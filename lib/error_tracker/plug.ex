@@ -4,13 +4,13 @@ defmodule ErrorTracker.Plug do
       use Plug.ErrorHandler
 
       @impl Plug.ErrorHandler
-      def handle_errors(conn, %{kind: kind, reason: reason, stack: stack}) do
+      def handle_errors(conn, %{kind: :error, reason: exception, stack: stack}) do
+        ErrorTracker.report(exception, stack)
 
+        :ok
+      end
 
-        dbg kind
-        dbg reason
-        dbg stack
-
+      def handle_errors(conn, _throw_or_exit) do
         :ok
       end
     end
