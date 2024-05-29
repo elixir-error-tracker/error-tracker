@@ -2,16 +2,29 @@
 
 En Elixir based built-in error tracking solution.
 
-## Installation
+## Configuration
 
-The package can be installed
-by adding `error_tracker` to your list of dependencies in `mix.exs`:
+Set up the repository:
 
 ```elixir
-def deps do
-  [
-    {:error_tracker, "~> 0.1.0"}
-  ]
+config :error_tracker,
+  repo: MyApp.Repo
+```
+
+Attach to Oban events:
+
+```elixir
+defmodule MyApp.Application do
+  def start(_type, _args) do
+    ErrorTracker.Integrations.Oban.attach()
+  end
 end
 ```
 
+Attach to Plug errors:
+
+```elixir
+defmodule MyApp.Endpoint do
+  use ErrorTracker.Plug
+end
+```
