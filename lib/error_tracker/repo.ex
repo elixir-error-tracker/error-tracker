@@ -1,5 +1,7 @@
 defmodule ErrorTracker.Repo do
-  use Ecto.Repo,
-    otp_app: :error_tracker,
-    adapter: Ecto.Adapters.Postgres
+  def insert!(struct_or_changeset, opts \\ []) do
+    repo = Application.get_env(:error_tracker, :repo)
+
+    repo.insert!(struct_or_changeset, opts)
+  end
 end
