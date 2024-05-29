@@ -6,6 +6,7 @@ defmodule ErrorTracker.MixProject do
       app: :error_tracker,
       version: "0.0.1",
       elixir: "~> 1.15",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
@@ -16,8 +17,14 @@ defmodule ErrorTracker.MixProject do
 
   # Run "mix help compile.app" to learn about applications.
   def application do
-    []
+    [
+      mod: {ErrorTracker.Application, []},
+      extra_applications: [:logger]
+    ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_env), do: ["lib"]
 
   def package do
     [
@@ -35,7 +42,11 @@ defmodule ErrorTracker.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_doc, "~> 0.33", only: :dev, runtime: false}
+      {:ecto_sql, "~> 3.0"},
+      {:ecto, "~> 3.11"},
+      {:ex_doc, "~> 0.33", only: :dev, runtime: false},
+      {:jason, "~> 1.1"},
+      {:postgrex, ">= 0.0.0"}
     ]
   end
 end

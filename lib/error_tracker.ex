@@ -1,18 +1,24 @@
 defmodule ErrorTracker do
-  @moduledoc """
-  Documentation for `ErrorTracker`.
-  """
+  alias ErrorTracker.Repo
 
-  @doc """
-  Hello world.
+  def report(exception, stacktrace, context \\ %{}) do
+    {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
+    {:ok, error} = ErrorTracker.Error.new(exception, stacktrace)
 
-  ## Examples
+    error =
+      Repo.insert!(error,
+        on_conflict: [set: [status: :unresolved]],
+        conflict_target: :fingerprint
+      )
 
-      iex> ErrorTracker.hello()
-      :world
+    error
+    |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context)
+    |> Repo.insert!()
+  end
 
-  """
-  def hello do
-    :world
+  def raise do
+    raise "PROBANDO PROBANDO"
+  rescue
+    e -> report(e, __STACKTRACE__)
   end
 end
