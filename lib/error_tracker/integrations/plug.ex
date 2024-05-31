@@ -1,4 +1,4 @@
-defmodule ErrorTracker.Plug do
+defmodule ErrorTracker.Integrations.Plug do
   defmacro __using__(_opts) do
     quote do
       use Plug.ErrorHandler
