@@ -41,6 +41,8 @@ Application.put_env(:error_tracker, ErrorTrackerDevWeb.Endpoint,
   ]
 )
 
+Application.put_env(:error_tracker, :repo, ErrorTrackerDev.Repo)
+
 defmodule ErrorTrackerDevWeb.PageController do
   import Plug.Conn
 
@@ -68,6 +70,7 @@ end
 
 defmodule ErrorTrackerDevWeb.Router do
   use Phoenix.Router
+  use ErrorTracker.Integrations.Plug
 
   pipeline :browser do
     plug :fetch_session
