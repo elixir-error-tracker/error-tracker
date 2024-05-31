@@ -24,3 +24,5 @@ error_tracker-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+dev.local.exs

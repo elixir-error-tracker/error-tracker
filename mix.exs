@@ -11,7 +11,8 @@ defmodule ErrorTracker.MixProject do
       deps: deps(),
       package: package(),
       description: description(),
-      source_url: "https://github.com/elixir-error-tracker/error-tracker"
+      source_url: "https://github.com/elixir-error-tracker/error-tracker",
+      aliases: aliases()
     ]
   end
 
@@ -44,9 +45,23 @@ defmodule ErrorTracker.MixProject do
     [
       {:ecto_sql, "~> 3.0"},
       {:ecto, "~> 3.11"},
-      {:ex_doc, "~> 0.33", only: :dev, runtime: false},
       {:jason, "~> 1.1"},
-      {:postgrex, ">= 0.0.0"}
+      {:phoenix_live_view, "~> 0.19 or ~> 1.0"},
+      {:plug, "~> 1.10"},
+      {:postgrex, ">= 0.0.0"},
+      # Dev dependencies
+      {:ex_doc, "~> 0.33", only: :dev},
+      {:phoenix_live_reload, ">= 0.0.0", only: :dev},
+      {:plug_cowboy, ">= 0.0.0", only: :dev},
+      {:tailwind, "~> 0.2", only: :dev}
+    ]
+  end
+
+  defp aliases do
+    [
+      setup: ["deps.get", "cmd --cd assets npm install"],
+      dev: "run --no-halt dev.exs",
+      "assets.build": ["esbuild default --minify"]
     ]
   end
 end
