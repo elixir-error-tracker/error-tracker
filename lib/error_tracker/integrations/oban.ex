@@ -1,6 +1,8 @@
 defmodule ErrorTracker.Integrations.Oban do
   def attach do
-    :telemetry.attach(__MODULE__, [:oban, :job, :exception], &handle_event/4, :no_config)
+    if Application.spec(:oban) do
+      :telemetry.attach(__MODULE__, [:oban, :job, :exception], &handle_event/4, :no_config)
+    end
   end
 
   def handle_event([:oban, :job, :exception], _measurements, metadata, :no_config) do
