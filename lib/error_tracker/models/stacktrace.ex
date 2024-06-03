@@ -38,8 +38,16 @@ defmodule ErrorTracker.Stacktrace do
     Ecto.Changeset.cast(line, params, ~w[application module function arity file line]a)
   end
 
+  @doc """
+  Source of the error stack trace.
+
+  The first line matching the client application. If no line belongs to the current
+  application, just the first line.
+  """
   def source(stack = %__MODULE__{}) do
-    List.first(stack.lines)
+    client_app = Application.fetch_env!(:error_tracker, :application)
+
+    Enum.find(stack.lines, &(&1.application == client_app)) || List.first(stack.lines)
   end
 end
 

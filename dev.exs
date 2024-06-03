@@ -41,7 +41,9 @@ Application.put_env(:error_tracker, ErrorTrackerDevWeb.Endpoint,
   ]
 )
 
+# Setup up the ErrorTracker configuration
 Application.put_env(:error_tracker, :repo, ErrorTrackerDev.Repo)
+Application.put_env(:error_tracker, :application, :error_tracker_dev)
 
 defmodule ErrorTrackerDevWeb.PageController do
   import Plug.Conn
