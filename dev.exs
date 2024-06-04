@@ -116,7 +116,8 @@ defmodule Migration0 do
     create table(:error_tracker_errors) do
       add :kind, :string, null: false
       add :reason, :text, null: false
-      add :source, :text, null: false
+      add :source_line, :text, null: false
+      add :source_function, :text, null: false
       add :status, :string, null: false
       add :fingerprint, :string, null: false
 

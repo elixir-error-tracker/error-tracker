@@ -4,7 +4,8 @@ defmodule ErrorTracker.Error do
   schema "error_tracker_errors" do
     field :kind, :string
     field :reason, :string
-    field :source, :string
+    field :source_line, :string
+    field :source_function, :string
     field :status, Ecto.Enum, values: [:resolved, :unresolved], default: :unresolved
     field :fingerprint, :binary
 
@@ -19,7 +20,8 @@ defmodule ErrorTracker.Error do
     params = [
       kind: "error",
       reason: Exception.message(exception),
-      source: to_string(source)
+      source_line: "#{source.file}:#{source.line}",
+      source_function: "#{source.module}.#{source.function}/#{source.arity}"
     ]
 
     fingerprint = :crypto.hash(:sha256, params |> Keyword.values() |> Enum.join())
