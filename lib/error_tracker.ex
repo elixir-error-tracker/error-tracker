@@ -6,15 +6,20 @@ defmodule ErrorTracker do
     error =
       repo().insert!(error,
         on_conflict: [set: [status: :unresolved]],
-        conflict_target: :fingerprint
+        conflict_target: :fingerprint,
+        prefix: prefix()
       )
 
     error
     |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context)
-    |> repo().insert!()
+    |> repo().insert!(prefix: prefix())
   end
 
   def repo do
     Application.fetch_env!(:error_tracker, :repo)
+  end
+
+  def prefix do
+    Application.get_env(:error_tracker, :prefix, "public")
   end
 end
