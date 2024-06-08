@@ -11,7 +11,7 @@ defmodule ErrorTracker.Error do
 
     has_many :occurrences, ErrorTracker.Occurrence
 
-    timestamps()
+    timestamps(type: :utc_datetime_usec)
   end
 
   def new(exception, stacktrace = %ErrorTracker.Stacktrace{}) do

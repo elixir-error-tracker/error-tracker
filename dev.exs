@@ -44,6 +44,7 @@ Application.put_env(:error_tracker, ErrorTrackerDevWeb.Endpoint,
 # Setup up the ErrorTracker configuration
 Application.put_env(:error_tracker, :repo, ErrorTrackerDev.Repo)
 Application.put_env(:error_tracker, :application, :error_tracker_dev)
+Application.put_env(:error_tracker, :prefix, "private")
 
 defmodule ErrorTrackerDevWeb.PageController do
   import Plug.Conn
@@ -112,30 +113,8 @@ end
 defmodule Migration0 do
   use Ecto.Migration
 
-  def change do
-    create table(:error_tracker_errors) do
-      add :kind, :string, null: false
-      add :reason, :text, null: false
-      add :source_line, :text, null: false
-      add :source_function, :text, null: false
-      add :status, :string, null: false
-      add :fingerprint, :string, null: false
-
-      timestamps()
-    end
-
-    create unique_index(:error_tracker_errors, :fingerprint)
-
-    create table(:error_tracker_occurrences) do
-      add :context, :map, null: false
-      add :stacktrace, :map, null: false
-      add :error_id, references(:error_tracker_errors, on_delete: :delete_all), null: false
-
-      timestamps(updated_at: false)
-    end
-
-    create index(:error_tracker_occurrences, :error_id)
-  end
+  def up, do: ErrorTracker.Migrations.up(prefix: "private")
+  def down, do: ErrorTracker.Migrations.down(prefix: "private")
 end
 
 Application.put_env(:phoenix, :serve_endpoints, true)
