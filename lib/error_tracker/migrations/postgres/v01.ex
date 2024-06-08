@@ -12,7 +12,7 @@ defmodule ErrorTracker.Migrations.Postgres.V01 do
       add :status, :string, null: false
       add :fingerprint, :string, null: false
 
-      timestamps()
+      timestamps(type: :utc_datetime_usec)
     end
 
     create unique_index(:error_tracker_errors, [:fingerprint], prefix: prefix)
@@ -22,7 +22,7 @@ defmodule ErrorTracker.Migrations.Postgres.V01 do
       add :stacktrace, :map, null: false
       add :error_id, references(:error_tracker_errors, on_delete: :delete_all), null: false
 
-      timestamps(updated_at: false)
+      timestamps(type: :utc_datetime_usec, updated_at: false)
     end
 
     create index(:error_tracker_occurrences, [:error_id], prefix: prefix)

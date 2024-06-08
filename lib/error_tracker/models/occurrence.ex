@@ -7,6 +7,6 @@ defmodule ErrorTracker.Occurrence do
     embeds_one :stacktrace, ErrorTracker.Stacktrace
     belongs_to :error, ErrorTracker.Error
 
-    timestamps(updated_at: false)
+    timestamps(type: :utc_datetime_usec, updated_at: false)
   end
 end
