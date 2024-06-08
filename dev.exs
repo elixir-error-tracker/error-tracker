@@ -125,6 +125,7 @@ defmodule ErrorTrackerDevWeb.Endpoint do
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
   plug :maybe_exception
+
   plug ErrorTrackerDevWeb.Router
 
   def maybe_exception(%Plug.Conn{path_info: ["plug-exception"]}, _), do: raise("Plug exception")

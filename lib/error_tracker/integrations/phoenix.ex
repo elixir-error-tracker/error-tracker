@@ -10,14 +10,14 @@ defmodule ErrorTracker.Integrations.Phoenix do
 
   alias ErrorTracker.Integrations.Plug, as: PlugIntegration
 
+  @events %{
+    [:phoenix, :router_dispatch, :exception] => &__MODULE__.handle_exception/4,
+    [:phoenix, :router_dispatch, :start] => &__MODULE__.add_context/4
+  }
+
   def attach do
     if Application.spec(:phoenix) do
-      :telemetry.attach(
-        __MODULE__,
-        [:phoenix, :router_dispatch, :exception],
-        &__MODULE__.handle_exception/4,
-        []
-      )
+      for {event, handler} <- @events, do: :telemetry.attach(__MODULE__, event, handler, [])
     end
   end
 
@@ -37,5 +37,9 @@ defmodule ErrorTracker.Integrations.Phoenix do
         _opts
       ) do
     PlugIntegration.report_error(conn, reason, stack)
+  end
+
+  def add_context([:phoenix, :router, :dispatch], _measurements, %{conn: conn}, _opts) do
+    PlugIntegration.set_context(conn)
   end
 end

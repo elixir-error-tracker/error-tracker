@@ -68,13 +68,47 @@ defmodule ErrorTracker.Integrations.Plug do
     end
   end
 
-  def report_error(_conn, reason, stack) do
+  def report_error(conn, reason, stack) do
     unless Process.get(:error_tracker_router_exception_reported) do
       try do
-        ErrorTracker.report(reason, stack)
+        ErrorTracker.report(reason, stack, set_context(conn))
       after
         Process.put(:error_tracker_router_exception_reported, true)
       end
     end
+  end
+
+  def set_context(conn = %Plug.Conn{}) do
+    ErrorTracker.set_context(%{
+      "request.host" => conn.host,
+      "request.path" => conn.request_path,
+      "request.query" => conn.query_string,
+      "request.method" => conn.method,
+      "request.ip" => remote_ip(conn),
+      "request.headers" => Map.new(conn.req_headers),
+      "response.headers" => Map.new(conn.resp_headers),
+      # TODO most likey this will be a %Plug.Conn.Unfetched{}
+      # Should we fetch it here?
+      "request.params" => %{},
+      "request.session" => %{}
+    })
+
+    conn
+  end
+
+  defp remote_ip(conn = %Plug.Conn{}) do
+    remote_ip =
+      case Plug.Conn.get_req_header(conn, "x-forwarded-for") do
+        [x_forwarded_for | _] ->
+          x_forwarded_for |> String.split(",", parts: 2) |> List.first()
+
+        [] ->
+          case :inet.ntoa(conn.remote_ip) do
+            {:error, _} -> ""
+            address -> to_string(address)
+          end
+      end
+
+    String.trim(remote_ip)
   end
 end
