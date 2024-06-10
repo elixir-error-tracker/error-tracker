@@ -11,20 +11,16 @@ config :error_tracker,
   repo: MyApp.Repo
 ```
 
-Attach to Oban events:
+And you are ready to go!
 
-```elixir
-defmodule MyApp.Application do
-  def start(_type, _args) do
-    ErrorTracker.Integrations.Oban.attach()
-  end
-end
-```
+By default Phoenix and Oban integrations will start registering exceptions.
 
-Attach to Plug errors:
+If you want to also catch exceptions before your Phoenix Router (in plugs used
+on your Endpoint) or your application just use `Plug` but not `Phoenix`, you can
+attach to those errors with:
 
 ```elixir
 defmodule MyApp.Endpoint do
-  use ErrorTracker.Plug
+  use ErrorTracker.Integrations.Plug
 end
 ```
