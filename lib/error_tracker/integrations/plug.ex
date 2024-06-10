@@ -1,17 +1,46 @@
 defmodule ErrorTracker.Integrations.Plug do
   defmacro __using__(_opts) do
     quote do
-      use Plug.ErrorHandler
+      @before_compile unquote(__MODULE__)
+    end
+  end
 
-      @impl Plug.ErrorHandler
-      def handle_errors(conn, %{kind: :error, reason: exception, stack: stack}) do
-        ErrorTracker.report(exception, stack)
+  defmacro __before_compile__(_) do
+    quote do
+      defoverridable call: 2
 
-        :ok
+      def call(conn, opts) do
+        try do
+          super(conn, opts)
+        rescue
+          e in Plug.Conn.WrapperError ->
+            unquote(__MODULE__).report_error(conn, e, e.stack)
+
+            Plug.Conn.WrapperError.reraise(e)
+
+          e ->
+            stack = __STACKTRACE__
+            unquote(__MODULE__).report_error(conn, e, stack)
+
+            :erlang.raise(:error, e, stack)
+        catch
+          kind, reason ->
+            stack = __STACKTRACE__
+            unquote(__MODULE__).report_error(conn, reason, stack)
+
+            :erlang.raise(kind, reason, stack)
+        end
       end
+    end
+  end
 
-      def handle_errors(conn, _throw_or_exit) do
-        :ok
+  def report_error(_conn, reason, stack) do
+    unless Process.get(:error_tracker_router_exception_reported) do
+      # TODO: Add metadata from conn when implemented
+      try do
+        ErrorTracker.report(reason, stack)
+      after
+        Process.put(:error_tracker_router_exception_reported, true)
       end
     end
   end
