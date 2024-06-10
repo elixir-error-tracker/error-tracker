@@ -55,13 +55,19 @@ defmodule ErrorTrackerDevWeb.PageController do
     content(conn, """
     <h2>ErrorTracker Dev Server</h2>
     <div><a href="/errors">Open ErrorTracker</a></div>
-    <div><a href="/404">Generate 404 Error</a></div>
+    <div><a href="/plug-exception">Generate Plug exception</a></div>
+    <div><a href="/404">Generate Router 404</a></div>
+    <div><a href="/noroute">Raise NoRouteError from a controller</a></div>
     <div><a href="/exception">Generate Exception</a></div>
     """)
   end
 
+  def call(conn, :noroute) do
+    raise Phoenix.Router.NoRouteError, conn: conn, router: ErrorTrackerDevWeb.Router
+  end
+
   def call(_conn, :exception) do
-    raise "This is an error"
+    raise "This is a controller exception"
   end
 
   defp content(conn, content) do
@@ -71,9 +77,18 @@ defmodule ErrorTrackerDevWeb.PageController do
   end
 end
 
+defmodule ErrorTrackerDevWeb.ErrorView do
+  def render("404.html", _assigns) do
+    "This is a 404"
+  end
+
+  def render("500.html", _assigns) do
+    "This is a 500"
+  end
+end
+
 defmodule ErrorTrackerDevWeb.Router do
   use Phoenix.Router
-  use ErrorTracker.Integrations.Plug
 
   pipeline :browser do
     plug :fetch_session
@@ -83,12 +98,14 @@ defmodule ErrorTrackerDevWeb.Router do
   scope "/" do
     pipe_through :browser
     get "/", ErrorTrackerDevWeb.PageController, :index
+    get "/noroute", ErrorTrackerDevWeb.PageController, :noroute
     get "/exception", ErrorTrackerDevWeb.PageController, :exception
   end
 end
 
 defmodule ErrorTrackerDevWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :error_tracker
+  use ErrorTracker.Integrations.Plug
 
   @session_options [
     store: :cookie,
@@ -107,7 +124,11 @@ defmodule ErrorTrackerDevWeb.Endpoint do
 
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
+  plug :maybe_exception
   plug ErrorTrackerDevWeb.Router
+
+  def maybe_exception(%Plug.Conn{path_info: ["plug-exception"]}, _), do: raise("Plug exception")
+  def maybe_exception(conn, _), do: conn
 end
 
 defmodule Migration0 do
