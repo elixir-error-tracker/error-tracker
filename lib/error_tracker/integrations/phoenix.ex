@@ -1,4 +1,13 @@
 defmodule ErrorTracker.Integrations.Phoenix do
+  @moduledoc """
+  The ErrorTracker integration with Phoenix applications.
+
+  ## How it works
+
+  It works using your application's Telemetry events, so you don't need to
+  modify anything on your application.
+  """
+
   alias ErrorTracker.Integrations.Plug, as: PlugIntegration
 
   def attach do

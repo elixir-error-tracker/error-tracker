@@ -1,4 +1,6 @@
 defmodule ErrorTracker.Migrations.Postgres.V01 do
+  @moduledoc false
+
   use Ecto.Migration
 
   def up(%{create_schema: create_schema, prefix: prefix}) do

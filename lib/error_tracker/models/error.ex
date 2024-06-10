@@ -1,4 +1,11 @@
 defmodule ErrorTracker.Error do
+  @moduledoc """
+  An Error is a type of exception recorded by the ErrorTracker.
+
+  It stores a kind, reason and source code location to generate a unique
+  fingerprint that can be used to avoid duplicates.
+  """
+
   use Ecto.Schema
 
   schema "error_tracker_errors" do

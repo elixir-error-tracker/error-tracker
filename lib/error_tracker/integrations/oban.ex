@@ -1,4 +1,13 @@
 defmodule ErrorTracker.Integrations.Oban do
+  @moduledoc """
+  The ErrorTracker integration with Oban.
+
+  ## How it works
+
+  It works using your application's Telemetry events, so you don't need to
+  modify anything on your application.
+  """
+
   def attach do
     if Application.spec(:oban) do
       :telemetry.attach(__MODULE__, [:oban, :job, :exception], &handle_event/4, :no_config)

@@ -1,4 +1,6 @@
 defmodule ErrorTracker.Migrations.Postgres do
+  @moduledoc false
+
   @behaviour ErrorTracker.Migration
 
   use Ecto.Migration
