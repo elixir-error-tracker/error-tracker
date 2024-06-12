@@ -157,4 +157,3 @@ Task.async(fn ->
 
   Process.sleep(:infinity)
 end)
-|> Task.await(:infinity)
