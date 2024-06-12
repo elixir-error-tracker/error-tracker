@@ -36,6 +36,6 @@ defmodule ErrorTracker.Integrations.Phoenix do
           {reason, stack}
       end
 
-    PlugIntegration.report_error(reason, stack)
+    PlugIntegration.report_error(metadata.conn, reason, stack)
   end
 end

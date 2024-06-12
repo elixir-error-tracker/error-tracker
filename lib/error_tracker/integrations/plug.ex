@@ -53,29 +53,42 @@ defmodule ErrorTracker.Integrations.Plug do
           # This error wraps the failed connection so it may contain newer
           # information for the context.
           unquote(__MODULE__).set_context(e.conn)
-          unquote(__MODULE__).report_error(e.reason, e.stack)
+          unquote(__MODULE__).report_error(e.conn, e.reason, e.stack)
 
           Plug.Conn.WrapperError.reraise(e)
 
         e ->
           stack = __STACKTRACE__
-          unquote(__MODULE__).report_error(e, stack)
+          unquote(__MODULE__).report_error(conn, e, stack)
 
           :erlang.raise(:error, e, stack)
       catch
         kind, reason ->
           stack = __STACKTRACE__
-          unquote(__MODULE__).report_error(reason, stack)
+          unquote(__MODULE__).report_error(conn, reason, stack)
 
           :erlang.raise(kind, reason, stack)
       end
     end
   end
 
-  def report_error(reason, stack) do
+  def report_error(conn, reason, stack) do
+    context =
+      try do
+        %{"request.session" => Plug.Conn.get_session(conn)}
+      rescue
+        ArgumentError -> %{}
+      end
+
+    context =
+      case conn.params do
+        %Plug.Conn.Unfetched{} -> context
+        fetched_params -> Map.put(context, "request.params", fetched_params)
+      end
+
     unless Process.get(:error_tracker_router_exception_reported) do
       try do
-        ErrorTracker.report(reason, stack)
+        ErrorTracker.report(reason, stack, context)
       after
         Process.put(:error_tracker_router_exception_reported, true)
       end
