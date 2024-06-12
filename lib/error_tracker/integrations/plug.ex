@@ -46,32 +46,33 @@ defmodule ErrorTracker.Integrations.Plug do
       defoverridable call: 2
 
       def call(conn, opts) do
+        unquote(__MODULE__).set_context(conn)
         super(conn, opts)
       rescue
         e in Plug.Conn.WrapperError ->
-          unquote(__MODULE__).report_error(conn, e, e.stack)
+          unquote(__MODULE__).report_error(e, e.stack)
 
           Plug.Conn.WrapperError.reraise(e)
 
         e ->
           stack = __STACKTRACE__
-          unquote(__MODULE__).report_error(conn, e, stack)
+          unquote(__MODULE__).report_error(e, stack)
 
           :erlang.raise(:error, e, stack)
       catch
         kind, reason ->
           stack = __STACKTRACE__
-          unquote(__MODULE__).report_error(conn, reason, stack)
+          unquote(__MODULE__).report_error(reason, stack)
 
           :erlang.raise(kind, reason, stack)
       end
     end
   end
 
-  def report_error(conn, reason, stack) do
+  def report_error(reason, stack) do
     unless Process.get(:error_tracker_router_exception_reported) do
       try do
-        ErrorTracker.report(reason, stack, set_context(conn))
+        ErrorTracker.report(reason, stack)
       after
         Process.put(:error_tracker_router_exception_reported, true)
       end

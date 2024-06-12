@@ -24,19 +24,19 @@ defmodule ErrorTracker.Integrations.Phoenix do
   def handle_exception(
         [:phoenix, :router_dispatch, :exception],
         _measurements,
-        %{reason: %Plug.Conn.WrapperError{conn: conn, reason: reason, stack: stack}},
+        %{reason: %Plug.Conn.WrapperError{reason: reason, stack: stack}},
         _opts
       ) do
-    PlugIntegration.report_error(conn, reason, stack)
+    PlugIntegration.report_error(reason, stack)
   end
 
   def handle_exception(
         [:phoenix, :router_dispatch, :exception],
         _measurements,
-        %{reason: reason, stacktrace: stack, conn: conn},
+        %{reason: reason, stacktrace: stack},
         _opts
       ) do
-    PlugIntegration.report_error(conn, reason, stack)
+    PlugIntegration.report_error(reason, stack)
   end
 
   def add_context([:phoenix, :router, :dispatch], _measurements, %{conn: conn}, _opts) do
