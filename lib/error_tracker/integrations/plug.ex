@@ -86,15 +86,8 @@ defmodule ErrorTracker.Integrations.Plug do
       "request.query" => conn.query_string,
       "request.method" => conn.method,
       "request.ip" => remote_ip(conn),
-      "request.headers" => Map.new(conn.req_headers),
-      "response.headers" => Map.new(conn.resp_headers),
-      # TODO most likey this will be a %Plug.Conn.Unfetched{}
-      # Should we fetch it here?
-      "request.params" => %{},
-      "request.session" => %{}
+      "request.headers" => Map.new(conn.req_headers)
     })
-
-    conn
   end
 
   defp remote_ip(conn = %Plug.Conn{}) do
