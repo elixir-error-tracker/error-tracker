@@ -4,7 +4,7 @@ defmodule ErrorTracker do
   """
 
   @typedoc """
-  A map containing the relvant context for a particular error.
+  A map containing the relevant context for a particular error.
   """
   @type context :: %{String.t() => any()}
 
