@@ -8,9 +8,15 @@ defmodule ErrorTracker.Integrations.Oban do
   modify anything on your application.
   """
 
+  # https://hexdocs.pm/oban/Oban.Telemetry.html
+  @events [
+    [:oban, :job, :start],
+    [:oban, :job, :exception]
+  ]
+
   def attach do
     if Application.spec(:oban) do
-      :telemetry.attach(__MODULE__, [:oban, :job, :exception], &handle_event/4, :no_config)
+      :telemetry.attach_many(__MODULE__, @events, &__MODULE__.handle_event/4, :no_config)
     end
   end
 
