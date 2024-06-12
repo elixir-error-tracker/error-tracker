@@ -50,7 +50,10 @@ defmodule ErrorTracker.Integrations.Plug do
         super(conn, opts)
       rescue
         e in Plug.Conn.WrapperError ->
-          unquote(__MODULE__).report_error(e, e.stack)
+          # This error wraps the failed connection so it may contain newer
+          # information for the context.
+          unquote(__MODULE__).set_context(e.conn)
+          unquote(__MODULE__).report_error(e.reason, e.stack)
 
           Plug.Conn.WrapperError.reraise(e)
 
