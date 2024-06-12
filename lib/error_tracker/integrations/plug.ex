@@ -50,9 +50,6 @@ defmodule ErrorTracker.Integrations.Plug do
         super(conn, opts)
       rescue
         e in Plug.Conn.WrapperError ->
-          # This error wraps the failed connection so it may contain newer
-          # information for the context.
-          unquote(__MODULE__).set_context(e.conn)
           unquote(__MODULE__).report_error(e.conn, e.reason, e.stack)
 
           Plug.Conn.WrapperError.reraise(e)
@@ -73,9 +70,11 @@ defmodule ErrorTracker.Integrations.Plug do
   end
 
   def report_error(conn, reason, stack) do
+    context = build_context(conn)
+
     context =
       try do
-        %{"request.session" => Plug.Conn.get_session(conn)}
+        Map.put(context, "request.session", Plug.Conn.get_session(conn))
       rescue
         ArgumentError -> %{}
       end
@@ -96,14 +95,18 @@ defmodule ErrorTracker.Integrations.Plug do
   end
 
   def set_context(conn = %Plug.Conn{}) do
-    ErrorTracker.set_context(%{
+    conn |> build_context |> ErrorTracker.set_context()
+  end
+
+  defp build_context(conn = %Plug.Conn{}) do
+    %{
       "request.host" => conn.host,
       "request.path" => conn.request_path,
       "request.query" => conn.query_string,
       "request.method" => conn.method,
       "request.ip" => remote_ip(conn),
       "request.headers" => Map.new(conn.req_headers)
-    })
+    }
   end
 
   defp remote_ip(conn = %Plug.Conn{}) do
