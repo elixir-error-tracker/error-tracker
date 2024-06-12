@@ -6,7 +6,7 @@ defmodule ErrorTracker do
   @typedoc """
   A map containing the relvant context for a particular error.
   """
-  @type context :: map()
+  @type context :: %{String.t() => any()}
 
   def report(exception, stacktrace, given_context \\ %{}) do
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
