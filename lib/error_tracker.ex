@@ -1,4 +1,8 @@
 defmodule ErrorTracker do
+  @moduledoc """
+  En Elixir based built-in error tracking solution.
+  """
+
   def report(exception, stacktrace, context \\ %{}) do
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
     {:ok, error} = ErrorTracker.Error.new(exception, stacktrace)

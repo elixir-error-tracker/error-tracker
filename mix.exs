@@ -50,6 +50,7 @@ defmodule ErrorTracker.MixProject do
       {:plug, "~> 1.10"},
       {:postgrex, ">= 0.0.0"},
       # Dev dependencies
+      {:credo, "~> 1.7", only: [:dev, :test]},
       {:ex_doc, "~> 0.33", only: :dev},
       {:phoenix_live_reload, ">= 0.0.0", only: :dev},
       {:plug_cowboy, ">= 0.0.0", only: :dev},

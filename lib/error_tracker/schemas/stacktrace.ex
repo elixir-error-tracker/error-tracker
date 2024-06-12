@@ -1,4 +1,9 @@
 defmodule ErrorTracker.Stacktrace do
+  @moduledoc """
+  An Stacktrace contains the information about the execution stack for a given
+  occurrence of an exception.
+  """
+
   use Ecto.Schema
 
   @primary_key false
