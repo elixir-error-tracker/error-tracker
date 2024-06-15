@@ -70,24 +70,9 @@ defmodule ErrorTracker.Integrations.Plug do
   end
 
   def report_error(conn, reason, stack) do
-    context = build_context(conn)
-
-    context =
-      try do
-        Map.put(context, "request.session", Plug.Conn.get_session(conn))
-      rescue
-        ArgumentError -> %{}
-      end
-
-    context =
-      case conn.params do
-        %Plug.Conn.Unfetched{} -> context
-        fetched_params -> Map.put(context, "request.params", fetched_params)
-      end
-
     unless Process.get(:error_tracker_router_exception_reported) do
       try do
-        ErrorTracker.report(reason, stack, context)
+        ErrorTracker.report(reason, stack, build_context(conn))
       after
         Process.put(:error_tracker_router_exception_reported, true)
       end
@@ -105,7 +90,9 @@ defmodule ErrorTracker.Integrations.Plug do
       "request.query" => conn.query_string,
       "request.method" => conn.method,
       "request.ip" => remote_ip(conn),
-      "request.headers" => Map.new(conn.req_headers)
+      "request.headers" => Map.new(conn.req_headers),
+      # Depending on the error source, the request params may have not been fetched yet
+      "request.params" => unless(is_struct(conn.params, Plug.Conn.Unfetched), do: conn.params)
     }
   end
 
