@@ -62,7 +62,7 @@ defmodule ErrorTracker.Integrations.Plug do
       catch
         kind, reason ->
           stack = __STACKTRACE__
-          unquote(__MODULE__).report_error(conn, reason, stack)
+          unquote(__MODULE__).report_error(conn, {kind, reason}, stack)
 
           :erlang.raise(kind, reason, stack)
       end

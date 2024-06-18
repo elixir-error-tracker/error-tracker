@@ -59,6 +59,7 @@ defmodule ErrorTrackerDevWeb.PageController do
     <div><a href="/404">Generate Router 404</a></div>
     <div><a href="/noroute">Raise NoRouteError from a controller</a></div>
     <div><a href="/exception">Generate Exception</a></div>
+    <div><a href="/exit">Generate Exit</a></div>
     """)
   end
 
@@ -68,6 +69,10 @@ defmodule ErrorTrackerDevWeb.PageController do
 
   def call(_conn, :exception) do
     raise "This is a controller exception"
+  end
+
+  def call(_conn, :exit) do
+    exit(:timeout)
   end
 
   defp content(conn, content) do
@@ -100,6 +105,7 @@ defmodule ErrorTrackerDevWeb.Router do
     get "/", ErrorTrackerDevWeb.PageController, :index
     get "/noroute", ErrorTrackerDevWeb.PageController, :noroute
     get "/exception", ErrorTrackerDevWeb.PageController, :exception
+    get "/exit", ErrorTrackerDevWeb.PageController, :exit
   end
 end
 

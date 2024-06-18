@@ -24,9 +24,21 @@ defmodule ErrorTracker.Error do
   def new(exception, stacktrace = %ErrorTracker.Stacktrace{}) do
     source = ErrorTracker.Stacktrace.source(stacktrace)
 
+    {kind, reason} =
+      case exception do
+        %struct{} = ex when is_exception(ex) ->
+          {to_string(struct), Exception.message(ex)}
+
+        {_kind, %struct{} = ex} when is_exception(ex) ->
+          {to_string(struct), Exception.message(ex)}
+
+        {kind, ex} ->
+          {to_string(kind), to_string(ex)}
+      end
+
     params = [
-      kind: "error",
-      reason: Exception.message(exception),
+      kind: to_string(kind),
+      reason: reason,
       source_line: "#{source.file}:#{source.line}",
       source_function: "#{source.module}.#{source.function}/#{source.arity}"
     ]
