@@ -29,11 +29,11 @@ defmodule ErrorTracker.Integrations.Phoenix do
   def handle_event([:phoenix, :router_dispatch, :exception], _measurements, metadata, :no_config) do
     {reason, kind, stack} =
       case metadata do
-        %{reason: %Plug.Conn.WrapperError{reason: reason, kind: kindstack: stack}} ->
-          {reason, stack}
+        %{reason: %Plug.Conn.WrapperError{reason: reason, kind: kind, stack: stack}} ->
+          {reason, kind, stack}
 
         %{kind: kind, reason: reason, stacktrace: stack} ->
-          {reason, stack}
+          {reason, kind, stack}
       end
 
     PlugIntegration.report_error(metadata.conn, {reason, kind}, stack)
