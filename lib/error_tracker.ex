@@ -3,9 +3,16 @@ defmodule ErrorTracker do
   En Elixir based built-in error tracking solution.
   """
 
-  def report(exception, stacktrace, context \\ %{}) do
+  @typedoc """
+  A map containing the relevant context for a particular error.
+  """
+  @type context :: %{String.t() => any()}
+
+  def report(exception, stacktrace, given_context \\ %{}) do
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
     {:ok, error} = ErrorTracker.Error.new(exception, stacktrace)
+
+    context = Map.merge(get_context(), given_context)
 
     error =
       repo().insert!(error,
@@ -25,5 +32,19 @@ defmodule ErrorTracker do
 
   def prefix do
     Application.get_env(:error_tracker, :prefix, "public")
+  end
+
+  @spec set_context(context()) :: context()
+  def set_context(params) when is_map(params) do
+    current_context = Process.get(:error_tracker_context, %{})
+
+    Process.put(:error_tracker_context, Map.merge(current_context, params))
+
+    params
+  end
+
+  @spec get_context() :: context()
+  def get_context do
+    Process.get(:error_tracker_context, %{})
   end
 end

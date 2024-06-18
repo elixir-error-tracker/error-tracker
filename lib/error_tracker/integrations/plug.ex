@@ -46,10 +46,11 @@ defmodule ErrorTracker.Integrations.Plug do
       defoverridable call: 2
 
       def call(conn, opts) do
+        unquote(__MODULE__).set_context(conn)
         super(conn, opts)
       rescue
         e in Plug.Conn.WrapperError ->
-          unquote(__MODULE__).report_error(conn, e, e.stack)
+          unquote(__MODULE__).report_error(e.conn, e.reason, e.stack)
 
           Plug.Conn.WrapperError.reraise(e)
 
@@ -68,13 +69,46 @@ defmodule ErrorTracker.Integrations.Plug do
     end
   end
 
-  def report_error(_conn, reason, stack) do
+  def report_error(conn, reason, stack) do
     unless Process.get(:error_tracker_router_exception_reported) do
       try do
-        ErrorTracker.report(reason, stack)
+        ErrorTracker.report(reason, stack, build_context(conn))
       after
         Process.put(:error_tracker_router_exception_reported, true)
       end
     end
+  end
+
+  def set_context(conn = %Plug.Conn{}) do
+    conn |> build_context |> ErrorTracker.set_context()
+  end
+
+  defp build_context(conn = %Plug.Conn{}) do
+    %{
+      "request.host" => conn.host,
+      "request.path" => conn.request_path,
+      "request.query" => conn.query_string,
+      "request.method" => conn.method,
+      "request.ip" => remote_ip(conn),
+      "request.headers" => Map.new(conn.req_headers),
+      # Depending on the error source, the request params may have not been fetched yet
+      "request.params" => unless(is_struct(conn.params, Plug.Conn.Unfetched), do: conn.params)
+    }
+  end
+
+  defp remote_ip(conn = %Plug.Conn{}) do
+    remote_ip =
+      case Plug.Conn.get_req_header(conn, "x-forwarded-for") do
+        [x_forwarded_for | _] ->
+          x_forwarded_for |> String.split(",", parts: 2) |> List.first()
+
+        [] ->
+          case :inet.ntoa(conn.remote_ip) do
+            {:error, _} -> ""
+            address -> to_string(address)
+          end
+      end
+
+    String.trim(remote_ip)
   end
 end

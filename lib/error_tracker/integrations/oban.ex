@@ -8,20 +8,34 @@ defmodule ErrorTracker.Integrations.Oban do
   modify anything on your application.
   """
 
+  # https://hexdocs.pm/oban/Oban.Telemetry.html
+  @events [
+    [:oban, :job, :start],
+    [:oban, :job, :exception]
+  ]
+
   def attach do
     if Application.spec(:oban) do
-      :telemetry.attach(__MODULE__, [:oban, :job, :exception], &handle_event/4, :no_config)
+      :telemetry.attach_many(__MODULE__, @events, &__MODULE__.handle_event/4, :no_config)
     end
   end
 
-  def handle_event([:oban, :job, :exception], _measurements, metadata, :no_config) do
-    %{job: job, reason: exception, stacktrace: stacktrace} = metadata
+  def handle_event([:oban, :job, :start], _measurements, metadata, :no_config) do
+    %{job: job} = metadata
 
-    ErrorTracker.report(exception, stacktrace, %{
-      job_id: job.id,
-      job_attempt: job.attempt,
-      job_queue: job.queue,
-      job_worker: job.worker
+    ErrorTracker.set_context(%{
+      "job.args" => job.args,
+      "job.attempt" => job.attempt,
+      "job.id" => job.id,
+      "job.priority" => job.priority,
+      "job.queue" => job.queue,
+      "job.worker" => job.worker
     })
+  end
+
+  def handle_event([:oban, :job, :exception], _measurements, metadata, :no_config) do
+    %{reason: exception, stacktrace: stacktrace} = metadata
+
+    ErrorTracker.report(exception, stacktrace)
   end
 end
