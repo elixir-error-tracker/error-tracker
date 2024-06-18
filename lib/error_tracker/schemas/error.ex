@@ -26,10 +26,10 @@ defmodule ErrorTracker.Error do
 
     {kind, reason} =
       case exception do
-        %{__struct__: struct} = ex when is_exception(ex) ->
+        %struct{} = ex when is_exception(ex) ->
           {to_string(struct), Exception.message(ex)}
 
-        {_kind, %{__struct__: struct} = ex} when is_exception(ex) ->
+        {_kind, %struct{} = ex} when is_exception(ex) ->
           {to_string(struct), Exception.message(ex)}
 
         {kind, ex} ->
