@@ -46,6 +46,7 @@ defmodule DemoLive do
     <button phx-click="error">Crash on handle_event</button>
 
     <.link href="/?crash=mount">Crash on mount</.link>
+    <.link patch="/?crash=handle_params">Crash on handle_params</.link>
 
     <style type="text/css">
       body { padding: 1em; }
@@ -63,7 +64,14 @@ defmodule DemoLive do
   end
 
   def handle_event("error", _params, _socket) do
-    raise "Crash on handle event"
+    raise "Crash on handle_event"
+  end
+
+  def handle_params(params, _uri, socket) do
+    if params["crash"] == "handle_params" do
+      raise "Crash on handle_params"
+    end
+    {:noreply, socket}
   end
 end
 
