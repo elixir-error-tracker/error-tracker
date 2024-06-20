@@ -1,5 +1,5 @@
 Mix.install([
-  {:phoenix_playground, "~> 0.1.0"},
+  {:phoenix_playground, github: "phoenix-playground/phoenix_playground", ref: "ee6da0fc3b141f78b9f967ce71a4fb015c6764a6"},
   {:error_tracker, path: "."}
 ])
 
