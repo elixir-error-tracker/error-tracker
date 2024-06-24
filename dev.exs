@@ -39,10 +39,6 @@ Application.put_env(:error_tracker, :repo, ErrorTrackerDev.Repo)
 Application.put_env(:error_tracker, :application, :error_tracker_dev)
 Application.put_env(:error_tracker, :prefix, "private")
 
-Application.put_env(:error_tracker, ErrorTracker.DevRepo,
-  url: "ecto://postgres:postgres@127.0.0.1/error_tracker_dev"
-)
-
 defmodule ErrorTrackerDevWeb.PageController do
   import Plug.Conn
 
