@@ -1,27 +1,7 @@
 Mix.install([
   {:phoenix_playground, github: "phoenix-playground/phoenix_playground", ref: "ee6da0fc3b141f78b9f967ce71a4fb015c6764a6"},
-  {:error_tracker, path: "."}
+  {:error_tracker, path: ".", env: :dev}
 ])
-
-# Set up the repository for the Error Tracker
-defmodule ErrorTrackerDev.Repo do
-  use Ecto.Repo, otp_app: :error_tracker, adapter: Ecto.Adapters.Postgres
-end
-
-Application.put_env(:error_tracker, :repo, ErrorTrackerDev.Repo)
-Application.put_env(:error_tracker, :application, :error_tracker_dev)
-Application.put_env(:error_tracker, :prefix, "private")
-Application.put_env(:error_tracker, ErrorTrackerDev.Repo, url: "ecto://postgres:postgres@127.0.0.1/error_tracker_dev")
-
-
-# This migration will set up the database structure
-defmodule Migration0 do
-  use Ecto.Migration
-
-  def up, do: ErrorTracker.Migrations.up(prefix: "private")
-  def down, do: ErrorTracker.Migrations.down(prefix: "private")
-end
-
 
 defmodule DemoLive do
   use Phoenix.LiveView
@@ -76,14 +56,9 @@ defmodule DemoLive do
 end
 
 
+Application.put_env(:error_tracker, :repo, ErrorTracker.DevRepo)
+Application.put_env(:error_tracker, :application, :error_tracker_dev)
+Application.put_env(:error_tracker, :prefix, "private")
+Application.put_env(:error_tracker, ErrorTracker.DevRepo, url: "ecto://postgres:postgres@127.0.0.1/error_tracker_dev")
 
-PhoenixPlayground.start(live: DemoLive, child_specs: [ErrorTrackerDev.Repo])
-
-
-# Create the database if it does not exist and run migrations if needed
-_ = Ecto.Adapters.Postgres.storage_up(ErrorTrackerDev.Repo.config())
-
-Ecto.Migrator.run(ErrorTrackerDev.Repo, [{0, Migration0}], :up,
-  all: true,
-  log_migrations_sql: :debug
-)
+PhoenixPlayground.start(live: DemoLive, child_specs: [ErrorTracker.DevSupervisor])

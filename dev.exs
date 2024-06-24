@@ -12,13 +12,6 @@ Logger.configure(level: :debug)
 # Get local configuration
 Code.require_file("dev.local.exs")
 
-# Prepare the repo
-defmodule ErrorTrackerDev.Repo do
-  use Ecto.Repo, otp_app: :error_tracker, adapter: Ecto.Adapters.Postgres
-end
-
-_ = Ecto.Adapters.Postgres.storage_up(ErrorTrackerDev.Repo.config())
-
 # Configures the endpoint
 Application.put_env(:error_tracker, ErrorTrackerDevWeb.Endpoint,
   url: [host: "localhost"],
@@ -45,6 +38,10 @@ Application.put_env(:error_tracker, ErrorTrackerDevWeb.Endpoint,
 Application.put_env(:error_tracker, :repo, ErrorTrackerDev.Repo)
 Application.put_env(:error_tracker, :application, :error_tracker_dev)
 Application.put_env(:error_tracker, :prefix, "private")
+
+Application.put_env(:error_tracker, ErrorTracker.DevRepo,
+  url: "ecto://postgres:postgres@127.0.0.1/error_tracker_dev"
+)
 
 defmodule ErrorTrackerDevWeb.PageController do
   import Plug.Conn
@@ -131,29 +128,16 @@ defmodule ErrorTrackerDevWeb.Endpoint do
   def maybe_exception(conn, _), do: conn
 end
 
-defmodule Migration0 do
-  use Ecto.Migration
-
-  def up, do: ErrorTracker.Migrations.up(prefix: "private")
-  def down, do: ErrorTracker.Migrations.down(prefix: "private")
-end
-
 Application.put_env(:phoenix, :serve_endpoints, true)
 
 Task.async(fn ->
   children = [
     {Phoenix.PubSub, [name: ErrorTrackerDev.PubSub, adapter: Phoenix.PubSub.PG2]},
-    ErrorTrackerDev.Repo,
+    ErrorTracker.DevSupervisor,
     ErrorTrackerDevWeb.Endpoint
   ]
 
   {:ok, _} = Supervisor.start_link(children, strategy: :one_for_one)
-
-  # Automatically run the migrations on boot
-  Ecto.Migrator.run(ErrorTrackerDev.Repo, [{0, Migration0}], :up,
-    all: true,
-    log_migrations_sql: :debug
-  )
 
   Process.sleep(:infinity)
 end)
