@@ -95,6 +95,8 @@ end
 defmodule ErrorTrackerDevWeb.Router do
   use Phoenix.Router
 
+  import ErrorTracker.Web.Router
+
   pipeline :browser do
     plug :fetch_session
     plug :protect_from_forgery
@@ -106,6 +108,8 @@ defmodule ErrorTrackerDevWeb.Router do
     get "/noroute", ErrorTrackerDevWeb.PageController, :noroute
     get "/exception", ErrorTrackerDevWeb.PageController, :exception
     get "/exit", ErrorTrackerDevWeb.PageController, :exit
+
+    error_tracker_dashboard("/error_tracker")
   end
 end
 
