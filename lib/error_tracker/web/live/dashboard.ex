@@ -1,4 +1,6 @@
 defmodule ErrorTracker.Web.Live.Dashboard do
+  @moduledoc false
+
   use ErrorTracker.Web, :live_view
 
   @impl Phoenix.LiveView
