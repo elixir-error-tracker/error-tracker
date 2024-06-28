@@ -44,7 +44,7 @@ defmodule ErrorTracker.Integrations.Phoenix do
           {reason, kind, stack}
       end
 
-    PlugIntegration.report_error(metadata.conn, {reason, kind}, stack)
+    PlugIntegration.report_error(metadata.conn, {kind, reason}, stack)
   end
 
   def handle_event([:phoenix, :live_view, :mount, :start], _, metadata, :no_config) do
@@ -68,6 +68,6 @@ defmodule ErrorTracker.Integrations.Phoenix do
   end
 
   def handle_event([:phoenix, :live_view, _action, :exception], _, metadata, :no_config) do
-    ErrorTracker.report(metadata.reason, metadata.stacktrace)
+    ErrorTracker.report({metadata.kind, metadata.reason}, metadata.stacktrace)
   end
 end
