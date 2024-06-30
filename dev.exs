@@ -94,8 +94,7 @@ end
 
 defmodule ErrorTrackerDevWeb.Router do
   use Phoenix.Router
-
-  import ErrorTracker.Web.Router
+  use ErrorTracker.Web, :router
 
   pipeline :browser do
     plug :fetch_session
