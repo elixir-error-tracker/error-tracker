@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <meta name="socket-path" content={get_config(:socket_path)} />
-    <meta name="socket-transport" content={get_config(:socket_transport)} />
+    <meta name="socket-path" content={get_socket_config(:path)} />
+    <meta name="socket-transport" content={get_socket_config(:transport)} />
 
     <title><%= assigns[:page_title] || "ErrorTracker" %></title>
 
