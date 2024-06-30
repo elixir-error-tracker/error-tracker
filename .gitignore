@@ -25,6 +25,8 @@ error_tracker-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 
+/assets/node_modules
+
 /priv/static/app.js
 /priv/static/app.css
 

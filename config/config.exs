@@ -12,11 +12,11 @@ if config_env() == :dev do
       cd: Path.expand("../assets", __DIR__)
     ]
 
-  config :esbuild,
-    version: "0.21.5",
+  config :bun,
+    version: "1.1.6",
     default: [
-      args: ~w(app.js --bundle --target=es2016 --outdir=../../priv/static),
+      args: ~w(build app.js --outdir=../../priv/static),
       cd: Path.expand("../assets/js", __DIR__),
-      env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+      env: %{}
     ]
 end

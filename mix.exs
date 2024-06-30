@@ -50,8 +50,8 @@ defmodule ErrorTracker.MixProject do
       {:plug, "~> 1.10"},
       {:postgrex, ">= 0.0.0"},
       # Dev dependencies
+      {:bun, "~> 1.3", only: :dev},
       {:credo, "~> 1.7", only: [:dev, :test]},
-      {:esbuild, "~> 0.8", only: :dev},
       {:ex_doc, "~> 0.33", only: :dev},
       {:phoenix_live_reload, ">= 0.0.0", only: :dev},
       {:plug_cowboy, ">= 0.0.0", only: :dev},
@@ -64,7 +64,7 @@ defmodule ErrorTracker.MixProject do
       setup: ["deps.get", "cmd --cd assets npm install"],
       dev: "run --no-halt dev.exs",
       "assets.watch": ["tailwind default --watch"],
-      "assets.build": ["esbuild default --minify", "tailwind default --minify"]
+      "assets.build": ["bun default --minify", "tailwind default --minify"]
     ]
   end
 end
