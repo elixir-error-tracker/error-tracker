@@ -7,6 +7,9 @@
     <meta name="csrf-token" content={get_csrf_token()} />
 
     <title><%= assigns[:page_title] || "ErrorTracker" %></title>
+
+    <style><%= get_content(:css) %></style>
+    <script><%= get_content(:js) %></script>
   </head>
 
   <body>
