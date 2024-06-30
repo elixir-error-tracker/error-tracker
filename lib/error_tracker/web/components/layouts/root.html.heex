@@ -8,8 +8,12 @@
 
     <title><%= assigns[:page_title] || "ErrorTracker" %></title>
 
-    <style><%= raw get_content(:css) %></style>
-    <script><%= raw get_content(:js) %></script>
+    <style>
+      <%= raw get_content(:css) %>
+    </style>
+    <script>
+      <%= raw get_content(:js) %>
+    </script>
   </head>
 
   <body>
