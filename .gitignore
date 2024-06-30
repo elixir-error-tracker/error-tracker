@@ -25,4 +25,7 @@ error_tracker-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 
+/priv/static/app.js
+/priv/static/app.css
+
 dev.local.exs
