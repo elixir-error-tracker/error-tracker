@@ -8,4 +8,7 @@ defmodule ErrorTracker.Web.Layouts do
 
   def get_content(:css), do: File.read!(@css_path)
   def get_content(:js), do: File.read!(@js_path)
+
+  def get_config(:socket_path), do: "/live"
+  def get_config(:socket_transport), do: :websocket
 end
