@@ -13,7 +13,7 @@ if config_env() == :dev do
     ]
 
   config :bun,
-    version: "1.1.6",
+    version: "1.1.18",
     default: [
       args: ~w(build app.js --outdir=../../priv/static),
       cd: Path.expand("../assets/js", __DIR__),
