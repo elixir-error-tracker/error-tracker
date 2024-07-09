@@ -45,8 +45,7 @@ know how to compile the assets needed to use the Web UI.
 To do so, you need to first make a clean build:
 
 ```
-(cd assets && ../_build/bun install)
-mix assets.build
+mix do assets.install, assets.build
 ```
 
 That task will build the JS and CSS of the project.
