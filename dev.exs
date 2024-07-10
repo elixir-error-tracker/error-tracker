@@ -94,6 +94,7 @@ end
 
 defmodule ErrorTrackerDevWeb.Router do
   use Phoenix.Router
+  use ErrorTracker.Web, :router
 
   pipeline :browser do
     plug :fetch_session
@@ -106,6 +107,8 @@ defmodule ErrorTrackerDevWeb.Router do
     get "/noroute", ErrorTrackerDevWeb.PageController, :noroute
     get "/exception", ErrorTrackerDevWeb.PageController, :exception
     get "/exit", ErrorTrackerDevWeb.PageController, :exit
+
+    error_tracker_dashboard("/errors")
   end
 end
 

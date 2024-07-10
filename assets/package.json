@@ -1,0 +1,10 @@
+{
+  "workspaces": [
+    "../deps/*"
+  ],
+  "dependencies": {
+    "phoenix": "workspace:*",
+    "phoenix_live_view": "workspace:*",
+    "topbar": "^3.0.0"
+  }
+}
