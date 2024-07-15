@@ -13,6 +13,7 @@ defmodule ErrorTracker.Migrations.Postgres.V01 do
       add :source_function, :text, null: false
       add :status, :string, null: false
       add :fingerprint, :string, null: false
+      add :last_occurrence_at, :utc_datetime_usec, null: false
 
       timestamps(type: :utc_datetime_usec)
     end

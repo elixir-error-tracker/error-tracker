@@ -15,6 +15,7 @@ defmodule ErrorTracker.Error do
     field :source_function, :string
     field :status, Ecto.Enum, values: [:resolved, :unresolved], default: :unresolved
     field :fingerprint, :binary
+    field :last_occurrence_at, :utc_datetime_usec
 
     has_many :occurrences, ErrorTracker.Occurrence
 
@@ -40,7 +41,8 @@ defmodule ErrorTracker.Error do
       kind: to_string(kind),
       reason: reason,
       source_line: "#{source.file}:#{source.line}",
-      source_function: "#{source.module}.#{source.function}/#{source.arity}"
+      source_function: "#{source.module}.#{source.function}/#{source.arity}",
+      last_occurrence_at: DateTime.utc_now()
     ]
 
     fingerprint = :crypto.hash(:sha256, params |> Keyword.values() |> Enum.join())

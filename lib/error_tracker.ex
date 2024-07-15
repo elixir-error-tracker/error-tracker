@@ -16,7 +16,7 @@ defmodule ErrorTracker do
 
     error =
       repo().insert!(error,
-        on_conflict: [set: [status: :unresolved]],
+        on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
         conflict_target: :fingerprint,
         prefix: prefix()
       )
