@@ -8,9 +8,11 @@ defmodule ErrorTracker do
   """
   @type context :: %{String.t() => any()}
 
+  alias ErrorTracker.Error
+
   def report(exception, stacktrace, given_context \\ %{}) do
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
-    {:ok, error} = ErrorTracker.Error.new(exception, stacktrace)
+    {:ok, error} = Error.new(exception, stacktrace)
 
     context = Map.merge(get_context(), given_context)
 
@@ -24,6 +26,18 @@ defmodule ErrorTracker do
     error
     |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context)
     |> repo().insert!(prefix: prefix())
+  end
+
+  def resolve(error = %Error{status: :unresolved}) do
+    changeset = Ecto.Changeset.change(error, status: :resolved)
+
+    repo().update(changeset, prefix: prefix())
+  end
+
+  def unresolve(error = %Error{status: :resolved}) do
+    changeset = Ecto.Changeset.change(error, status: :unresolved)
+
+    repo().update(changeset, prefix: prefix())
   end
 
   def repo do

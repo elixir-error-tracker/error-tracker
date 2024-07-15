@@ -1,8 +1,50 @@
-<p class="font-bold">Hello world!</p>
-<p>Number of presses: <%= @counter %></p>
-<button
-  class="h-8 px-4 m-2 text-sm text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800"
-  phx-click="increment"
->
-  Press me!
-</button>
+<table>
+  <thead>
+    <tr>
+      <th>Error</th>
+      <th>Source</th>
+      <th>Last</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody
+    id="errors"
+    phx-update="stream"
+    phx-viewport-top={if @page > 1, do: "prev-page"}
+    phx-viewport-bottom={if !@end_of_errors?, do: "next-page"}
+    phx-page-loading
+  >
+    <tr :for={{id, error} <- @streams.errors} id={id}>
+      <td><%= String.slice(error.reason, 0..100) %></td>
+      <td>
+        <%= error.source_line %>
+        <br />
+        <%= error.source_function %>
+      </td>
+      <td>
+        <%= error.last_occurrence_at %>
+      </td>
+      <td>
+        <%= error.status %>
+      </td>
+      <td>
+        <button
+          :if={error.status == :unresolved}
+          phx-click="resolve"
+          phx-value-error_id={error.id}
+        >
+          Resolve
+        </button>
+
+        <button
+          :if={error.status == :resolved}
+          phx-click="unresolve"
+          phx-value-error_id={error.id}
+        >
+          Unresolve
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
