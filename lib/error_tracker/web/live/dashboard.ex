@@ -7,82 +7,101 @@ defmodule ErrorTracker.Web.Live.Dashboard do
 
   alias ErrorTracker.Error
 
+  @per_page 10
+
   @impl Phoenix.LiveView
-  def mount(_params, _session, socket) do
-    {:ok,
-     socket
-     |> assign(page: 1, per_page: 5)
-     |> paginate_errors(1)}
+  def mount(params, _session, socket) do
+    {_search, search_form} = search_terms(params)
+
+    {:ok, assign(socket, page: 1, total_pages: 1, search_form: search_form, errors: [])}
   end
 
   @impl Phoenix.LiveView
-  def handle_params(_params, _uri, socket) do
-    {:noreply, socket}
+  def handle_params(params, uri, socket) do
+    {search, search_form} = search_terms(params)
+
+    path = struct(URI, uri |> URI.parse() |> Map.take([:path, :query]))
+
+    {:noreply,
+     socket
+     |> assign(path: path, search: search, page: 1, search_form: search_form)
+     |> paginate_errors()}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("search", params, socket) do
+    {search, _search_form} = search_terms(params["search"] || %{})
+
+    path_w_filters = %URI{socket.assigns.path | query: URI.encode_query(search)}
+
+    {:noreply, push_patch(socket, to: URI.to_string(path_w_filters))}
   end
 
   @impl Phoenix.LiveView
   def handle_event("next-page", _params, socket) do
-    {:noreply, paginate_errors(socket, socket.assigns.page + 1)}
-  end
-
-  @impl Phoenix.LiveView
-  def handle_event("prev-page", %{"_overran" => true}, socket) do
-    {:noreply, paginate_errors(socket, 1)}
+    {:noreply, socket |> assign(page: socket.assigns.page + 1) |> paginate_errors()}
   end
 
   @impl Phoenix.LiveView
   def handle_event("prev-page", _params, socket) do
-    if socket.assigns.page > 1 do
-      {:noreply, paginate_errors(socket, socket.assigns.page - 1)}
-    else
-      {:noreply, socket}
-    end
+    {:noreply, socket |> assign(page: socket.assigns.page - 1) |> paginate_errors()}
   end
 
   @impl Phoenix.LiveView
   def handle_event("resolve", %{"error_id" => id}, socket) do
     error = ErrorTracker.repo().get(Error, id, prefix: ErrorTracker.prefix())
-    {:ok, resolved} = ErrorTracker.resolve(error)
+    {:ok, _resolved} = ErrorTracker.resolve(error)
 
-    {:noreply, stream_insert(socket, :errors, resolved)}
+    {:noreply, paginate_errors(socket)}
   end
 
   @impl Phoenix.LiveView
   def handle_event("unresolve", %{"error_id" => id}, socket) do
     error = ErrorTracker.repo().get(Error, id, prefix: ErrorTracker.prefix())
-    {:ok, unresolved} = ErrorTracker.unresolve(error)
+    {:ok, _unresolved} = ErrorTracker.unresolve(error)
 
-    {:noreply, stream_insert(socket, :errors, unresolved)}
+    {:noreply, paginate_errors(socket)}
   end
 
-  defp paginate_errors(socket, new_page) when new_page >= 1 do
-    %{per_page: per_page, page: cur_page} = socket.assigns
+  defp paginate_errors(socket) do
+    %{page: page, search: search} = socket.assigns
+    repo = ErrorTracker.repo()
+    prefix = ErrorTracker.prefix()
 
-    errors =
-      ErrorTracker.repo().all(
-        from(Error,
-          order_by: [desc: :last_occurrence_at],
-          offset: (^new_page - 1) * ^per_page,
-          limit: ^per_page
-        ),
-        prefix: ErrorTracker.prefix()
-      )
+    query = filter(Error, search)
 
-    {errors, at, limit} =
-      if new_page >= cur_page do
-        {errors, -1, per_page * 3 * -1}
-      else
-        {Enum.reverse(errors), 0, per_page * 3}
-      end
+    total_errors = repo.aggregate(query, :count, prefix: prefix)
 
-    case errors do
-      [] ->
-        assign(socket, end_of_errors?: at == -1)
+    errors_query =
+      query
+      |> order_by(desc: :last_occurrence_at)
+      |> offset((^page - 1) * @per_page)
+      |> limit(@per_page)
 
-      [_ | _] ->
-        socket
-        |> assign(end_of_errors?: false, page: new_page)
-        |> stream(:errors, errors, at: at, limit: limit)
-    end
+    assign(socket,
+      errors: repo.all(errors_query, prefix: prefix),
+      total_pages: (total_errors / @per_page) |> Float.ceil() |> trunc
+    )
+  end
+
+  defp search_terms(params) do
+    data = %{}
+    types = %{reason: :string, source_line: :string, source_function: :string, status: :string}
+
+    changeset = Ecto.Changeset.cast({data, types}, params, Map.keys(types))
+
+    {Ecto.Changeset.apply_changes(changeset), to_form(changeset, as: :search)}
+  end
+
+  defp filter(query, search) do
+    Enum.reduce(search, query, &do_filter/2)
+  end
+
+  defp do_filter({:status, status}, query) do
+    where(query, [error], error.status == ^status)
+  end
+
+  defp do_filter({field, value}, query) do
+    where(query, [error], ilike(field(error, ^field), ^"%#{value}%"))
   end
 end

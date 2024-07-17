@@ -1,3 +1,36 @@
+<.form for={@search_form} id="search" phx-change="search">
+  <input
+    name={@search_form[:reason].name}
+    value={@search_form[:reason].value}
+    type="text"
+    placeholder="Error"
+    phx-debounce
+  />
+  <input
+    name={@search_form[:source_line].name}
+    value={@search_form[:source_line].value}
+    type="text"
+    placeholder="Source line"
+    phx-debounce
+  />
+  <input
+    name={@search_form[:source_function].name}
+    value={@search_form[:source_function].value}
+    type="text"
+    placeholder="Source function"
+    phx-debounce
+  />
+  <select name={@search_form[:status].name} type="select" placeholder="Source function">
+    <option value="">All</option>
+    <option value="unresolved" selected={@search_form[:status].value == "unresolved"}>
+      Unresolved
+    </option>
+    <option value="resolved" selected={@search_form[:status].value == "resolved"}>
+      Resolved
+    </option>
+  </select>
+</.form>
+
 <table>
   <thead>
     <tr>
@@ -8,14 +41,8 @@
       <th></th>
     </tr>
   </thead>
-  <tbody
-    id="errors"
-    phx-update="stream"
-    phx-viewport-top={if @page > 1, do: "prev-page"}
-    phx-viewport-bottom={if !@end_of_errors?, do: "next-page"}
-    phx-page-loading
-  >
-    <tr :for={{id, error} <- @streams.errors} id={id}>
+  <tbody>
+    <tr :for={error <- @errors}>
       <td><%= String.slice(error.reason, 0..100) %></td>
       <td>
         <%= error.source_line %>
@@ -48,3 +75,11 @@
     </tr>
   </tbody>
 </table>
+
+<button disabled={@page <= 1} phx-click="prev-page">
+  Prev page
+</button>
+
+<button disabled={@page >= @total_pages} phx-click="next-page">
+  Next page
+</button>
