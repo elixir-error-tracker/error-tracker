@@ -83,10 +83,4 @@
   </table>
 </div>
 
-<button disabled={@page <= 1} phx-click="prev-page">
-  Prev page
-</button>
-
-<button disabled={@page >= @total_pages} phx-click="next-page">
-  Next page
-</button>
+<.pagination page={@page} total_pages={@total_pages} />

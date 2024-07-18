@@ -67,4 +67,30 @@ defmodule ErrorTracker.Web.CoreComponents do
     </span>
     """
   end
+
+  attr :page, :integer, required: true
+  attr :total_pages, :integer, required: true
+  attr :event_previous, :string, default: "prev-page"
+  attr :event_next, :string, default: "next-page"
+
+  def pagination(assigns) do
+    ~H"""
+    <div class="mt-10 w-full flex">
+      <button
+        :if={@page > 1}
+        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 hover:text-white"
+        phx-click={@event_previous}
+      >
+        Previous page
+      </button>
+      <button
+        :if={@page < @total_pages}
+        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 hover:text-white"
+        phx-click={@event_next}
+      >
+        Next page
+      </button>
+    </div>
+    """
+  end
 end
