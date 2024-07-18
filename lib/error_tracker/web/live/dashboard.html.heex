@@ -1,4 +1,4 @@
-<.form for={@search_form} id="search" phx-change="search">
+<.form for={@search_form} id="search" class="mb-4 text-black" phx-change="search">
   <input
     name={@search_form[:reason].name}
     value={@search_form[:reason].value}
@@ -20,8 +20,8 @@
     placeholder="Source function"
     phx-debounce
   />
-  <select name={@search_form[:status].name} type="select" placeholder="Source function">
-    <option value="">All</option>
+  <select name={@search_form[:status].name}>
+    <option value="" selected={@search_form[:status].value == ""}>All</option>
     <option value="unresolved" selected={@search_form[:status].value == "unresolved"}>
       Unresolved
     </option>
@@ -31,50 +31,57 @@
   </select>
 </.form>
 
-<table>
-  <thead>
-    <tr>
-      <th>Error</th>
-      <th>Source</th>
-      <th>Last</th>
-      <th>Status</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr :for={error <- @errors}>
-      <td><%= String.slice(error.reason, 0..100) %></td>
-      <td>
-        <%= error.source_line %>
-        <br />
-        <%= error.source_function %>
-      </td>
-      <td>
-        <%= error.last_occurrence_at %>
-      </td>
-      <td>
-        <%= error.status %>
-      </td>
-      <td>
-        <button
-          :if={error.status == :unresolved}
-          phx-click="resolve"
-          phx-value-error_id={error.id}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-600 dark:text-gray-400">
+      <tr>
+        <th scope="col" class="px-4 pr-2 py-3 w-128">Error</th>
+        <th scope="col" class="px-4 py-3 w-72">Last occurrence</th>
+        <th scope="col" class="px-4 py-3 w-28">Status</th>
+        <th scope="col" class="px-4 py-3 w-32"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr :for={error <- @errors} class="border-b bg-gray-800 border-gray-700">
+        <th
+          scope="row"
+          class="px-4 py-4 font-medium text-white whitespace-nowrap text-ellipsis  overflow-hidden"
         >
-          Resolve
-        </button>
+          (<%= error.kind %>) <%= error.reason %>
+          <p class="font-normal text-gray-400">
+            <%= error.source_function %>
+            <br />
+            <%= error.source_line %>
+          </p>
+        </th>
+        <td class="px-4 py-4">
+          <%= error.last_occurrence_at %>
+        </td>
+        <td class="px-4 py-4">
+          <.badge :if={error.status == :resolved} color={:green}>Resolved</.badge>
+          <.badge :if={error.status == :unresolved} color={:red}>Unresolved</.badge>
+        </td>
+        <td class="px-4 py-4 text-center">
+          <.button
+            :if={error.status == :unresolved}
+            phx-click="resolve"
+            phx-value-error_id={error.id}
+          >
+            Resolve
+          </.button>
 
-        <button
-          :if={error.status == :resolved}
-          phx-click="unresolve"
-          phx-value-error_id={error.id}
-        >
-          Unresolve
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+          <.button
+            :if={error.status == :resolved}
+            phx-click="unresolve"
+            phx-value-error_id={error.id}
+          >
+            Unresolve
+          </.button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <button disabled={@page <= 1} phx-click="prev-page">
   Prev page

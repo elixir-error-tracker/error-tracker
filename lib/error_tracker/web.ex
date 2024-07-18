@@ -73,6 +73,8 @@ defmodule ErrorTracker.Web do
       import Phoenix.HTML
       import Phoenix.LiveView.Helpers
 
+      import ErrorTracker.Web.CoreComponents
+
       alias Phoenix.LiveView.JS
     end
   end
