@@ -1,0 +1,20 @@
+<.link navigate="/errors">Back to the dashboard</.link>
+
+<h1><%= @error.reason |> String.split("\n", trim: true) |> List.first() %></h1>
+
+<h2>Full message</h2>
+<pre>
+  <%= @error.reason %>
+</pre>
+
+<h2>Source</h2>
+
+<pre>
+  <%= @error.source_line %>
+</pre>
+<pre>
+  <%= @error.source_function %>
+</pre>
+
+<h2>Last occurrence</h2>
+<%= @error.last_occurrence_at %>

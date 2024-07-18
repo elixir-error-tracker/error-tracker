@@ -15,6 +15,7 @@ defmodule ErrorTracker.Web.Router do
 
         live_session unquote(session_name), unquote(session_opts) do
           live "/", ErrorTracker.Web.Live.Dashboard, :index, as: unquote(session_name)
+          live "/:id", ErrorTracker.Web.Live.Show, :show, as: unquote(session_name)
         end
       end
     end

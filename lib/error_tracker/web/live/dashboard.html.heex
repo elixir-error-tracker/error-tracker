@@ -47,7 +47,9 @@
           scope="row"
           class="px-4 py-4 font-medium text-white whitespace-nowrap text-ellipsis  overflow-hidden"
         >
-          (<%= error.kind %>) <%= error.reason %>
+          <.link navigate={"/errors/#{error.id}"}>
+            (<%= error.kind %>) <%= error.reason %>
+          </.link>
           <p class="font-normal text-gray-400">
             <%= error.source_function %>
             <br />
