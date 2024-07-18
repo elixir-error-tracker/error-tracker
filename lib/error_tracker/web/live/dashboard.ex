@@ -10,13 +10,6 @@ defmodule ErrorTracker.Web.Live.Dashboard do
   @per_page 10
 
   @impl Phoenix.LiveView
-  def mount(params, _session, socket) do
-    {_search, search_form} = search_terms(params)
-
-    {:ok, assign(socket, page: 1, total_pages: 1, search_form: search_form, errors: [])}
-  end
-
-  @impl Phoenix.LiveView
   def handle_params(params, uri, socket) do
     {search, search_form} = search_terms(params)
 
