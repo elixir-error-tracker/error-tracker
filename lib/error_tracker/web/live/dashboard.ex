@@ -6,6 +6,7 @@ defmodule ErrorTracker.Web.Live.Dashboard do
   import Ecto.Query
 
   alias ErrorTracker.Error
+  alias ErrorTracker.Repo
 
   @per_page 10
 
@@ -42,7 +43,7 @@ defmodule ErrorTracker.Web.Live.Dashboard do
 
   @impl Phoenix.LiveView
   def handle_event("resolve", %{"error_id" => id}, socket) do
-    error = ErrorTracker.repo().get(Error, id, prefix: ErrorTracker.prefix())
+    error = Repo.get(Error, id)
     {:ok, _resolved} = ErrorTracker.resolve(error)
 
     {:noreply, paginate_errors(socket)}
@@ -50,7 +51,7 @@ defmodule ErrorTracker.Web.Live.Dashboard do
 
   @impl Phoenix.LiveView
   def handle_event("unresolve", %{"error_id" => id}, socket) do
-    error = ErrorTracker.repo().get(Error, id, prefix: ErrorTracker.prefix())
+    error = Repo.get(Error, id)
     {:ok, _unresolved} = ErrorTracker.unresolve(error)
 
     {:noreply, paginate_errors(socket)}
@@ -58,12 +59,10 @@ defmodule ErrorTracker.Web.Live.Dashboard do
 
   defp paginate_errors(socket) do
     %{page: page, search: search} = socket.assigns
-    repo = ErrorTracker.repo()
-    prefix = ErrorTracker.prefix()
 
     query = filter(Error, search)
 
-    total_errors = repo.aggregate(query, :count, prefix: prefix)
+    total_errors = Repo.aggregate(query, :count)
 
     errors_query =
       query
@@ -72,7 +71,7 @@ defmodule ErrorTracker.Web.Live.Dashboard do
       |> limit(@per_page)
 
     assign(socket,
-      errors: repo.all(errors_query, prefix: prefix),
+      errors: Repo.all(errors_query),
       total_pages: (total_errors / @per_page) |> Float.ceil() |> trunc
     )
   end

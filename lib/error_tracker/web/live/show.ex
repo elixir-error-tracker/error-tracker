@@ -5,20 +5,18 @@ defmodule ErrorTracker.Web.Live.Show do
   import Ecto.Query
 
   alias ErrorTracker.Error
-  alias ErrorTracker.Occurrence
+  alias ErrorTracker.Repo
 
   @occurreneces_to_navigate 50
 
   def mount(%{"id" => id}, _session, socket) do
-    error = ErrorTracker.repo().get!(Error, id, prefix: ErrorTracker.prefix())
+    error = Repo.get!(Error, id)
     {:ok, assign(socket, error: error)}
   end
 
   def handle_params(%{"occurence_id" => occurrence_id}, _uri, socket) do
     base_query = Ecto.assoc(socket.assigns.error, :occurrences)
-
-    occurrence =
-      ErrorTracker.repo().get!(base_query, occurrence_id, prefix: ErrorTracker.prefix())
+    occurrence = Repo.get!(base_query, occurrence_id)
 
     previous_occurrences =
       base_query
@@ -44,9 +42,7 @@ defmodule ErrorTracker.Web.Live.Show do
     base_query = Ecto.assoc(socket.assigns.error, :occurrences)
 
     occurrences = related_occurrences(base_query)
-
-    occurrence =
-      ErrorTracker.repo().get!(base_query, hd(occurrences).id, prefix: ErrorTracker.prefix())
+    occurrence = Repo.get!(base_query, hd(occurrences).id)
 
     socket =
       socket
@@ -61,6 +57,6 @@ defmodule ErrorTracker.Web.Live.Show do
     |> order_by([o], desc: o.id)
     |> select([:id, :inserted_at])
     |> limit(^num_results)
-    |> ErrorTracker.repo().all(prefix: ErrorTracker.prefix())
+    |> Repo.all()
   end
 end
