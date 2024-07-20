@@ -1,4 +1,9 @@
-<.form for={@search_form} id="search" class="mb-4 text-black" phx-change="search">
+<.form
+  for={@search_form}
+  id="search"
+  class="mb-4 text-black grid grid-cols-4 gap-2"
+  phx-change="search"
+>
   <input
     name={@search_form[:reason].name}
     value={@search_form[:reason].value}
