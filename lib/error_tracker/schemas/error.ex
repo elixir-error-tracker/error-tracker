@@ -41,8 +41,7 @@ defmodule ErrorTracker.Error do
       kind: to_string(kind),
       reason: reason,
       source_line: "#{source.file}:#{source.line}",
-      source_function: "#{source.module}.#{source.function}/#{source.arity}",
-      last_occurrence_at: DateTime.utc_now()
+      source_function: "#{source.module}.#{source.function}/#{source.arity}"
     ]
 
     fingerprint = :crypto.hash(:sha256, params |> Keyword.values() |> Enum.join())
@@ -50,6 +49,7 @@ defmodule ErrorTracker.Error do
     %__MODULE__{}
     |> Ecto.Changeset.change(params)
     |> Ecto.Changeset.put_change(:fingerprint, Base.encode16(fingerprint))
+    |> Ecto.Changeset.put_change(:last_occurrence_at, DateTime.utc_now())
     |> Ecto.Changeset.apply_action(:new)
   end
 end
