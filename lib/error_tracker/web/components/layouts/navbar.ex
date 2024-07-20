@@ -1,4 +1,5 @@
 defmodule ErrorTracker.Web.Layouts.Navbar do
+  @moduledoc false
   use ErrorTracker.Web, :live_component
 
   def render(assigns) do

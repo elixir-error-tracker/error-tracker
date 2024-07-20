@@ -1,4 +1,5 @@
 defmodule ErrorTracker.Web.CoreComponents do
+  @moduledoc false
   use Phoenix.Component
 
   @doc """
