@@ -14,16 +14,16 @@ defmodule ErrorTracker.Web.Live.Show do
     {:ok, assign(socket, error: error)}
   end
 
-  def handle_params(%{"occurence_id" => occurrence_id}, _uri, socket) do
+  def handle_params(%{"occurrence_id" => occurrence_id}, _uri, socket) do
     base_query = Ecto.assoc(socket.assigns.error, :occurrences)
     occurrence = Repo.get!(base_query, occurrence_id)
 
     previous_occurrences =
       base_query
       |> where([o], o.id < ^occurrence.id)
-      |> related_occurrences(@occurreneces_to_navigate / 2)
+      |> related_occurrences(round(@occurreneces_to_navigate / 2))
 
-    limit_next_occurrences = @occurreneces_to_navigate - length(previous_occurrences) - 1
+    limit_next_occurrences = dbg(@occurreneces_to_navigate - length(previous_occurrences) - 1)
 
     next_occurrences =
       base_query
@@ -32,7 +32,7 @@ defmodule ErrorTracker.Web.Live.Show do
 
     socket =
       socket
-      |> assign(:occurrences, previous_occurrences ++ occurrence ++ next_occurrences)
+      |> assign(:occurrences, previous_occurrences ++ [occurrence] ++ next_occurrences)
       |> assign(:occurrence, occurrence)
 
     {:noreply, socket}

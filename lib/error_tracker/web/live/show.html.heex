@@ -1,26 +1,45 @@
-<.link navigate="/errors">Back to the dashboard</.link>
+<div>
+  <.link navigate="/errors">Back to the dashboard</.link>
+</div>
 
-<h1><%= @error.reason |> String.split("\n", trim: true) |> List.first() %></h1>
+<div class="grid grid-cols-1 sm:grid-cols-3 mt-6 gap-2">
+  <div class="sm:col-span-2">
+    <h1><%= @error.reason |> String.split("\n", trim: true) |> List.first() %></h1>
 
-<h2>Full message</h2>
-<pre>
-  <%= @error.reason %>
-</pre>
+    <div class="mt-4">
+      <h2>Full message</h2>
+      <pre class="mt-2 text-wrap">
+      <%= @error.reason %>
+    </pre>
+    </div>
 
-<h2>Source</h2>
+    <div class="mt-4">
+      <h2>Source</h2>
 
-<pre>
-  <%= @error.source_line %>
-</pre>
-<pre>
-  <%= @error.source_function %>
-</pre>
+      <pre class="mt-2 text-wrap">
+      <%= @error.source_line %>
+      <%= @error.source_function %>
+    </pre>
+    </div>
 
-<h2>Last occurrence</h2>
-<%= @error.last_occurrence_at %>
+    <h2>Last occurrence</h2>
+    <%= Calendar.strftime(@error.last_occurrence_at, "%c") %>
 
-<h2>Details of occurrence</h2>
-<%= inspect(@occurrence) %>
+    <h2>Details of occurrence</h2>
+    <%= inspect(@occurrence) %>
+  </div>
 
-<h2>List of occurrences</h2>
-<%= inspect(@occurrences) %>
+  <div>
+    <h2 class="mb-4">List of occurrences</h2>
+
+    <div class="grid grid-cols-1 gap-y-1">
+      <.link
+        :for={occurrence <- @occurrences}
+        class={if occurrence.id == @occurrence.id, do: "font-bold"}
+        patch={"/errors/#{@error.id}?occurrence_id=#{occurrence.id}"}
+      >
+        <%= Calendar.strftime(occurrence.inserted_at, "%c") %>
+      </.link>
+    </div>
+  </div>
+</div>
