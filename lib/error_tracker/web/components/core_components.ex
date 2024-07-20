@@ -56,7 +56,6 @@ defmodule ErrorTracker.Web.CoreComponents do
         :purple -> "bg-purple-900 text-purple-300"
         :pink -> "bg-pink-900 text-pink-300"
         :gray -> "bg-gray-700 text-gray-300"
-        :gray -> "bg-gray-700 text-gray-300"
       end
 
     assigns = Map.put(assigns, :color_class, color_class)
