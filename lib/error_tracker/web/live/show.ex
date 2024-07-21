@@ -7,7 +7,7 @@ defmodule ErrorTracker.Web.Live.Show do
   alias ErrorTracker.Error
   alias ErrorTracker.Repo
 
-  @occurreneces_to_navigate 50
+  @occurrences_to_navigate 50
 
   def mount(%{"id" => id}, _session, socket) do
     error = Repo.get!(Error, id)
@@ -15,44 +15,74 @@ defmodule ErrorTracker.Web.Live.Show do
   end
 
   def handle_params(%{"occurrence_id" => occurrence_id}, _uri, socket) do
-    base_query = Ecto.assoc(socket.assigns.error, :occurrences)
-    occurrence = Repo.get!(base_query, occurrence_id)
-
-    previous_occurrences =
-      base_query
-      |> where([o], o.id < ^occurrence.id)
-      |> related_occurrences(round(@occurreneces_to_navigate / 2))
-
-    limit_next_occurrences = @occurreneces_to_navigate - length(previous_occurrences) - 1
-
-    next_occurrences =
-      base_query
-      |> where([o], o.id > ^occurrence.id)
-      |> related_occurrences(limit_next_occurrences)
+    occurrence =
+      socket.assigns.error
+      |> Ecto.assoc(:occurrences)
+      |> Repo.get!(occurrence_id)
 
     socket =
       socket
-      |> assign(:occurrences, previous_occurrences ++ [occurrence] ++ next_occurrences)
       |> assign(:occurrence, occurrence)
+      |> load_related_occurrences()
 
     {:noreply, socket}
   end
 
   def handle_params(_, _uri, socket) do
-    base_query = Ecto.assoc(socket.assigns.error, :occurrences)
-
-    occurrences = related_occurrences(base_query)
-    occurrence = Repo.get!(base_query, hd(occurrences).id)
+    [occurrence] =
+      socket.assigns.error
+      |> Ecto.assoc(:occurrences)
+      |> order_by([o], desc: o.id)
+      |> limit(1)
+      |> Repo.all()
 
     socket =
       socket
-      |> assign(:occurrences, occurrences)
       |> assign(:occurrence, occurrence)
+      |> load_related_occurrences()
 
     {:noreply, socket}
   end
 
-  defp related_occurrences(query, num_results \\ @occurreneces_to_navigate) do
+  defp load_related_occurrences(socket) do
+    current_occurrence = socket.assigns.occurrence
+    base_query = Ecto.assoc(socket.assigns.error, :occurrences)
+
+    half_limit = floor(@occurrences_to_navigate / 2)
+
+    previous_occurrences_query = where(base_query, [o], o.id < ^current_occurrence.id)
+    next_occurrences_query = where(base_query, [o], o.id > ^current_occurrence.id)
+    previous_count = Repo.aggregate(previous_occurrences_query, :count)
+    next_count = Repo.aggregate(next_occurrences_query, :count)
+
+    {previous_limit, next_limit} =
+      cond do
+        previous_count < half_limit and next_count < half_limit ->
+          {previous_count, next_count}
+
+        previous_count < half_limit ->
+          {previous_count, @occurrences_to_navigate - previous_count - 1}
+
+        next_count < half_limit ->
+          {@occurrences_to_navigate - next_count - 1, next_count}
+
+        true ->
+          {half_limit, half_limit}
+      end
+
+    occurrences =
+      [
+        related_occurrences(next_occurrences_query, next_limit),
+        current_occurrence,
+        related_occurrences(previous_occurrences_query, previous_limit)
+      ]
+      |> List.flatten()
+      |> Enum.reverse()
+
+    assign(socket, :occurrences, occurrences)
+  end
+
+  defp related_occurrences(query, num_results) do
     query
     |> order_by([o], desc: o.id)
     |> select([:id, :error_id, :inserted_at])
