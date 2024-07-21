@@ -62,7 +62,7 @@
           </p>
         </th>
         <td class="px-4 py-4">
-          <%= Calendar.strftime(error.last_occurrence_at, "%c") %>
+          <%= Calendar.strftime(error.last_occurrence_at, "%c %Z") %>
         </td>
         <td class="px-4 py-4">
           <.badge :if={error.status == :resolved} color={:green}>Resolved</.badge>

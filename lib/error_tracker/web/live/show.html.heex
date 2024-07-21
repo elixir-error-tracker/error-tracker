@@ -4,7 +4,7 @@
 
 <div id="header">
   <p class="text-sm uppercase font-semibold text-gray-300">
-    Error #<%= @error.id %> @ <%= DateTime.truncate(@occurrence.inserted_at, :second) %>
+    Error #<%= @error.id %> @ <%= Calendar.strftime(@occurrence.inserted_at, "%c %Z") %>
   </p>
   <h1 class="my-1 text-2xl font-bold whitespace-nowrap text-ellipsis overflow-hidden">
     (<%= @error.kind %>) <%= @error.reason |> String.replace("\n", " ") |> String.trim() %>
@@ -75,7 +75,7 @@
             value={occurrence.id}
             selected={occurrence.id == @occurrence.id}
           >
-            <%= DateTime.truncate(occurrence.inserted_at, :second) %>
+            <%= Calendar.strftime(occurrence.inserted_at, "%c %Z") %>
           </option>
         </select>
       </form>
@@ -88,7 +88,7 @@
 
     <div>
       <h2 class="text-sm font-bold mb-2 uppercase">Last seen</h2>
-      <pre><%= DateTime.truncate(@error.last_occurrence_at, :second) %></pre>
+      <pre><%= Calendar.strftime(@error.last_occurrence_at, "%c %Z") %></pre>
     </div>
 
     <div>
