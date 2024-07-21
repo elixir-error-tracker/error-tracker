@@ -23,7 +23,7 @@ defmodule ErrorTracker.Web.Live.Show do
       |> where([o], o.id < ^occurrence.id)
       |> related_occurrences(round(@occurreneces_to_navigate / 2))
 
-    limit_next_occurrences = dbg(@occurreneces_to_navigate - length(previous_occurrences) - 1)
+    limit_next_occurrences = @occurreneces_to_navigate - length(previous_occurrences) - 1
 
     next_occurrences =
       base_query

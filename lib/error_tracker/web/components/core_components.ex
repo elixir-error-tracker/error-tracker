@@ -16,7 +16,7 @@ defmodule ErrorTracker.Web.CoreComponents do
 
   slot :inner_block, required: true
 
-  def button(%{type: "link"} = assigns) do
+  def button(assigns = %{type: "link"}) do
     ~H"""
     <.link
       class={[
