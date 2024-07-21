@@ -25,8 +25,17 @@
     <h2>Last occurrence</h2>
     <%= Calendar.strftime(@error.last_occurrence_at, "%c") %>
 
-    <h2>Details of occurrence</h2>
-    <%= inspect(@occurrence) %>
+    <h3>Stacktrace</h3>
+
+    <pre>
+      <%= to_string(@occurrence.stacktrace) %>
+    </pre>
+
+    <h3>Context</h3>
+
+    <pre>
+      <%= Jason.encode!(@occurrence.context, pretty: true) %>
+    </pre>
   </div>
 
   <div>
