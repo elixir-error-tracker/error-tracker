@@ -25,7 +25,7 @@ defmodule ErrorTracker.Stacktrace do
 
         %{
           application: to_string(application),
-          module: to_string(module),
+          module: module |> to_string() |> String.replace_prefix("Elixir.", ""),
           function: to_string(function),
           arity: arity,
           file: to_string(opts[:file]),
