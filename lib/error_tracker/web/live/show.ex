@@ -10,17 +10,18 @@ defmodule ErrorTracker.Web.Live.Show do
 
   @occurrences_to_navigate 50
 
+  @impl Phoenix.LiveView
   def mount(%{"id" => id}, _session, socket) do
     error = Repo.get!(Error, id)
     {:ok, assign(socket, error: error, app: Application.fetch_env!(:error_tracker, :application))}
   end
 
+  @impl Phoenix.LiveView
   def handle_params(%{"occurrence_id" => occurrence_id}, _uri, socket) do
     occurrence =
       socket.assigns.error
       |> Ecto.assoc(:occurrences)
       |> Repo.get!(occurrence_id)
-      |> IO.inspect()
 
     socket =
       socket
@@ -46,6 +47,7 @@ defmodule ErrorTracker.Web.Live.Show do
     {:noreply, socket}
   end
 
+  @impl Phoenix.LiveView
   def handle_event("occurrence_navigation", %{"occurrence_id" => id}, socket) do
     {:noreply,
      push_patch(socket,
