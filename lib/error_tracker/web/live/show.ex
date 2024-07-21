@@ -55,7 +55,7 @@ defmodule ErrorTracker.Web.Live.Show do
   defp related_occurrences(query, num_results \\ @occurreneces_to_navigate) do
     query
     |> order_by([o], desc: o.id)
-    |> select([:id, :inserted_at])
+    |> select([:id, :error_id, :inserted_at])
     |> limit(^num_results)
     |> Repo.all()
   end

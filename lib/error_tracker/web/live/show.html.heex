@@ -1,5 +1,5 @@
 <div>
-  <.button type="link" href="/errors">Back to the dashboard</.button>
+  <.button type="link" href={dashboard_path(assigns)}>Back to the dashboard</.button>
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-3 mt-6 gap-2">
@@ -65,7 +65,7 @@
       <.link
         :for={occurrence <- @occurrences}
         class={if occurrence.id == @occurrence.id, do: "font-bold"}
-        patch={"/errors/#{@error.id}?occurrence_id=#{occurrence.id}"}
+        patch={occurrence_path(assigns, occurrence)}
       >
         <%= Calendar.strftime(occurrence.inserted_at, "%c") %>
       </.link>
