@@ -12,62 +12,49 @@
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-4 md:space-x-3 mt-6 gap-2">
-  <div class="px-3 md:col-span-3 md:border-r-2 md:border-gray-500">
-    <div class="mt-4">
-      <h2>Full message</h2>
-      <pre class="mt-2 text-wrap">
-      <%= @error.reason %>
-    </pre>
-    </div>
+  <div class="px-3 md:col-span-3 md:border-r-2 md:border-gray-500 space-y-8">
+    <.section title="Full message">
+      <pre class="overflow-auto p-4 bg-gray-600"><%= @error.reason %></pre>
+    </.section>
 
-    <div class="mt-4">
-      <h2>Source</h2>
+    <.section title="Source">
+      <pre class="overflow-auto p-4 bg-gray-600">
+        <%= @error.source_line %>
+        <%= @error.source_function %></pre>
+    </.section>
 
-      <pre class="mt-2 text-wrap">
-      <%= @error.source_line %>
-      <%= @error.source_function %>
-    </pre>
-    </div>
+    <.section title="Stacktrace">
+      <div class="p-4 bg-gray-600">
+        <div class="w-full mb-4 align-right">
+          <input
+            type="checkbox"
+            id="show-app-frames"
+            phx-click={JS.toggle(to: "#stacktrace tr:not([data-app=#{@app}])")}
+          />
+          <label for="show-app-frames">Show only app frames</label>
+        </div>
 
-    <h2>Last occurrence</h2>
-    <%= Calendar.strftime(@error.last_occurrence_at, "%c") %>
+        <table class="w-100" id="stacktrace">
+          <tbody>
+            <tr :for={line <- @occurrence.stacktrace.lines} data-app={line.application || @app}>
+              <td class="px-2 align-top"><pre>(<%= line.application || @app %>)</pre></td>
+              <td>
+                <pre><%= "#{line.module}.#{line.function}/#{line.arity}" %>
+                <%= "#{line.file}.#{line.line}" %></pre>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </.section>
 
-    <h3>Stacktrace</h3>
-
-    <input
-      type="checkbox"
-      id="show-app-frames"
-      phx-click={JS.toggle(to: "#stacktrace tr:not([data-app=#{@app}])")}
-    />
-    <label for="show-app-frames">Show only app frames</label>
-
-    <table class="w-100" id="stacktrace">
-      <thead>
-        <tr>
-          <th>App</th>
-          <th>Function</th>
-          <th>Source</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr :for={line <- @occurrence.stacktrace.lines} data-app={line.application || @app}>
-          <td><%= line.application || @app %></td>
-          <td><%= "#{line.module}.#{line.function}/#{line.arity}" %></td>
-          <td><%= "#{line.file}.#{line.line}" %></td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h3>Context</h3>
-
-    <pre>
-      <%= Jason.encode!(@occurrence.context, pretty: true) %>
-    </pre>
+    <.section title="Context">
+      <pre class="overflow-auto p-4 bg-gray-600"><%= Jason.encode!(@occurrence.context, pretty: true) %></pre>
+    </.section>
   </div>
 
   <div class="px-3 md:pl-0 space-y-8">
-    <div>
-      <h2 class="text-sm font-bold mb-2 uppercase">Occurrence</h2>
+    <.section title="Occurrence">
       <form phx-change="occurrence_navigation">
         <select name="occurrence_id" class="text-black w-full">
           <option
@@ -79,25 +66,22 @@
           </option>
         </select>
       </form>
-    </div>
+    </.section>
 
-    <div>
-      <h2 class="text-sm font-bold mb-2 uppercase">Error kind</h2>
+    <.section title="Error kind">
       <pre><%= @error.kind %></pre>
-    </div>
+    </.section>
 
-    <div>
-      <h2 class="text-sm font-bold mb-2 uppercase">Last seen</h2>
+    <.section title="Last seen">
       <pre><%= Calendar.strftime(@error.last_occurrence_at, "%c %Z") %></pre>
-    </div>
+    </.section>
 
-    <div>
-      <h2 class="text-sm font-bold mb-2 uppercase">Status</h2>
+    <.section title="Status" title_class="mb-3">
       <.badge :if={@error.status == :resolved} color={:green}>Resolved</.badge>
       <.badge :if={@error.status == :unresolved} color={:red}>Unresolved</.badge>
-    </div>
+    </.section>
 
-    <div>
+    <.section>
       <.button :if={@error.status == :unresolved} phx-click="resolve">
         Mark as resolved
       </.button>
@@ -105,6 +89,6 @@
       <.button :if={@error.status == :resolved} phx-click="unresolve">
         Mark as unresolved
       </.button>
-    </div>
+    </.section>
   </div>
 </div>

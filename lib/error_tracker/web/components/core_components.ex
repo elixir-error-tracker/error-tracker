@@ -107,4 +107,21 @@ defmodule ErrorTracker.Web.CoreComponents do
     </div>
     """
   end
+
+  attr :title, :string
+  attr :title_class, :string, default: nil
+  attr :rest, :global
+
+  slot :inner_block, required: true
+
+  def section(assigns) do
+    ~H"""
+    <div>
+      <h2 :if={assigns[:title]} class={["text-sm font-bold mb-2 uppercase", @title_class]}>
+        <%= @title %>
+      </h2>
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
 end
