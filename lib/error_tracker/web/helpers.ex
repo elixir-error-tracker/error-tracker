@@ -6,5 +6,5 @@ defmodule ErrorTracker.Web.Helpers do
   def sanitize_module(str), do: str
 
   @doc false
-  def format_datetime(%DateTime{} = dt), do: Calendar.strftime(dt, "%c %Z")
+  def format_datetime(dt = %DateTime{}), do: Calendar.strftime(dt, "%c %Z")
 end
