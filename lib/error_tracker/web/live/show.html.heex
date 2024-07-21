@@ -27,9 +27,29 @@
 
     <h3>Stacktrace</h3>
 
-    <pre>
-      <%= to_string(@occurrence.stacktrace) %>
-    </pre>
+    <input
+      type="checkbox"
+      id="show-app-frames"
+      phx-click={JS.toggle(to: "#stacktrace tr:not([data-app=#{@app}])")}
+    />
+    <label for="show-app-frames">Show only app frames</label>
+
+    <table class="w-100" id="stacktrace">
+      <thead>
+        <tr>
+          <th>App</th>
+          <th>Function</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr :for={line <- @occurrence.stacktrace.lines} data-app={line.application || @app}>
+          <td><%= line.application || @app %></td>
+          <td><%= "#{line.module}.#{line.function}/#{line.arity}" %></td>
+          <td><%= "#{line.file}.#{line.line}" %></td>
+        </tr>
+      </tbody>
+    </table>
 
     <h3>Context</h3>
 

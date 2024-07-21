@@ -11,7 +11,7 @@ defmodule ErrorTracker.Web.Live.Show do
 
   def mount(%{"id" => id}, _session, socket) do
     error = Repo.get!(Error, id)
-    {:ok, assign(socket, error: error)}
+    {:ok, assign(socket, error: error, app: Application.fetch_env!(:error_tracker, :application))}
   end
 
   def handle_params(%{"occurrence_id" => occurrence_id}, _uri, socket) do
