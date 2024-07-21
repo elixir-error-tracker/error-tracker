@@ -4,10 +4,12 @@
 
 <div id="header">
   <p class="text-sm uppercase font-semibold text-gray-300">
-    Error #<%= @error.id %> @ <%= Calendar.strftime(@occurrence.inserted_at, "%c %Z") %>
+    Error #<%= @error.id %> @ <%= format_datetime(@occurrence.inserted_at) %>
   </p>
   <h1 class="my-1 text-2xl font-bold whitespace-nowrap text-ellipsis overflow-hidden">
-    (<%= @error.kind %>) <%= @error.reason |> String.replace("\n", " ") |> String.trim() %>
+    (<%= sanitize_module(@error.kind) %>) <%= @error.reason
+    |> String.replace("\n", " ")
+    |> String.trim() %>
   </h1>
 </div>
 
@@ -18,9 +20,9 @@
     </.section>
 
     <.section title="Source">
-      <pre class="overflow-auto p-4 bg-gray-600">
-        <%= @error.source_line %>
-        <%= @error.source_function %></pre>
+      <pre class="overflow-auto text-sm p-4 bg-gray-600">
+        <%= sanitize_module(@error.source_function) %>
+        <%= @error.source_line %></pre>
     </.section>
 
     <.section title="Stacktrace">
@@ -34,12 +36,12 @@
           <label for="show-app-frames">Show only app frames</label>
         </div>
 
-        <table class="w-100" id="stacktrace">
+        <table class="w-100 text-sm" id="stacktrace">
           <tbody>
             <tr :for={line <- @occurrence.stacktrace.lines} data-app={line.application || @app}>
               <td class="px-2 align-top"><pre>(<%= line.application || @app %>)</pre></td>
               <td>
-                <pre><%= "#{line.module}.#{line.function}/#{line.arity}" %>
+                <pre><%= "#{sanitize_module(line.module)}.#{line.function}/#{line.arity}" %>
                 <%= "#{line.file}.#{line.line}" %></pre>
               </td>
             </tr>
@@ -49,7 +51,7 @@
     </.section>
 
     <.section title="Context">
-      <pre class="overflow-auto p-4 bg-gray-600"><%= Jason.encode!(@occurrence.context, pretty: true) %></pre>
+      <pre class="overflow-auto text-sm p-4 bg-gray-600"><%= Jason.encode!(@occurrence.context, pretty: true) %></pre>
     </.section>
   </div>
 
@@ -62,18 +64,18 @@
             value={occurrence.id}
             selected={occurrence.id == @occurrence.id}
           >
-            <%= Calendar.strftime(occurrence.inserted_at, "%c %Z") %>
+            <%= format_datetime(occurrence.inserted_at) %>
           </option>
         </select>
       </form>
     </.section>
 
     <.section title="Error kind">
-      <pre><%= @error.kind %></pre>
+      <pre><%= sanitize_module(@error.kind) %></pre>
     </.section>
 
     <.section title="Last seen">
-      <pre><%= Calendar.strftime(@error.last_occurrence_at, "%c %Z") %></pre>
+      <pre><%= format_datetime(@error.last_occurrence_at) %></pre>
     </.section>
 
     <.section title="Status" title_class="mb-3">

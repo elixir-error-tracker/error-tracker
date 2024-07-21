@@ -53,16 +53,16 @@
           class="px-4 py-4 font-medium text-white whitespace-nowrap text-ellipsis overflow-hidden"
         >
           <.link navigate={error_path(assigns, error)}>
-            (<%= error.kind %>) <%= error.reason %>
+            (<%= sanitize_module(error.kind) %>) <%= error.reason %>
           </.link>
           <p class="font-normal text-gray-400">
-            <%= error.source_function %>
+            <%= sanitize_module(error.source_function) %>
             <br />
             <%= error.source_line %>
           </p>
         </th>
         <td class="px-4 py-4">
-          <%= Calendar.strftime(error.last_occurrence_at, "%c %Z") %>
+          <%= format_datetime(error.last_occurrence_at) %>
         </td>
         <td class="px-4 py-4">
           <.badge :if={error.status == :resolved} color={:green}>Resolved</.badge>
