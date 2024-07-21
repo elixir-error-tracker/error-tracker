@@ -5,6 +5,7 @@ defmodule ErrorTracker.Web.Live.Show do
   import Ecto.Query
 
   alias ErrorTracker.Error
+  alias ErrorTracker.Occurrence
   alias ErrorTracker.Repo
 
   @occurrences_to_navigate 50
@@ -19,6 +20,7 @@ defmodule ErrorTracker.Web.Live.Show do
       socket.assigns.error
       |> Ecto.assoc(:occurrences)
       |> Repo.get!(occurrence_id)
+      |> IO.inspect()
 
     socket =
       socket
@@ -42,6 +44,27 @@ defmodule ErrorTracker.Web.Live.Show do
       |> load_related_occurrences()
 
     {:noreply, socket}
+  end
+
+  def handle_event("occurrence_navigation", %{"occurrence_id" => id}, socket) do
+    {:noreply,
+     push_patch(socket,
+       to: occurrence_path(socket.assigns, %Occurrence{error_id: socket.assigns.error.id, id: id})
+     )}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("resolve", _params, socket) do
+    {:ok, updated_error} = ErrorTracker.resolve(socket.assigns.error)
+
+    {:noreply, assign(socket, :error, updated_error)}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("unresolve", _params, socket) do
+    {:ok, updated_error} = ErrorTracker.unresolve(socket.assigns.error)
+
+    {:noreply, assign(socket, :error, updated_error)}
   end
 
   defp load_related_occurrences(socket) do

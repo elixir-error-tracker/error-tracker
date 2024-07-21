@@ -65,17 +65,46 @@
     </pre>
   </div>
 
-  <div class="px-3 md:pl-0">
-    <h2 class="mb-4">List of occurrences</h2>
+  <div class="px-3 md:pl-0 space-y-8">
+    <div>
+      <h2 class="text-sm font-bold mb-2 uppercase">Occurrence</h2>
+      <form phx-change="occurrence_navigation">
+        <select name="occurrence_id" class="text-black w-full">
+          <option
+            :for={occurrence <- @occurrences}
+            value={occurrence.id}
+            selected={occurrence.id == @occurrence.id}
+          >
+            <%= DateTime.truncate(occurrence.inserted_at, :second) %>
+          </option>
+        </select>
+      </form>
+    </div>
 
-    <div class="grid grid-cols-1 gap-y-1">
-      <.link
-        :for={occurrence <- @occurrences}
-        class={if occurrence.id == @occurrence.id, do: "font-bold"}
-        patch={occurrence_path(assigns, occurrence)}
-      >
-        <%= Calendar.strftime(occurrence.inserted_at, "%c") %>
-      </.link>
+    <div>
+      <h2 class="text-sm font-bold mb-2 uppercase">Error kind</h2>
+      <pre><%= @error.kind %></pre>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-bold mb-2 uppercase">Last seen</h2>
+      <pre><%= DateTime.truncate(@error.last_occurrence_at, :second) %></pre>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-bold mb-2 uppercase">Status</h2>
+      <.badge :if={@error.status == :resolved} color={:green}>Resolved</.badge>
+      <.badge :if={@error.status == :unresolved} color={:red}>Unresolved</.badge>
+    </div>
+
+    <div>
+      <.button :if={@error.status == :unresolved} phx-click="resolve">
+        Mark as resolved
+      </.button>
+
+      <.button :if={@error.status == :resolved} phx-click="unresolve">
+        Mark as unresolved
+      </.button>
     </div>
   </div>
 </div>
