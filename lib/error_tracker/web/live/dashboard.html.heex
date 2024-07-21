@@ -50,7 +50,7 @@
       <tr :for={error <- @errors} class="border-b bg-gray-800 border-gray-700">
         <th
           scope="row"
-          class="px-4 py-4 font-medium text-white whitespace-nowrap text-ellipsis  overflow-hidden"
+          class="px-4 py-4 font-medium text-white whitespace-nowrap text-ellipsis overflow-hidden"
         >
           <.link navigate={error_path(assigns, error)}>
             (<%= error.kind %>) <%= error.reason %>

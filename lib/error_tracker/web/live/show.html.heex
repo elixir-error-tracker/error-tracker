@@ -1,11 +1,18 @@
-<div>
+<div class="my-6">
   <.button type="link" href={dashboard_path(assigns)}>Back to the dashboard</.button>
 </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-3 mt-6 gap-2">
-  <div class="sm:col-span-2">
-    <h1><%= @error.reason |> String.split("\n", trim: true) |> List.first() %></h1>
+<div id="header">
+  <p class="text-sm uppercase font-semibold text-gray-300">
+    Error #<%= @error.id %> @ <%= DateTime.truncate(@occurrence.inserted_at, :second) %>
+  </p>
+  <h1 class="my-1 text-2xl font-bold whitespace-nowrap text-ellipsis overflow-hidden">
+    (<%= @error.kind %>) <%= @error.reason |> String.replace("\n", " ") |> String.trim() %>
+  </h1>
+</div>
 
+<div class="grid grid-cols-1 md:grid-cols-4 md:space-x-3 mt-6 gap-2">
+  <div class="px-3 md:col-span-3 md:border-r-2 md:border-gray-500">
     <div class="mt-4">
       <h2>Full message</h2>
       <pre class="mt-2 text-wrap">
@@ -58,7 +65,7 @@
     </pre>
   </div>
 
-  <div>
+  <div class="px-3 md:pl-0">
     <h2 class="mb-4">List of occurrences</h2>
 
     <div class="grid grid-cols-1 gap-y-1">
