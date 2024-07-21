@@ -12,9 +12,24 @@ defmodule ErrorTracker.Web.CoreComponents do
   """
   attr :type, :string, default: nil
   attr :class, :string, default: nil
-  attr :rest, :global, include: ~w(disabled form name value)
+  attr :rest, :global, include: ~w(disabled form name value navigate)
 
   slot :inner_block, required: true
+
+  def button(%{type: "link"} = assigns) do
+    ~H"""
+    <a
+      class={[
+        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-600 hover:bg-zinc-400 py-[11.5px] px-3",
+        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        @class
+      ]}
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </a>
+    """
+  end
 
   def button(assigns) do
     ~H"""
