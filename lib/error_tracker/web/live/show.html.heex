@@ -27,13 +27,18 @@
 
     <.section title="Stacktrace">
       <div class="p-4 bg-gray-600">
-        <div class="w-full mb-4 align-right">
-          <input
-            type="checkbox"
-            id="show-app-frames"
-            phx-click={JS.toggle(to: "#stacktrace tr:not([data-app=#{@app}])")}
-          />
-          <label for="show-app-frames">Show only app frames</label>
+        <div class="w-full mb-4">
+          <label class="flex justify-end">
+            <input
+              type="checkbox"
+              id="show-app-frames"
+              class="ml-2 mr-2 mb-1 mt-1 inline-block"
+              phx-click={JS.toggle(to: "#stacktrace tr:not([data-app=#{@app}])")}
+            />
+            <span class="text-md inline-block">
+              Show only app frames
+            </span>
+          </label>
         </div>
 
         <table class="w-100 text-sm" id="stacktrace">
