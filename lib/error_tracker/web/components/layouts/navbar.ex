@@ -5,10 +5,13 @@ defmodule ErrorTracker.Web.Layouts.Navbar do
   def render(assigns) do
     ~H"""
     <nav class="border-gray-200 bg-gray-800" phx-click-away={JS.hide(to: "#navbar-main")}>
-      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">
+      <div class="container flex flex-wrap items-center justify-between mx-auto p-4">
+        <.link
+          href={dashboard_path(assigns)}
+          class="self-center text-2xl font-semibold whitespace-nowrap text-white"
+        >
           ErrorTracker
-        </span>
+        </.link>
         <button
           type="button"
           class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded -lg md:hidden focus:outline-none focus:ring-2 text-gray-400 hover:bg-gray-600 focus:ring-gray-500"
