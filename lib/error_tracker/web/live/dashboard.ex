@@ -64,14 +64,24 @@ defmodule ErrorTracker.Web.Live.Dashboard do
 
     total_errors = Repo.aggregate(query, :count)
 
-    errors_query =
-      query
-      |> order_by(desc: :last_occurrence_at)
-      |> offset((^page - 1) * @per_page)
-      |> limit(@per_page)
+    errors =
+      Repo.all(
+        from query,
+          order_by: [desc: :last_occurrence_at],
+          offset: (^page - 1) * @per_page,
+          limit: @per_page
+      )
+
+    occurrences =
+      errors
+      |> Ecto.assoc(:occurrences)
+      |> group_by([o], o.error_id)
+      |> select([o], {o.error_id, count(o.id)})
+      |> Repo.all()
 
     assign(socket,
-      errors: Repo.all(errors_query),
+      errors: errors,
+      occurrences: Map.new(occurrences),
       total_pages: (total_errors / @per_page) |> Float.ceil() |> trunc
     )
   end

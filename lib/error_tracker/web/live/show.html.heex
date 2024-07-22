@@ -63,7 +63,7 @@
   </div>
 
   <div class="px-3 md:pl-0 space-y-8">
-    <.section title="Occurrence">
+    <.section title={"Occurrence (#{Enum.count(@occurrences)} total)"}>
       <form phx-change="occurrence_navigation">
         <select name="occurrence_id" class="text-black w-full">
           <option
