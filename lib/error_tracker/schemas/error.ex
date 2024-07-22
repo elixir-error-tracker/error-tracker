@@ -22,24 +22,11 @@ defmodule ErrorTracker.Error do
     timestamps(type: :utc_datetime_usec)
   end
 
-  def new(exception, stacktrace = %ErrorTracker.Stacktrace{}) do
+  def new(kind, reason, stacktrace = %ErrorTracker.Stacktrace{}) do
     source = ErrorTracker.Stacktrace.source(stacktrace)
-
-    {kind, reason} =
-      case exception do
-        %struct{} = ex when is_exception(ex) ->
-          {to_string(struct), Exception.message(ex)}
-
-        {_kind, %struct{} = ex} when is_exception(ex) ->
-          {to_string(struct), Exception.message(ex)}
-
-        {kind, ex} ->
-          {to_string(kind), to_string(ex)}
-      end
 
     params = [
       kind: to_string(kind),
-      reason: reason,
       source_line: "#{source.file}:#{source.line}",
       source_function: "#{source.module}.#{source.function}/#{source.arity}"
     ]
@@ -48,6 +35,7 @@ defmodule ErrorTracker.Error do
 
     %__MODULE__{}
     |> Ecto.Changeset.change(params)
+    |> Ecto.Changeset.put_change(:reason, reason)
     |> Ecto.Changeset.put_change(:fingerprint, Base.encode16(fingerprint))
     |> Ecto.Changeset.put_change(:last_occurrence_at, DateTime.utc_now())
     |> Ecto.Changeset.apply_action(:new)

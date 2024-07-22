@@ -10,6 +10,7 @@ defmodule ErrorTracker.Occurrence do
 
   schema "error_tracker_occurrences" do
     field :context, :map
+    field :reason, :string
 
     embeds_one :stacktrace, ErrorTracker.Stacktrace
     belongs_to :error, ErrorTracker.Error

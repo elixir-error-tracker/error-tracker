@@ -22,6 +22,7 @@ defmodule ErrorTracker.Migrations.Postgres.V01 do
 
     create table(:error_tracker_occurrences, prefix: prefix) do
       add :context, :map, null: false
+      add :reason, :text, null: false
       add :stacktrace, :map, null: false
       add :error_id, references(:error_tracker_errors, on_delete: :delete_all), null: false
 
