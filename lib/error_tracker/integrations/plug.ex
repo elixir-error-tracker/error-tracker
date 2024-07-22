@@ -90,7 +90,7 @@ defmodule ErrorTracker.Integrations.Plug do
       "request.query" => conn.query_string,
       "request.method" => conn.method,
       "request.ip" => remote_ip(conn),
-      "request.headers" => Map.new(conn.req_headers),
+      "request.headers" => conn.req_headers |> Map.new() |> Map.drop(["cookie"]),
       # Depending on the error source, the request params may have not been fetched yet
       "request.params" => unless(is_struct(conn.params, Plug.Conn.Unfetched), do: conn.params)
     }
