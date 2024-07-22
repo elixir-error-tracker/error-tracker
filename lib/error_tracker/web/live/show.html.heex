@@ -41,17 +41,19 @@
           </label>
         </div>
 
-        <table class="w-100 text-sm" id="stacktrace">
-          <tbody>
-            <tr :for={line <- @occurrence.stacktrace.lines} data-app={line.application || @app}>
-              <td class="px-2 align-top"><pre>(<%= line.application || @app %>)</pre></td>
-              <td>
-                <pre><%= "#{sanitize_module(line.module)}.#{line.function}/#{line.arity}" %>
+        <div class="overflow-auto">
+          <table class="w-100 text-sm" id="stacktrace">
+            <tbody>
+              <tr :for={line <- @occurrence.stacktrace.lines} data-app={line.application || @app}>
+                <td class="px-2 align-top"><pre>(<%= line.application || @app %>)</pre></td>
+                <td>
+                  <pre><%= "#{sanitize_module(line.module)}.#{line.function}/#{line.arity}" %>
                 <%= "#{line.file}.#{line.line}" %></pre>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </.section>
 
