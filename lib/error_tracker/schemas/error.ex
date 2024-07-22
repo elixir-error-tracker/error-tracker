@@ -15,6 +15,7 @@ defmodule ErrorTracker.Error do
     field :source_function, :string
     field :status, Ecto.Enum, values: [:resolved, :unresolved], default: :unresolved
     field :fingerprint, :binary
+    field :last_occurrence_at, :utc_datetime_usec
 
     has_many :occurrences, ErrorTracker.Occurrence
 
@@ -48,6 +49,7 @@ defmodule ErrorTracker.Error do
     %__MODULE__{}
     |> Ecto.Changeset.change(params)
     |> Ecto.Changeset.put_change(:fingerprint, Base.encode16(fingerprint))
+    |> Ecto.Changeset.put_change(:last_occurrence_at, DateTime.utc_now())
     |> Ecto.Changeset.apply_action(:new)
   end
 end

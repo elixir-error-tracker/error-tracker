@@ -73,6 +73,10 @@ defmodule ErrorTracker.Web do
       import Phoenix.HTML
       import Phoenix.LiveView.Helpers
 
+      import ErrorTracker.Web.CoreComponents
+      import ErrorTracker.Web.Helpers
+      import ErrorTracker.Web.Router.Routes
+
       alias Phoenix.LiveView.JS
     end
   end

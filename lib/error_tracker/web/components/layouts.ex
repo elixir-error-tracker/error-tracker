@@ -1,6 +1,8 @@
 defmodule ErrorTracker.Web.Layouts do
   use ErrorTracker.Web, :html
 
+  alias ErrorTracker.Web.Layouts.Navbar
+
   @css_path :code.priv_dir(:error_tracker) |> Path.join("static/app.css")
   @js_path :code.priv_dir(:error_tracker) |> Path.join("static/app.js")
 

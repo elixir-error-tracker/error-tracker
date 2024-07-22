@@ -116,7 +116,7 @@ defmodule ErrorTracker.Migration do
   end
 
   defp migrator do
-    case ErrorTracker.repo().__adapter__() do
+    case ErrorTracker.Repo.__adapter__() do
       Ecto.Adapters.Postgres -> ErrorTracker.Migrations.Postgres
       adapter -> raise "ErrorTracker does not support #{adapter}"
     end
