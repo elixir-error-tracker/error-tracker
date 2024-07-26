@@ -16,15 +16,7 @@ defmodule ErrorTracker do
 
   ## Requirements
 
-  ErrorTracker requires:
-
-  * Elixir: `~> 1.15`
-
-  * Ecto: `~> 3.11`
-
-  * Phoenix LiveView `~> 0.19` or `~> 1.0`
-
-  * PostgreSQL
+  ErrorTracker requires Elixir 1.15+, Ecto 3.11+, Phoenix LiveView 0.19+ and PostgreSQL
 
   ## Installation
 
