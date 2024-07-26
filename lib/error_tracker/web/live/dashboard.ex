@@ -72,9 +72,12 @@ defmodule ErrorTracker.Web.Live.Dashboard do
           limit: @per_page
       )
 
+    error_ids = Enum.map(errors, & &1.id)
+
     occurrences =
       errors
       |> Ecto.assoc(:occurrences)
+      |> where([o], o.error_id in ^error_ids)
       |> group_by([o], o.error_id)
       |> select([o], {o.error_id, count(o.id)})
       |> Repo.all()
