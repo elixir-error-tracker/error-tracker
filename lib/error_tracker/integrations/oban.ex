@@ -37,7 +37,7 @@ defmodule ErrorTracker.Integrations.Oban do
   ]
 
   @doc """
-  Attachs to Oban's Telemtry events if the library is detected.
+  Attachs to Oban's Telemetry events if the library is detected.
 
   This function is usually called internally during the startup process so you
   don't have to.

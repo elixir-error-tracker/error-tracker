@@ -2,7 +2,9 @@ defmodule ErrorTracker.Integrations.Plug do
   @moduledoc """
   Integration with Plug applications.
 
-  ## How it works
+  ## How to use it
+
+  ### Plug applications
 
   The way to use this integration is by adding it to either your `Plug.Builder`
   or `Plug.Router`:
@@ -16,7 +18,7 @@ defmodule ErrorTracker.Integrations.Plug do
   end
   ```
 
-  ## Using it with Phoenix
+  ### Phoenix applications
 
   There is a particular use case which can be useful when running a Phoenix
   web application.
@@ -33,6 +35,30 @@ defmodule ErrorTracker.Integrations.Plug do
     ...
   end
   ```
+
+  ### Default context
+
+  By default we store some context for you on errors generated during a Plug
+  request:
+
+  * `request.host`: the `conn.host` value.
+
+  * `request.ip`: the IP address that initiated the request. It includes parsing
+  proxy headers
+
+  * `request.method`: the HTTP method of the request.
+
+  * `request.path`: the path of the request.
+
+  * `request.query`: the query string of the request.
+
+  * `request.params`: parsed params of the request (only available if they have
+  been fetched and parsed as part of the Plug pipeline).
+
+  * `request.headers`: headers received on the request. All headers are included
+  by default except for the `Cookie` ones, as they may include large and
+  sensitive content like sessions.
+
   """
 
   defmacro __using__(_opts) do
@@ -69,6 +95,7 @@ defmodule ErrorTracker.Integrations.Plug do
     end
   end
 
+  @doc false
   def report_error(conn, reason, stack) do
     unless Process.get(:error_tracker_router_exception_reported) do
       try do
@@ -79,6 +106,7 @@ defmodule ErrorTracker.Integrations.Plug do
     end
   end
 
+  @doc false
   def set_context(conn = %Plug.Conn{}) do
     conn |> build_context |> ErrorTracker.set_context()
   end
