@@ -7,6 +7,14 @@ defmodule ErrorTracker.Web.Router do
   Creates the routes needed to use the `ErrorTracker` web interface.
 
   It requires a path in which you are going to serve the web interface.
+
+  ## Options
+
+  * `on_mount`: a list of mount hooks to use before invoking the dashboard
+  LiveView views.
+
+  * `as`: a session name to use for the dashboard LiveView session. By default
+  it uses `:error_tracker_dashboard`.
   """
   defmacro error_tracker_dashboard(path, opts \\ []) do
     {session_name, session_opts} = parse_options(opts, path)

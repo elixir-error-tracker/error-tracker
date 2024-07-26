@@ -1,6 +1,6 @@
 defmodule ErrorTracker.Web do
   @moduledoc """
-  ErrorTracker includes a Web UI to view and inspect errors occurred on your
+  ErrorTracker includes a dashboard to view and inspect errors occurred on your
   application and already stored on the database.
 
   In order to use it, you need to add the following to your Phoenix's `
@@ -17,7 +17,22 @@ defmodule ErrorTracker.Web do
   end
   ```
 
-  This will add the routes needed for the ErrorTracker LiveView UI to work.
+  This will add the routes needed for the ErrorTracker dashboard to work.
+
+  ## Security considerations
+
+  Errors may contain sensitive information, like IP addresses, users information
+  or even passwords sent on forms!
+
+  Securing your dashboard is an important part of integrating `ErrorTracker` on
+  your project.
+
+  In order to do so, we recommend implementing your own security mechanisms in
+  the form of a mount hook and pass it to the `error_tracker_dashboard` macro
+  using the `on_mount` option.
+
+  You can find more details on
+  `ErrorTracker.Web.Router.error_tracker_dashboard/2`.
 
   ## LiveView socket options
 
@@ -36,6 +51,7 @@ defmodule ErrorTracker.Web do
   ```
   """
 
+  @doc false
   def html do
     quote do
       import Phoenix.Controller, only: [get_csrf_token: 0]
@@ -44,6 +60,7 @@ defmodule ErrorTracker.Web do
     end
   end
 
+  @doc false
   def live_view do
     quote do
       use Phoenix.LiveView, layout: {ErrorTracker.Web.Layouts, :live}
@@ -52,6 +69,7 @@ defmodule ErrorTracker.Web do
     end
   end
 
+  @doc false
   def live_component do
     quote do
       use Phoenix.LiveComponent
@@ -60,6 +78,7 @@ defmodule ErrorTracker.Web do
     end
   end
 
+  @doc false
   def router do
     quote do
       import ErrorTracker.Web.Router

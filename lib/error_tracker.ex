@@ -59,6 +59,15 @@ defmodule ErrorTracker do
   Please, check the documentation of the `ErrorTracker.Migration` module for
   more details.
 
+  ## Web UI
+
+  We have included a dashboard (built with the awesome LiveView library) that
+  can be used to see the errors recorded for your project, as well as mark them
+  as resolved.
+
+  You can find more information about how to integrate it on your Phoenix
+  application on the documentation of `ErrorTracker.Web`.
+
   """
 
   @typedoc """
