@@ -1,5 +1,7 @@
 defmodule ErrorTracker.Web.Router do
-  @moduledoc false
+  @moduledoc """
+  Integration of the ErrorTracker UI into your application's router.
+  """
 
   @doc """
   Creates the routes needed to use the `ErrorTracker` web interface.

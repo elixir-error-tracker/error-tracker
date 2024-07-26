@@ -1,4 +1,11 @@
 defmodule ErrorTracker.Migrations do
+  @moduledoc false
+
+  defdelegate up(opts \\ []), to: ErrorTracker.Migration
+  defdelegate down(opts \\ []), to: ErrorTracker.Migration
+end
+
+defmodule ErrorTracker.Migration do
   @moduledoc """
   Create and modify the database tables for the ErrorTracker.
 
@@ -92,12 +99,6 @@ defmodule ErrorTracker.Migrations do
   config :error_tracker, :prefix, "custom_schema"
   ```
   """
-  defdelegate up(opts \\ []), to: ErrorTracker.Migration
-  defdelegate down(opts \\ []), to: ErrorTracker.Migration
-end
-
-defmodule ErrorTracker.Migration do
-  @moduledoc false
 
   @callback up(Keyword.t()) :: :ok
   @callback down(Keyword.t()) :: :ok

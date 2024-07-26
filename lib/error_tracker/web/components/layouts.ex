@@ -1,4 +1,5 @@
 defmodule ErrorTracker.Web.Layouts do
+  @moduledoc false
   use ErrorTracker.Web, :html
 
   alias ErrorTracker.Web.Layouts.Navbar

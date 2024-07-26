@@ -1,7 +1,5 @@
 defmodule ErrorTracker.Web.Router.Routes do
-  @moduledoc """
-  Module used to generate dashboard routes.
-  """
+  @moduledoc false
 
   alias ErrorTracker.Error
   alias ErrorTracker.Occurrence

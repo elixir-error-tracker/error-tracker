@@ -1,7 +1,8 @@
 defmodule ErrorTracker.Repo do
   @moduledoc """
-  Wraps Ecto.Repo calls and applies default options.
+  Wrapper around Ecto Repo calls to apply default options.
   """
+
   def insert!(struct_or_changeset, opts \\ []) do
     dispatch(:insert!, [struct_or_changeset], opts)
   end

@@ -1,10 +1,10 @@
 defmodule ErrorTracker.Integrations.Plug do
   @moduledoc """
-  The ErrorTracker integration with Plug applications.
+  Integration with Plug applications.
 
   ## How it works
 
-  The way to use this integration is by adding it to either your `Plug.Builder``
+  The way to use this integration is by adding it to either your `Plug.Builder`
   or `Plug.Router`:
 
   ```elixir

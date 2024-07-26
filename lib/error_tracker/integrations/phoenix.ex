@@ -1,6 +1,6 @@
 defmodule ErrorTracker.Integrations.Phoenix do
   @moduledoc """
-  The ErrorTracker integration with Phoenix applications.
+  Integration with Phoenix applications.
 
   ## How it works
 

@@ -1,6 +1,6 @@
 defmodule ErrorTracker.Integrations.Oban do
   @moduledoc """
-  The ErrorTracker integration with Oban.
+  Integration with Oban.
 
   ## How it works
 
