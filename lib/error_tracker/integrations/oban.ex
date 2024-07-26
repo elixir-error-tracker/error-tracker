@@ -4,13 +4,13 @@ defmodule ErrorTracker.Integrations.Oban do
 
   ## How to use it
 
-  It is a plug&play integration. As long as you have Oban installed the
+  It is a plug and play integration: as long as you have Oban installed the
   ErrorTracker will receive and store the errors as they are reported.
 
   ### How it works
 
-  It works using your application's Telemetry events, so you don't need to
-  modify anything on your application.
+  It works using Oban's Telemetry events, so you don't need to modify anything
+  on your application.
 
   ### Default context
 
@@ -36,12 +36,19 @@ defmodule ErrorTracker.Integrations.Oban do
     [:oban, :job, :exception]
   ]
 
+  @doc """
+  Attachs to Oban's Telemtry events if the library is detected.
+
+  This function is usually called internally during the startup process so you
+  don't have to.
+  """
   def attach do
     if Application.spec(:oban) do
       :telemetry.attach_many(__MODULE__, @events, &__MODULE__.handle_event/4, :no_config)
     end
   end
 
+  @doc false
   def handle_event([:oban, :job, :start], _measurements, metadata, :no_config) do
     %{job: job} = metadata
 
