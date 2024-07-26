@@ -12,7 +12,13 @@ defmodule ErrorTracker.MixProject do
       package: package(),
       description: description(),
       source_url: "https://github.com/elixir-error-tracker/error-tracker",
-      aliases: aliases()
+      aliases: aliases(),
+      name: "ErrorTracker",
+      docs: [
+        main: "ErrorTracker",
+        formatters: ["html"],
+        groups_for_modules: groups_for_modules()
+      ]
     ]
   end
 
@@ -38,6 +44,26 @@ defmodule ErrorTracker.MixProject do
 
   def description do
     "An Elixir based built-in error tracking solution"
+  end
+
+  defp groups_for_modules do
+    [
+      Integrations: [
+        ErrorTracker.Integrations.Oban,
+        ErrorTracker.Integrations.Phoenix,
+        ErrorTracker.Integrations.Plug
+      ],
+      Schemas: [
+        ErrorTracker.Error,
+        ErrorTracker.Occurrence,
+        ErrorTracker.Stacktrace,
+        ErrorTracker.Stacktrace.Line
+      ],
+      "Web UI": [
+        ErrorTracker.Web,
+        ErrorTracker.Web.Router
+      ]
+    ]
   end
 
   # Run "mix help deps" to learn about dependencies.

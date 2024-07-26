@@ -14,9 +14,34 @@ defmodule ErrorTracker do
   * Be as minimalistic as possible: you just need a database to store errors and
   an Phoenix application if you want to inspect them via web. That's all.
 
-  ## How to report an error
+  ## Requirements
 
-  You can report an exception as easy as:
+  ErrorTracker requires:
+
+  * Elixir: `~> 1.15`
+
+  * Ecto: `~> 3.11`
+
+  * Phoenix LiveView `~> 0.19` or `~> 1.0`
+
+  * PostgreSQL
+
+  ## Installation
+
+  TODO
+
+  ## Integrations
+
+  We currently include integrations for what we consider the basic stack of
+  an application: Phoenix, Plug and Oban.
+
+  However, we may continue working in adding support for more systems and
+  libraries in the future if there is enough interest by the community.
+
+  ## Report an error
+
+  You may relay on already built integrations by default, but in case you want
+  to report an exception by yourself, it is an easy as:
 
   ```elixir
   try do
@@ -26,14 +51,6 @@ defmodule ErrorTracker do
       ErrorTracker.report(e, __STACKTRACE__)
   end
   ```
-
-  ## Integrations
-
-  We currently include integrations for what we consider the basic stack of
-  an application: Phoenix, Plug and Oban.
-
-  However, we may continue working in adding support for more systems and
-  libraries in the future if there is enough interest by the community.
 
   ## Context
 
