@@ -1,6 +1,64 @@
 defmodule ErrorTracker do
   @moduledoc """
   En Elixir based built-in error tracking solution.
+
+  The main objectives behind this project are:
+
+  * Provide a basic free error tracking solution: because tracking errors on
+  your application should be a requirement to almost any project, and helps to
+  provide quality and maintenance to your project.
+
+  * Easy to use: by providing plug and play integrations, documentation and a
+  simple UI to manage your errors.
+
+  * Be as minimalistic as possible: you just need a database to store errors and
+  an Phoenix application if you want to inspect them via web. That's all.
+
+  ## How to report an error
+
+  You can report an exception as easy as:
+
+  ```elixir
+  try do
+    # your code
+  catch
+    e ->
+      ErrorTracker.report(e, __STACKTRACE__)
+  end
+  ```
+
+  ## Integrations
+
+  We currently include integrations for what we consider the basic stack of
+  an application: Phoenix, Plug and Oban.
+
+  However, we may continue working in adding support for more systems and
+  libraries in the future if there is enough interest by the community.
+
+  ## Context
+
+  Aside from the information abot each exception (kind, message, stacktrace...)
+  we also store contexts.
+
+  Contexts are arbitrary maps that allow you to store extra information of an
+  exception to be able to reproduce it later.
+
+  Each integration includes a default context with the useful information they
+  can gather, but aside from that you can also add your own information:
+
+  ```elixir
+  ErrorTracker.set_context(%{user_id: conn.assigns.current_user.id})
+  ```
+
+  ## Migrations
+
+  As we store information in a database, there are migrations to create the
+  required database objects (tables, indices...) for you to stay up to date with
+  the project.
+
+  Please, check the documentation of the `ErrorTracker.Migration` module for
+  more details.
+
   """
 
   @typedoc """
