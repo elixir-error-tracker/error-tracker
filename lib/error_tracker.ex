@@ -12,8 +12,20 @@ defmodule ErrorTracker do
   alias ErrorTracker.Repo
 
   def report(exception, stacktrace, given_context \\ %{}) do
+    {kind, reason} =
+      case exception do
+        %struct{} = ex when is_exception(ex) ->
+          {to_string(struct), Exception.message(ex)}
+
+        {_kind, %struct{} = ex} when is_exception(ex) ->
+          {to_string(struct), Exception.message(ex)}
+
+        {kind, ex} ->
+          {to_string(kind), to_string(ex)}
+      end
+
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
-    {:ok, error} = Error.new(exception, stacktrace)
+    {:ok, error} = Error.new(kind, reason, stacktrace)
 
     context = Map.merge(get_context(), given_context)
 
@@ -24,7 +36,7 @@ defmodule ErrorTracker do
       )
 
     error
-    |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context)
+    |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context, reason: reason)
     |> Repo.insert!()
   end
 
