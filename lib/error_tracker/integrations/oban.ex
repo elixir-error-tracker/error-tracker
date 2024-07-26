@@ -2,10 +2,32 @@ defmodule ErrorTracker.Integrations.Oban do
   @moduledoc """
   Integration with Oban.
 
-  ## How it works
+  ## How to use it
+
+  It is a plug&play integration. As long as you have Oban installed the
+  ErrorTracker will receive and store the errors as they are reported.
+
+  ### How it works
 
   It works using your application's Telemetry events, so you don't need to
   modify anything on your application.
+
+  ### Default context
+
+  By default we store some context for you on errors generated in an Oban
+  process:
+
+  * `job.id`: the unqiue ID of the job.
+
+  * `job.worker`: the name of the worker module.
+
+  * `job.queue`: the name of the queue in which the job was inserted.
+
+  * `job.args`: the arguments of the job being executed.
+
+  * `job.priority`: the priority of the job.
+
+  * `job.attempt`: the number of attempts performed for the job.
   """
 
   # https://hexdocs.pm/oban/Oban.Telemetry.html
