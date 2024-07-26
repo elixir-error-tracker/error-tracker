@@ -104,7 +104,14 @@ defmodule ErrorTracker.Web.Live.Show do
       |> List.flatten()
       |> Enum.reverse()
 
-    assign(socket, :occurrences, occurrences)
+    total_occurrences =
+      socket.assigns.error
+      |> Ecto.assoc(:occurrences)
+      |> Repo.aggregate(:count)
+
+    socket
+    |> assign(:occurrences, occurrences)
+    |> assign(:total_occurrences, total_occurrences)
   end
 
   defp related_occurrences(query, num_results) do

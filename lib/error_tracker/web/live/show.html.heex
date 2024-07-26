@@ -63,7 +63,7 @@
   </div>
 
   <div class="px-3 md:pl-0 space-y-8">
-    <.section title={"Occurrence (#{Enum.count(@occurrences)} total)"}>
+    <.section title={"Occurrence (#{@total_occurrences} total)"}>
       <form phx-change="occurrence_navigation">
         <select name="occurrence_id" class="text-black w-full">
           <option
@@ -83,6 +83,10 @@
 
     <.section title="Last seen">
       <pre><%= format_datetime(@error.last_occurrence_at) %></pre>
+    </.section>
+
+    <.section title="First seen">
+      <pre><%= format_datetime(@error.inserted_at) %></pre>
     </.section>
 
     <.section title="Status" title_class="mb-3">
