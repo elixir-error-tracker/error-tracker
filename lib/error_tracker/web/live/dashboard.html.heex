@@ -41,7 +41,7 @@
     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-600 dark:text-gray-400">
       <tr>
         <th scope="col" class="px-4 pr-2 py-3 w-128">Error</th>
-        <th scope="col" class="px-4 py-3 w-72">Last occurrence</th>
+        <th scope="col" class="px-4 py-3 w-72">Occurrences</th>
         <th scope="col" class="px-4 py-3 w-28">Status</th>
         <th scope="col" class="px-4 py-3 w-32"></th>
       </tr>
@@ -62,7 +62,8 @@
           </p>
         </th>
         <td class="px-4 py-4">
-          <%= format_datetime(error.last_occurrence_at) %>
+          <p>Last: <%= format_datetime(error.last_occurrence_at) %></p>
+          <p>Total: <%= @occurrences[error.id] %></p>
         </td>
         <td class="px-4 py-4">
           <.badge :if={error.status == :resolved} color={:green}>Resolved</.badge>
