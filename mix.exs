@@ -44,7 +44,8 @@ defmodule ErrorTracker.MixProject do
       licenses: ["Apache-2.0"],
       links: %{
         "GitHub" => "https://github.com/elixir-error-tracker/error-tracker"
-      }
+      },
+      maintainers: ["Oscar de Arriba González", "Cristian Álvarez Belaustegui"]
     ]
   end
 
