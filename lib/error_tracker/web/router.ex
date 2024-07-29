@@ -8,6 +8,12 @@ defmodule ErrorTracker.Web.Router do
 
   It requires a path in which you are going to serve the web interface.
 
+  ## Security considerations
+
+  Errors may contain sensitive information so it is recommended to use the `on_mount`
+  option to provide a custom hook that implements authentication and authorization
+  for access control.
+
   ## Options
 
   * `on_mount`: a list of mount hooks to use before invoking the dashboard
