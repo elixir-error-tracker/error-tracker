@@ -8,7 +8,7 @@ defmodule ErrorTracker do
   your application should be a requirement to almost any project, and helps to
   provide quality and maintenance to your project.
 
-  * Easy to use: by providing plug and play integrations, documentation and a
+  * Be easy to use: by providing plug and play integrations, documentation and a
   simple UI to manage your errors.
 
   * Be as minimalistic as possible: you just need a database to store errors and
@@ -32,7 +32,7 @@ defmodule ErrorTracker do
 
   ## Report an error
 
-  You may relay on already built integrations by default, but in case you want
+  You may rely on already built integrations by default, but in case you want
   to report an exception by yourself, it is an easy as:
 
   ```elixir
@@ -53,10 +53,33 @@ defmodule ErrorTracker do
   exception to be able to reproduce it later.
 
   Each integration includes a default context with the useful information they
-  can gather, but aside from that you can also add your own information:
+  can gather, but aside from that you can also add your own information. You can
+  do this in a per-process way or in a per-call way (or both).
+
+  **Per process**
+
+  This allows you to set general context for the current process such as a Phoenix
+  request or an Oban job. For example you could include the following code in your
+  authentication Plug to automatically include the user ID on any error that is
+  tracked during the Phoenix request handling.
 
   ```elixir
   ErrorTracker.set_context(%{user_id: conn.assigns.current_user.id})
+  ```
+
+  **Per call**
+
+  As we had seen before you can use `ErrorTracker.report/3` to manually report an
+  error. The third parameter of this function is optional and allows you to include
+  extra context that will be tracked along with that error.
+
+  ```elixir
+  try do
+    # your code
+  catch
+    e ->
+      ErrorTracker.report(e, __STACKTRACE__, %{user_id: your_user_id})
+  end
   ```
 
   ## Migrations
