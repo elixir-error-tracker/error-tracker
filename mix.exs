@@ -21,7 +21,9 @@ defmodule ErrorTracker.MixProject do
         extra_section: "GUIDES",
         extras: [
           "guides/Getting Started.md"
-        ]
+        ],
+        api_reference: false,
+        main: "getting-started"
       ]
     ]
   end
