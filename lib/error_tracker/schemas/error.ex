@@ -26,10 +26,7 @@ defmodule ErrorTracker.Error do
     timestamps(type: :utc_datetime_usec)
   end
 
-  @doc """
-  Generates a new structure with all required metadata, including fingerprint
-  calculation.
-  """
+  @doc false
   def new(kind, reason, stacktrace = %ErrorTracker.Stacktrace{}) do
     source = ErrorTracker.Stacktrace.source(stacktrace)
 
