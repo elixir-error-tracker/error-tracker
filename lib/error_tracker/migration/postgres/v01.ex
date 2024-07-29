@@ -1,4 +1,4 @@
-defmodule ErrorTracker.Migrations.Postgres.V01 do
+defmodule ErrorTracker.Migration.Postgres.V01 do
   @moduledoc false
 
   use Ecto.Migration

@@ -145,8 +145,8 @@ end
 defmodule Migration0 do
   use Ecto.Migration
 
-  def up, do: ErrorTracker.Migrations.up(prefix: "private")
-  def down, do: ErrorTracker.Migrations.down(prefix: "private")
+  def up, do: ErrorTracker.Migration.up(prefix: "private")
+  def down, do: ErrorTracker.Migration.down(prefix: "private")
 end
 
 Application.put_env(:phoenix, :serve_endpoints, true)
