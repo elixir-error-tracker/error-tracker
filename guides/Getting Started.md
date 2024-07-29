@@ -35,13 +35,13 @@ config :error_tracker,
   otp_app: :my_app
 ```
 
-The `:repo` option specifies the repository that will be used by the ErrorTracker. You can use your regular application repository or, if you prefer to keep errors in a different database, a different one.
+The `:repo` option specifies the repository that will be used by the ErrorTracker. You can use your regular application repository, or a different one if you prefer to keep errors in a different database.
 
 The `:otp_app` option specifies your application name. When an error happens the ErrorTracker will use this information to understand which parts of the stacktrace belong to your application and which parts belong to third party dependencies. This allows you to filter in-app vs third-party frames when viewing errors.
 
 ## Setting up the database
 
-Since the ErrorTracker tracks errors in the database you must create a database migration to add the `error_tracker_errors` table:
+Since the ErrorTracker stores errors in the database you must create a database migration to add the required tables:
 
 ```
 mix ecto.gen.migration add_error_tracker
@@ -53,8 +53,8 @@ Open the generated migration and call the `up` and `down` functions on `ErrorTra
 defmodule MyApp.Repo.Migrations.AddErrorTracker do
   use Ecto.Migration
 
-  def up, do: ErrorTracker.Migrations.up()
-  def down, do: ErrorTracker.Migrations.down()
+  def up, do: ErrorTracker.Migration.up()
+  def down, do: ErrorTracker.Migration.down()
 end
 ```
 
@@ -65,8 +65,6 @@ mix ecto.migrate
 ```
 
 For more information about how to handle migrations take a look at the `ErrorTracker.Migration` module docs.
-
-
 
 ## Automatic error tracking
 
@@ -83,7 +81,7 @@ defmodule MyApp.Router do
 end
 ```
 
-This is also required if you want to track errors that happen in your Phoenix endpoint, before the Phoenix router starts running. Keep in mind that this won't be needed in most cases as endpoint errors are very infrequent.
+This is also required if you want to track errors that happen in your Phoenix endpoint, before the Phoenix router starts handling the request. Keep in mind that this won't be needed in most cases as endpoint errors are very infrequent.
 
 ```elixir
 defmodule MyApp.Endpoint do
@@ -98,11 +96,11 @@ You can learn more about this in the `ErrorTracker.Integrations.Plug` module doc
 
 ## Error context
 
-The default integrations include some additional context when tracking errors. You can take a look at the relevant integration modules to see what is being tracked.
+The default integrations include some additional context when tracking errors. You can take a look at the relevant integration modules to see what is being tracked out of the box.
 
 In certain cases you may want to include some additional information when tracking errors. For example it may be useful to track the user ID that was using the application when an error happened. Fortunately, the ErrorTracker allows you to enrich the default context with custom information.
 
-The `ErrorTracker.set_context/1` function stores the given context in the current process so any errors that happen in that proces (for example a Phoenix request or an Oban job) will include this given context along with the default integration context.
+The `ErrorTracker.set_context/1` function stores the given context in the current process so any errors that happen in that process (for example a Phoenix request or an Oban job) will include this given context along with the default integration context.
 
 ```elixir
 ErrorTracker.set_context(%{user_id: conn.assigns.current_user.id})
@@ -125,4 +123,6 @@ You can also use `ErrorTracker.report/3` and set some custom context that will b
 
 ## Web UI
 
-The ErrorTracker also provides a dashboard built with Phoenix LiveView that can be used to see and manage the recorded errors. This is completely optional and you can find more information about it in the `ErrorTracker.Web` module documentation.
+The ErrorTracker also provides a dashboard built with Phoenix LiveView that can be used to see and manage the recorded errors.
+
+This is completely optional and you can find more information about it in the `ErrorTracker.Web` module documentation.
