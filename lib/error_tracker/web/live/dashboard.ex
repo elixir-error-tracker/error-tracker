@@ -75,12 +75,16 @@ defmodule ErrorTracker.Web.Live.Dashboard do
     error_ids = Enum.map(errors, & &1.id)
 
     occurrences =
-      errors
-      |> Ecto.assoc(:occurrences)
-      |> where([o], o.error_id in ^error_ids)
-      |> group_by([o], o.error_id)
-      |> select([o], {o.error_id, count(o.id)})
-      |> Repo.all()
+      if errors != [] do
+        errors
+        |> Ecto.assoc(:occurrences)
+        |> where([o], o.error_id in ^error_ids)
+        |> group_by([o], o.error_id)
+        |> select([o], {o.error_id, count(o.id)})
+        |> Repo.all()
+      else
+        []
+      end
 
     assign(socket,
       errors: errors,

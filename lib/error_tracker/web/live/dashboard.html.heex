@@ -47,6 +47,11 @@
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td :if={@errors == []} colspan="4" class="text-center py-8 font-extralight">
+          No errors to show 🎉
+        </td>
+      </tr>
       <tr :for={error <- @errors} class="border-b bg-gray-800 border-gray-700">
         <th
           scope="row"
