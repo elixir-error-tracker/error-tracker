@@ -17,7 +17,11 @@ defmodule ErrorTracker.MixProject do
       docs: [
         main: "ErrorTracker",
         formatters: ["html"],
-        groups_for_modules: groups_for_modules()
+        groups_for_modules: groups_for_modules(),
+        extra_section: "GUIDES",
+        extras: [
+          "guides/Getting Started.md"
+        ]
       ]
     ]
   end

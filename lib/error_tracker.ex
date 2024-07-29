@@ -18,10 +18,6 @@ defmodule ErrorTracker do
 
   ErrorTracker requires Elixir 1.15+, Ecto 3.11+, Phoenix LiveView 0.19+ and PostgreSQL
 
-  ## Installation
-
-  TODO
-
   ## Integrations
 
   We currently include integrations for what we consider the basic stack of
@@ -30,19 +26,7 @@ defmodule ErrorTracker do
   However, we may continue working in adding support for more systems and
   libraries in the future if there is enough interest by the community.
 
-  ## Report an error
-
-  You may rely on already built integrations by default, but in case you want
-  to report an exception by yourself, it is an easy as:
-
-  ```elixir
-  try do
-    # your code
-  catch
-    e ->
-      ErrorTracker.report(e, __STACKTRACE__)
-  end
-  ```
+  If you want to manually report an error you can use the `ErrorTracker.report/3` function.
 
   ## Context
 
@@ -72,34 +56,6 @@ defmodule ErrorTracker do
   As we had seen before you can use `ErrorTracker.report/3` to manually report an
   error. The third parameter of this function is optional and allows you to include
   extra context that will be tracked along with that error.
-
-  ```elixir
-  try do
-    # your code
-  catch
-    e ->
-      ErrorTracker.report(e, __STACKTRACE__, %{user_id: your_user_id})
-  end
-  ```
-
-  ## Migrations
-
-  As we store information in a database, there are migrations to create the
-  required database objects (tables, indices...) for you to stay up to date with
-  the project.
-
-  Please, check the documentation of the `ErrorTracker.Migration` module for
-  more details.
-
-  ## Web UI
-
-  We have included a dashboard (built with the awesome LiveView library) that
-  can be used to see the errors recorded for your project, as well as mark them
-  as resolved.
-
-  You can find more information about how to integrate it on your Phoenix
-  application on the documentation of `ErrorTracker.Web`.
-
   """
 
   @typedoc """
@@ -116,6 +72,19 @@ defmodule ErrorTracker do
   Aside from the exception, it is expected to receive the stacktrace and,
   optionally, a context map which will be merged with the current process
   context.
+
+  Keep in mind that errors that happen in Phoenix controllers, Phoenix live views
+  and Oban jobs are automatically reported. You will need this function only if you
+  want to report custom errors.
+
+  ```elixir
+  try do
+    # your code
+  catch
+    e ->
+      ErrorTracker.report(e, __STACKTRACE__)
+  end
+  ```
 
   ## Exceptions
 
