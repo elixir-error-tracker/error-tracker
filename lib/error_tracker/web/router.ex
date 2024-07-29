@@ -23,16 +23,20 @@ defmodule ErrorTracker.Web.Router do
   it uses `:error_tracker_dashboard`.
   """
   defmacro error_tracker_dashboard(path, opts \\ []) do
-    {session_name, session_opts} = parse_options(opts, path)
+    quote bind_quoted: [path: path, opts: opts] do
+      # Ensure that the given path includes previous scopes so we can generate proper
+      # paths for navigating through the dashboard.
+      scoped_path = Phoenix.Router.scoped_path(__MODULE__, path)
+      # Generate the session name and session hooks.
+      {session_name, session_opts} = parse_options(opts, scoped_path)
 
-    quote do
-      scope unquote(path), alias: false, as: false do
+      scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
-        live_session unquote(session_name), unquote(session_opts) do
-          live "/", ErrorTracker.Web.Live.Dashboard, :index, as: unquote(session_name)
-          live "/:id", ErrorTracker.Web.Live.Show, :show, as: unquote(session_name)
-          live "/:id/:occurrence_id", ErrorTracker.Web.Live.Show, :show, as: unquote(session_name)
+        live_session session_name, session_opts do
+          live "/", ErrorTracker.Web.Live.Dashboard, :index, as: session_name
+          live "/:id", ErrorTracker.Web.Live.Show, :show, as: session_name
+          live "/:id/:occurrence_id", ErrorTracker.Web.Live.Show, :show, as: session_name
         end
       end
     end
