@@ -13,7 +13,7 @@ defmodule ErrorTracker.Web.Live.Show do
   @impl Phoenix.LiveView
   def mount(%{"id" => id}, _session, socket) do
     error = Repo.get!(Error, id)
-    {:ok, assign(socket, error: error, app: Application.fetch_env!(:error_tracker, :application))}
+    {:ok, assign(socket, error: error, app: Application.fetch_env!(:error_tracker, :otp_app))}
   end
 
   @impl Phoenix.LiveView
