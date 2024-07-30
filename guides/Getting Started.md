@@ -6,7 +6,7 @@ In this guide we will learn how to install ErrorTracker in an Elixir project so 
 
 **This guide requires you to have set up Ecto with PostgreSQL beforehand.**
 
-## Installing the ErrorTracking as a dependency
+## Installing the ErrorTracker as a dependency
 
 The first step to add ErrorTracker to your application is to declare the package as a dependency in your `mix.exs` file:
 

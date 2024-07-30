@@ -4,7 +4,7 @@ defmodule ErrorTracker do
 
   The main objectives behind this project are:
 
-  * Provide a basic free error tracking solution: because tracking errors inm\
+  * Provide a basic free error tracking solution: because tracking errors in
   your application should be a requirement for almost any project, and helps to
   provide quality and maintenance to your project.
 
