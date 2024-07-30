@@ -3,7 +3,7 @@ defmodule ErrorTracker.Web do
   ErrorTracker includes a dashboard to view and inspect errors that occurred
   on your application and are already stored in the database.
 
-  In order to use it, you need to add the following to your Phoenix's\
+  In order to use it, you need to add the following to your Phoenix's
   `router.ex` file:
 
   ```elixir
