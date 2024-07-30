@@ -161,7 +161,7 @@ defmodule ErrorTracker do
   You can store context on more than one level of depth, but take into account
   that the merge operation is performed on the first level.
 
-  That means that any existing data on deep levels fot he current context will
+  That means that any existing data on deep levels for he current context will
   be replaced if the first level key is received on the new contents.
   """
   @spec set_context(context()) :: context()

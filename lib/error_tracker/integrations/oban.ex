@@ -17,7 +17,7 @@ defmodule ErrorTracker.Integrations.Oban do
   By default we store some context for you on errors generated in an Oban
   process:
 
-  * `job.id`: the unqiue ID of the job.
+  * `job.id`: the unique ID of the job.
 
   * `job.worker`: the name of the worker module.
 
@@ -37,7 +37,7 @@ defmodule ErrorTracker.Integrations.Oban do
   ]
 
   @doc """
-  Attachs to Oban's Telemetry events if the library is detected.
+  Attaches to Oban's Telemetry events if the library is detected.
 
   This function is usually called internally during the startup process so you
   don't have to.
