@@ -1,6 +1,6 @@
 defmodule ErrorTracker.Error do
   @moduledoc """
-  Schema to store an error or exception recorded by the ErrorTracker.
+  Schema to store an error or exception recorded by ErrorTracker.
 
   It stores a kind, reason and source code location to generate a unique
   fingerprint that can be used to avoid duplicates.

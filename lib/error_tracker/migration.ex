@@ -1,10 +1,10 @@
 defmodule ErrorTracker.Migration do
   @moduledoc """
-  Create and modify the database tables for the ErrorTracker.
+  Create and modify the database tables for ErrorTracker.
 
   ## Usage
 
-  To use the ErrorTracker migrations in your application you will need to generate
+  To use ErrorTracker migrations in your application you will need to generate
   a regular `Ecto.Migration` that performs the relevant calls to `ErrorTracker.Migration`.
 
   ```bash
@@ -30,7 +30,7 @@ defmodule ErrorTracker.Migration do
   mix ecto.migrate
   ```
 
-  As new versions of the ErrorTracker are released you may need to run additional migrations.
+  As new versions of ErrorTracker are released you may need to run additional migrations.
   To do this you can follow the previous process and create a new migration:
 
   ```bash
@@ -73,7 +73,7 @@ defmodule ErrorTracker.Migration do
   ```
 
   This will automatically create the database schema for you. If the schema does already exist
-  the migration may fail when trying to recreate it. In such cases you can instruct the ErrorTracker
+  the migration may fail when trying to recreate it. In such cases you can instruct ErrorTracker
   not to create the schema again:
 
   ```elixir
@@ -85,7 +85,7 @@ defmodule ErrorTracker.Migration do
   end
   ```
 
-  If you are using a custom schema other than the default "public" you need to configure the
+  If you are using a custom schema other than the default "public" you need to configure
   ErrorTracker to use that schema:
 
   ```elixir

@@ -1,50 +1,50 @@
 defmodule ErrorTracker do
   @moduledoc """
-  En Elixir based built-in error tracking solution.
+  En Elixir-based built-in error tracking solution.
 
   The main objectives behind this project are:
 
-  * Provide a basic free error tracking solution: because tracking errors on
-  your application should be a requirement to almost any project, and helps to
+  * Provide a basic free error tracking solution: because tracking errors inm\
+  your application should be a requirement for almost any project, and helps to
   provide quality and maintenance to your project.
 
-  * Be easy to use: by providing plug and play integrations, documentation and a
+  * Be easy to use: by providing plug-and-play integrations, documentation and a
   simple UI to manage your errors.
 
   * Be as minimalistic as possible: you just need a database to store errors and
-  an Phoenix application if you want to inspect them via web. That's all.
+  a Phoenix application if you want to inspect them via web. That's all.
 
   ## Requirements
 
-  ErrorTracker requires Elixir 1.15+, Ecto 3.11+, Phoenix LiveView 0.19+ and PostgreSQL
+  ErrorTracker requires Elixir 1.15+, Ecto 3.11+, Phoenix LiveView 0.19+, and PostgreSQL.
 
   ## Integrations
 
   We currently include integrations for what we consider the basic stack of
-  an application: Phoenix, Plug and Oban.
+  an application: Phoenix, Plug, and Oban.
 
   However, we may continue working in adding support for more systems and
-  libraries in the future if there is enough interest by the community.
+  libraries in the future if there is enough interest from the community.
 
-  If you want to manually report an error you can use the `ErrorTracker.report/3` function.
+  If you want to manually report an error, you can use the `ErrorTracker.report/3` function.
 
   ## Context
 
-  Aside from the information abot each exception (kind, message, stacktrace...)
+  Aside from the information about each exception (kind, message, stack trace...)
   we also store contexts.
 
-  Contexts are arbitrary maps that allow you to store extra information of an
+  Contexts are arbitrary maps that allow you to store extra information about an
   exception to be able to reproduce it later.
 
-  Each integration includes a default context with the useful information they
-  can gather, but aside from that you can also add your own information. You can
-  do this in a per-process way or in a per-call way (or both).
+  Each integration includes a default context with useful information they
+  can gather, but aside from that, you can also add your own information. You can
+  do this in a per-process basis or in a per-call basis (or both).
 
   **Per process**
 
-  This allows you to set general context for the current process such as a Phoenix
-  request or an Oban job. For example you could include the following code in your
-  authentication Plug to automatically include the user ID on any error that is
+  This allows you to set a general context for the current process such as a Phoenix
+  request or an Oban job. For example, you could include the following code in your
+  authentication Plug to automatically include the user ID in any error that is
   tracked during the Phoenix request handling.
 
   ```elixir
@@ -53,9 +53,9 @@ defmodule ErrorTracker do
 
   **Per call**
 
-  As we had seen before you can use `ErrorTracker.report/3` to manually report an
+  As we had seen before, you can use `ErrorTracker.report/3` to manually report an
   error. The third parameter of this function is optional and allows you to include
-  extra context that will be tracked along with that error.
+  extra context that will be tracked along with the error.
   """
 
   @typedoc """
@@ -67,13 +67,13 @@ defmodule ErrorTracker do
   alias ErrorTracker.Repo
 
   @doc """
-  Report a exception to be stored.
+  Report an exception to be stored.
 
-  Aside from the exception, it is expected to receive the stacktrace and,
+  Aside from the exception, it is expected to receive the stack trace and,
   optionally, a context map which will be merged with the current process
   context.
 
-  Keep in mind that errors that happen in Phoenix controllers, Phoenix live views
+  Keep in mind that errors that occur in Phoenix controllers, Phoenix LiveViews
   and Oban jobs are automatically reported. You will need this function only if you
   want to report custom errors.
 
@@ -88,16 +88,16 @@ defmodule ErrorTracker do
 
   ## Exceptions
 
-  Exceptions passed can be in three different forms:
+  Exceptions can be passed in three different forms:
 
-  * An exception struct: the module of the exception is stored alongside with
+  * An exception struct: the module of the exception is stored along with
   the exception message.
 
-  * A `{kind, exception}` tuple in which the `exception` is an struct: it
+  * A `{kind, exception}` tuple in which the `exception` is a struct: it
   behaves the same as when passing just the exception struct.
 
-  * A `{kind, reason}` tuple: it stores the kind and the message itself casted
-  to strings, as it is useful for some errors like EXIT signals or custom error
+  * A `{kind, reason}` tuple: it stores the kind and the message itself cast
+  to strings, which is useful for some errors like EXIT signals or custom error
   messages.
   """
   def report(exception, stacktrace, given_context \\ %{}) do
@@ -151,13 +151,12 @@ defmodule ErrorTracker do
   end
 
   @doc """
-  Sets current process context.
+  Sets the current process context.
 
-  By default it will merge the current context with the new one received, taking
-  preference the new context's contents over the existsing ones if any key
-  matches.
+  The given context will be merged into the current process context. The given context
+  may override existing keys from the current process context.
 
-  ## Depth of the context
+  ## Context depth
 
   You can store context on more than one level of depth, but take into account
   that the merge operation is performed on the first level.

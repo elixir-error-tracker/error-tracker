@@ -50,7 +50,7 @@ defmodule ErrorTracker.MixProject do
   end
 
   def description do
-    "An Elixir based built-in error tracking solution"
+    "An Elixir-based built-in error tracking solution"
   end
 
   defp groups_for_modules do
