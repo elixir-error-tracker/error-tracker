@@ -2,6 +2,13 @@
 
 En Elixir based built-in error tracking solution.
 
+<a href="guides/screenshots/error-dashboard.png">
+  <img src="guides/screenshots/error-dashboard.png" alt="ErrorTracker web dashboard" width="400">
+</a>
+<a href="guides/screenshots/error-detail.png">
+  <img src="guides/screenshots/error-detail.png" alt="ErrorTracker error detail" width="400">
+</a>
+
 ## Configuration
 
 Take a look at the [Getting Started](/guides/Getting%20Started.md) guide.
