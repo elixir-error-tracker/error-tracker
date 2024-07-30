@@ -43,7 +43,7 @@ Application.put_env(:error_tracker, ErrorTrackerDevWeb.Endpoint,
 
 # Setup up the ErrorTracker configuration
 Application.put_env(:error_tracker, :repo, ErrorTrackerDev.Repo)
-Application.put_env(:error_tracker, :application, :error_tracker_dev)
+Application.put_env(:error_tracker, :otp_app, :error_tracker_dev)
 Application.put_env(:error_tracker, :prefix, "private")
 
 defmodule ErrorTrackerDevWeb.PageController do
@@ -54,7 +54,7 @@ defmodule ErrorTrackerDevWeb.PageController do
   def call(conn, :index) do
     content(conn, """
     <h2>ErrorTracker Dev Server</h2>
-    <div><a href="/errors">Open ErrorTracker</a></div>
+    <div><a href="/dev/errors">Open ErrorTracker</a></div>
     <div><a href="/plug-exception">Generate Plug exception</a></div>
     <div><a href="/404">Generate Router 404</a></div>
     <div><a href="/noroute">Raise NoRouteError from a controller</a></div>
@@ -108,7 +108,9 @@ defmodule ErrorTrackerDevWeb.Router do
     get "/exception", ErrorTrackerDevWeb.PageController, :exception
     get "/exit", ErrorTrackerDevWeb.PageController, :exit
 
-    error_tracker_dashboard("/errors")
+    scope "/dev" do
+      error_tracker_dashboard("/errors")
+    end
   end
 end
 
@@ -143,8 +145,8 @@ end
 defmodule Migration0 do
   use Ecto.Migration
 
-  def up, do: ErrorTracker.Migrations.up(prefix: "private")
-  def down, do: ErrorTracker.Migrations.down(prefix: "private")
+  def up, do: ErrorTracker.Migration.up(prefix: "private")
+  def down, do: ErrorTracker.Migration.down(prefix: "private")
 end
 
 Application.put_env(:phoenix, :serve_endpoints, true)

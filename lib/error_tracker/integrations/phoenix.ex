@@ -1,11 +1,50 @@
 defmodule ErrorTracker.Integrations.Phoenix do
   @moduledoc """
-  The ErrorTracker integration with Phoenix applications.
+  Integration with Phoenix applications.
 
-  ## How it works
+  ## How to use it
 
-  It works using your application's Telemetry events, so you don't need to
-  modify anything on your application.
+  It is a plug and play integration: as long as you have Phoenix installed the
+  ErrorTracker will receive and store the errors as they are reported.
+
+  It also collects the exceptions that raise on your LiveView modules.
+
+  ### How it works
+
+  It works using Phoenix's Telemetry events, so you don't need to modify
+  anything on your application.
+
+  ### Errors on the Endpoint
+
+  This integration only catches errors that raise after the requests hits your
+  Router. That means that an exception on a plug defined on your Endpoint will
+  not be reported.
+
+  If you want to also catch those errors, we recommend you to set up the
+  `ErrorTracker.Integrations.Plug` integration too.
+
+  ### Default context
+
+  For errors that are reported when executing regular HTTP requests (the ones
+  that go to Controllers), the context added by default is the same that you
+  can find on the `ErrorTracker.Integrations.Plug` integration.
+
+  As for exceptions generated in LiveView processes, we collect some special
+  information on the context:
+
+  * `live_view.view`: the LiveView module itself,
+
+  * `live_view.uri`: last URI that loaded the LiveView (available when the
+  `handle_params` function is invoked).
+
+  * `live_view.params`: the params received by the LiveView (available when the
+  `handle_params` function is invoked).
+
+  * `live_view.event`: last event received by the LiveView (available when the
+  `handle_event` function is invoked).
+
+  * `live_view.event_params`: last event params received by the LiveView
+  (available when the `handle_event` function is invoked).
   """
 
   alias ErrorTracker.Integrations.Plug, as: PlugIntegration
@@ -24,12 +63,19 @@ defmodule ErrorTracker.Integrations.Phoenix do
     [:phoenix, :live_view, :render, :exception]
   ]
 
+  @doc """
+  Attachs to Phoenix's Telemetry events if the library is detected.
+
+  This function is usually called internally during the startup process so you
+  don't have to.
+  """
   def attach do
     if Application.spec(:phoenix) do
       :telemetry.attach_many(__MODULE__, @events, &__MODULE__.handle_event/4, :no_config)
     end
   end
 
+  @doc false
   def handle_event([:phoenix, :router_dispatch, :start], _measurements, metadata, :no_config) do
     PlugIntegration.set_context(metadata.conn)
   end

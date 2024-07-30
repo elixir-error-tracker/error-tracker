@@ -47,12 +47,17 @@
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td :if={@errors == []} colspan="4" class="text-center py-8 font-extralight">
+          No errors to show 🎉
+        </td>
+      </tr>
       <tr :for={error <- @errors} class="border-b bg-gray-800 border-gray-700">
         <th
           scope="row"
           class="px-4 py-4 font-medium text-white whitespace-nowrap text-ellipsis overflow-hidden"
         >
-          <.link navigate={error_path(assigns, error)}>
+          <.link navigate={error_path(@socket, error)}>
             (<%= sanitize_module(error.kind) %>) <%= error.reason %>
           </.link>
           <p class="font-normal text-gray-400">

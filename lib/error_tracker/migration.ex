@@ -1,4 +1,4 @@
-defmodule ErrorTracker.Migrations do
+defmodule ErrorTracker.Migration do
   @moduledoc """
   Create and modify the database tables for the ErrorTracker.
 
@@ -18,8 +18,8 @@ defmodule ErrorTracker.Migrations do
   defmodule MyApp.Repo.Migrations.AddErrorTracker do
     use Ecto.Migration
 
-    def up, do: ErrorTracker.Migrations.up()
-    def down, do: ErrorTracker.Migrations.down()
+    def up, do: ErrorTracker.Migration.up()
+    def down, do: ErrorTracker.Migration.down()
   end
   ```
 
@@ -44,8 +44,8 @@ defmodule ErrorTracker.Migrations do
   defmodule MyApp.Repo.Migrations.UpdateErrorTrackerToVN do
     use Ecto.Migration
 
-    def up, do: ErrorTracker.Migrations.up(version: N)
-    def down, do: ErrorTracker.Migrations.down(version: N)
+    def up, do: ErrorTracker.Migration.up(version: N)
+    def down, do: ErrorTracker.Migration.down(version: N)
   end
   ```
 
@@ -67,8 +67,8 @@ defmodule ErrorTracker.Migrations do
   defmodule MyApp.Repo.Migrations.AddErrorTracker do
     use Ecto.Migration
 
-    def up, do: ErrorTracker.Migrations.up(prefix: "custom_schema")
-    def down, do: ErrorTracker.Migrations.down(prefix: "custom_schema")
+    def up, do: ErrorTracker.Migration.up(prefix: "custom_schema")
+    def down, do: ErrorTracker.Migration.down(prefix: "custom_schema")
   end
   ```
 
@@ -80,8 +80,8 @@ defmodule ErrorTracker.Migrations do
   defmodule MyApp.Repo.Migrations.AddErrorTracker do
     use Ecto.Migration
 
-    def up, do: ErrorTracker.Migrations.up(prefix: "custom_schema", create_schema: false)
-    def down, do: ErrorTracker.Migrations.down(prefix: "custom_schema")
+    def up, do: ErrorTracker.Migration.up(prefix: "custom_schema", create_schema: false)
+    def down, do: ErrorTracker.Migration.down(prefix: "custom_schema")
   end
   ```
 
@@ -92,12 +92,6 @@ defmodule ErrorTracker.Migrations do
   config :error_tracker, :prefix, "custom_schema"
   ```
   """
-  defdelegate up(opts \\ []), to: ErrorTracker.Migration
-  defdelegate down(opts \\ []), to: ErrorTracker.Migration
-end
-
-defmodule ErrorTracker.Migration do
-  @moduledoc false
 
   @callback up(Keyword.t()) :: :ok
   @callback down(Keyword.t()) :: :ok
@@ -117,7 +111,7 @@ defmodule ErrorTracker.Migration do
 
   defp migrator do
     case ErrorTracker.Repo.__adapter__() do
-      Ecto.Adapters.Postgres -> ErrorTracker.Migrations.Postgres
+      Ecto.Adapters.Postgres -> ErrorTracker.Migration.Postgres
       adapter -> raise "ErrorTracker does not support #{adapter}"
     end
   end

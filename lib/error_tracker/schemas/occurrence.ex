@@ -1,6 +1,6 @@
 defmodule ErrorTracker.Occurrence do
   @moduledoc """
-  An Occurrence is a particular instance of an error in a given time.
+  Schema to store a particular instance of an error in a given time.
 
   It contains all the metadata available about the moment and the environment
   in which the exception raised.

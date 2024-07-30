@@ -7,7 +7,7 @@ defmodule ErrorTracker.Web.Layouts.Navbar do
     <nav class="border-gray-200 bg-gray-800" phx-click-away={JS.hide(to: "#navbar-main")}>
       <div class="container flex flex-wrap items-center justify-between mx-auto p-4">
         <.link
-          href={dashboard_path(assigns)}
+          href={dashboard_path(@socket)}
           class="self-center text-2xl font-semibold whitespace-nowrap text-white"
         >
           ErrorTracker

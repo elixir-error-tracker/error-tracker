@@ -13,7 +13,7 @@ defmodule ErrorTracker.Web.Live.Show do
   @impl Phoenix.LiveView
   def mount(%{"id" => id}, _session, socket) do
     error = Repo.get!(Error, id)
-    {:ok, assign(socket, error: error, app: Application.fetch_env!(:error_tracker, :application))}
+    {:ok, assign(socket, error: error, app: Application.fetch_env!(:error_tracker, :otp_app))}
   end
 
   @impl Phoenix.LiveView
@@ -51,7 +51,7 @@ defmodule ErrorTracker.Web.Live.Show do
   def handle_event("occurrence_navigation", %{"occurrence_id" => id}, socket) do
     {:noreply,
      push_patch(socket,
-       to: occurrence_path(socket.assigns, %Occurrence{error_id: socket.assigns.error.id, id: id})
+       to: occurrence_path(socket, %Occurrence{error_id: socket.assigns.error.id, id: id})
      )}
   end
 

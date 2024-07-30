@@ -1,4 +1,4 @@
-defmodule ErrorTracker.Migrations.Postgres do
+defmodule ErrorTracker.Migration.Postgres do
   @moduledoc false
 
   @behaviour ErrorTracker.Migration
