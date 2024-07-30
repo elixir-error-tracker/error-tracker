@@ -22,6 +22,9 @@ We have a `dev.exs` script that starts a development server.
 To run it together with an `IEx` console you can do:
 
 ```
+cp dev.local.example.exs dev.local.exs
+mix deps.get
+mix setup
 iex -S mix dev
 ```
 

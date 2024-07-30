@@ -26,6 +26,7 @@ error_tracker-*.tar
 /tmp/
 
 /assets/node_modules
+/assets/*.json
 
 /priv/static/app.js
 /priv/static/app.css
