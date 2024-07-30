@@ -2,3 +2,6 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+th a {
+    display: block;
+}
