@@ -45,7 +45,8 @@ defmodule ErrorTracker.MixProject do
       links: %{
         "GitHub" => "https://github.com/elixir-error-tracker/error-tracker"
       },
-      maintainers: ["Óscar de Arriba González", "Cristian Álvarez Belaustegui"]
+      maintainers: ["Óscar de Arriba González", "Cristian Álvarez Belaustegui"],
+      files: ~w(lib priv/static LICENSE mix.exs README.md .formatter.exs)
     ]
   end
 
