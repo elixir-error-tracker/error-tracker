@@ -35,7 +35,7 @@ jobs:
           --health-retries 5
     name: Elixir v${{ matrix.elixir }}, Erlang v${{ matrix.erlang }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: erlef/setup-beam@v1
         with:
@@ -43,7 +43,7 @@ jobs:
           elixir-version: ${{ matrix.elixir }}
 
       - name: Retrieve Dependencies Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: mix-cache
         with:
           path: |
@@ -54,14 +54,14 @@ jobs:
       - name: Install Mix Dependencies
         run: mix deps.get
 
-      - name: Check format
-        run: mix format --check-formatted
-
       - name: Check unused dependencies
         run: mix deps.unlock --check-unused
 
       - name: Compile dependencies
         run: mix deps.compile
+
+      - name: Check format
+        run: mix format --check-formatted
 
       - name: Check application compile warnings
         run: mix compile --force --warnings-as-errors
