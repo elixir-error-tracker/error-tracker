@@ -25,7 +25,6 @@ jobs:
           - pair:
               elixir: 1.17.0
               erlang: 27.0.0
-              lint: true
     services:
       db:
         image: postgres:15
@@ -56,14 +55,13 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.erlang }}-${{ matrix.elixir }}-mix-${{ hashFiles('**/mix.lock') }}
 
       - name: Install Mix Dependencies
-        run: mix deps.get --only test
+        run: mix deps.get
 
       - name: Check format
         run: mix format --check-formatted
 
       - name: Check unused dependencies
         run: mix deps.unlock --check-unused
-        if: ${{ matrix.lint }}
 
       - name: Compile dependencies
         run: mix deps.compile
@@ -73,7 +71,6 @@ jobs:
 
       - name: Check Credo warnings
         run: mix credo
-        if: ${{ matrix.lint }}
 
       - name: Run Tests
         run: mix test
