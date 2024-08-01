@@ -13,6 +13,7 @@ jobs:
   code_quality_and_tests:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         elixir: [1.15.0, 1.16.0, 1.17.0]
         erlang: [24.0.0, 27.0.0]
@@ -34,7 +35,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    name: Code quality & Tests - Elixir v${{ matrix.erlang }}, Erlang v${{ matrix.elixir }}
+    name: Code quality & Tests - Elixir v${{ matrix.elixir }}, Erlang v${{ matrix.erlang }}
     steps:
       - uses: actions/checkout@v2
 
