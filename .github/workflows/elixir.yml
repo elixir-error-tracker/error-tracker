@@ -15,15 +15,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        elixir: [1.15.0, 1.16.0, 1.17.0]
-        erlang: [24.0.0, 27.0.0]
-        exclude:
-          - elixir: 1.15.0
-            erlang: 27.0.0
-          - elixir: 1.16.0
-            erlang: 27.0.0
-          - elixir: 1.17.0
-            erlang: 24.0.0
+        include:
+          - pair:
+              elixir: 1.15.0
+              erlang: 24.0.0
+          - pair:
+              elixir: 1.16.0
+              erlang: 24.0.0
+          - pair:
+              elixir: 1.17.0
+              erlang: 27.0.0
+              lint: true
     services:
       db:
         image: postgres:15
@@ -61,6 +63,7 @@ jobs:
 
       - name: Check unused dependencies
         run: mix deps.unlock --check-unused
+        if: ${{ matrix.lint }}
 
       - name: Compile dependencies
         run: mix deps.compile
@@ -70,6 +73,7 @@ jobs:
 
       - name: Check Credo warnings
         run: mix credo
+        if: ${{ matrix.lint }}
 
       - name: Run Tests
         run: mix test
