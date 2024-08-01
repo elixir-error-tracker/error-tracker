@@ -1,6 +1,6 @@
 # ErrorTracker
 
-En Elixir based built-in error tracking solution.
+An Elixir based built-in error tracking solution.
 
 <a href="guides/screenshots/error-dashboard.png">
   <img src="guides/screenshots/error-dashboard.png" alt="ErrorTracker web dashboard" width="400">
@@ -27,7 +27,7 @@ iex -S mix dev
 
 ### Assets
 
-In ortder to participate in the development of this library, you may need to
+In order to participate in the development of this library, you may need to
 know how to compile the assets needed to use the Web UI.
 
 To do so, you need to first make a clean build:

@@ -64,7 +64,7 @@ defmodule ErrorTracker.Integrations.Phoenix do
   ]
 
   @doc """
-  Attachs to Phoenix's Telemetry events if the library is detected.
+  Attaches to Phoenix's Telemetry events if the library is detected.
 
   This function is usually called internally during the startup process so you
   don't have to.
