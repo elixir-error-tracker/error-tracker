@@ -1,100 +1,32 @@
-name: code-analysis
-on: push
+name: CI
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'guides/**'
+  pull_request:
+    paths-ignore:
+      - 'guides/**'
 env:
   MIX_ENV: test
-  ERLANG_VERSION: 26.0.2
-  ELIXIR_VERSION: 1.16.0
 
 jobs:
-  compile_deps:
+  code_quality_and_tests:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: erlef/setup-beam@v1
-        with:
-          otp-version: ${{ env.ERLANG_VERSION }}
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-      - name: Retrieve Dependencies Cache
-        uses: actions/cache@v2
-        id: mix-cache
-        with:
-          path: |
-            deps
-            _build
-          key: ${{ runner.os }}-${{ env.ERLANG_VERSION }}-${{ env.ELIXIR_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
-      - name: Install Mix Dependencies
-        run: |
-          mix local.rebar --force
-          mix local.hex --force
-          mix deps.get
-      - name: Compile dependencies
-        run: mix deps.compile
-
-  check_format:
-    needs: [compile_deps]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: erlef/setup-beam@v1
-        with:
-          otp-version: ${{ env.ERLANG_VERSION }}
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-      - name: Retrieve Dependencies Cache
-        uses: actions/cache@v2
-        id: mix-cache
-        with:
-          path: |
-            deps
-            _build
-          key: ${{ runner.os }}-${{ env.ERLANG_VERSION }}-${{ env.ELIXIR_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
-      - run: mix format --check-formatted
-
-  check_warnings:
-    needs: [compile_deps]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: erlef/setup-beam@v1
-        with:
-          otp-version: ${{ env.ERLANG_VERSION }}
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-      - name: Retrieve Mix Dependencies Cache
-        uses: actions/cache@v2
-        id: mix-cache
-        with:
-          path: |
-            deps
-            _build
-          key: ${{ runner.os }}-${{ env.ERLANG_VERSION }}-${{ env.ELIXIR_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
-      - name: Check application compile warnings
-        run: mix compile --force --warnings-as-errors
-
-  check_credo:
-    needs: [compile_deps]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: erlef/setup-beam@v1
-        with:
-          otp-version: ${{ env.ERLANG_VERSION }}
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-      - name: Retrieve Mix Dependencies Cache
-        uses: actions/cache@v2
-        id: mix-cache
-        with:
-          path: |
-            deps
-            _build
-          key: ${{ runner.os }}-${{ env.ERLANG_VERSION }}-${{ env.ELIXIR_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
-      - name: Check Credo warnings
-        run: mix credo
-
-  run_tests:
-    needs: [compile_deps]
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - elixir: 1.15.0
+            erlang: 24.0.0
+          - elixir: 1.16.0
+            erlang: 24.0.0
+          - elixir: 1.17.0
+            erlang: 27.0.0
     services:
       db:
-        image: postgres:11
+        image: postgres:15
         ports: ["5432:5432"]
         env:
           POSTGRES_PASSWORD: postgres
@@ -103,19 +35,41 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    name: Elixir v${{ matrix.elixir }}, Erlang v${{ matrix.erlang }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: ${{ env.ERLANG_VERSION }}
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-      - name: Retrieve Mix Dependencies Cache
-        uses: actions/cache@v2
+          otp-version: ${{ matrix.erlang }}
+          elixir-version: ${{ matrix.elixir }}
+
+      - name: Retrieve Dependencies Cache
+        uses: actions/cache@v4
         id: mix-cache
         with:
           path: |
             deps
             _build
-          key: ${{ runner.os }}-${{ env.ERLANG_VERSION }}-${{ env.ELIXIR_VERSION }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: ${{ runner.os }}-${{ matrix.erlang }}-${{ matrix.elixir }}-mix-${{ hashFiles('**/mix.lock') }}
+
+      - name: Install Mix Dependencies
+        run: mix deps.get
+
+      - name: Check unused dependencies
+        run: mix deps.unlock --check-unused
+
+      - name: Compile dependencies
+        run: mix deps.compile
+
+      - name: Check format
+        run: mix format --check-formatted
+
+      - name: Check application compile warnings
+        run: mix compile --force --warnings-as-errors
+
+      - name: Check Credo warnings
+        run: mix credo
+
       - name: Run Tests
         run: mix test
