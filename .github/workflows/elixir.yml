@@ -16,15 +16,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - pair:
-              elixir: 1.15.0
-              erlang: 24.0.0
-          - pair:
-              elixir: 1.16.0
-              erlang: 24.0.0
-          - pair:
-              elixir: 1.17.0
-              erlang: 27.0.0
+          - elixir: 1.15.0
+            erlang: 24.0.0
+          - elixir: 1.16.0
+            erlang: 24.0.0
+          - elixir: 1.17.0
+            erlang: 27.0.0
     services:
       db:
         image: postgres:15
