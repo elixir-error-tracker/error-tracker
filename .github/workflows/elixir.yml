@@ -1,4 +1,4 @@
-name: code-analysis
+name: CI
 on:
   push:
     paths-ignore:
@@ -34,6 +34,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    name: Code quality & Tests - Elixir v${{ matrix.erlang }}, Erlang v${{ matrix.elixir }}
     steps:
       - uses: actions/checkout@v2
 
