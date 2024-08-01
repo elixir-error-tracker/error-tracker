@@ -36,7 +36,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    name: Code quality & Tests - Elixir v${{ matrix.elixir }}, Erlang v${{ matrix.erlang }}
+    name: Elixir v${{ matrix.elixir }}, Erlang v${{ matrix.erlang }}
     steps:
       - uses: actions/checkout@v2
 
