@@ -6,13 +6,9 @@ defmodule ErrorTracker.Application do
   def start(_type, _args) do
     children = []
 
-    attach_handlers()
+    if Application.spec(:phoenix), do: ErrorTracker.Integrations.Phoenix.attach()
+    if Application.spec(:oban), do: ErrorTracker.Integrations.Oban.attach()
 
     Supervisor.start_link(children, strategy: :one_for_one, name: __MODULE__)
-  end
-
-  defp attach_handlers do
-    ErrorTracker.Integrations.Oban.attach()
-    ErrorTracker.Integrations.Phoenix.attach()
   end
 end
