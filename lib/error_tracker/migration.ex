@@ -112,6 +112,7 @@ defmodule ErrorTracker.Migration do
   defp migrator do
     case ErrorTracker.Repo.__adapter__() do
       Ecto.Adapters.Postgres -> ErrorTracker.Migration.Postgres
+      Ecto.Adapters.SQLite3 -> ErrorTracker.Migration.SQLite
       adapter -> raise "ErrorTracker does not support #{adapter}"
     end
   end
