@@ -6,15 +6,13 @@ defmodule ErrorTracker.Web.Layouts do
 
   @default_docket_config %{path: "/live", transport: :websocket}
 
+  @css :code.priv_dir(:error_tracker) |> Path.join("static/app.css") |> File.read!()
+  @js :code.priv_dir(:error_tracker) |> Path.join("static/app.js") |> File.read!()
+
   embed_templates "layouts/*"
 
-  def get_content(:css) do
-    :code.priv_dir(:error_tracker) |> Path.join("static/app.css") |> File.read!()
-  end
-
-  def get_content(:js) do
-    :code.priv_dir(:error_tracker) |> Path.join("static/app.js") |> File.read!()
-  end
+  def get_content(:css), do: @css
+  def get_content(:js), do: @js
 
   def get_socket_config(key) do
     default = Map.get(@default_docket_config, key)
