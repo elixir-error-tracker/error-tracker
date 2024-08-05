@@ -31,3 +31,4 @@ error_tracker-*.tar
 /priv/static/app.css
 
 dev.local.exs
+dev.db*
