@@ -4,7 +4,7 @@ This guide is an introduction to ErrorTracker, an Elixir-based built-in error tr
 
 In this guide we will learn how to install ErrorTracker in an Elixir project so you can start reporting errors as soon as possible. We will also cover more advanced topics such as how to report custom errors and how to add extra context to reported errors.
 
-**This guide requires you to have set up Ecto with PostgreSQL beforehand.**
+**This guide requires you to have set up Ecto with PostgreSQL or SQLite3 beforehand.**
 
 ## Installing the ErrorTracker as a dependency
 
