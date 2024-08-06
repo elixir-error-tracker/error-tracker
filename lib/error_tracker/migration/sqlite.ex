@@ -7,8 +7,8 @@ defmodule ErrorTracker.Migration.SQLite do
 
   import Ecto.Query
 
-  @initial_version 1
-  @current_version 1
+  @initial_version 2
+  @current_version 2
 
   @impl ErrorTracker.Migration
   def up(opts) do

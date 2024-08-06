@@ -1,4 +1,4 @@
-defmodule ErrorTracker.Migration.SQLite.V01 do
+defmodule ErrorTracker.Migration.SQLite.V02 do
   @moduledoc false
 
   use Ecto.Migration
@@ -39,5 +39,6 @@ defmodule ErrorTracker.Migration.SQLite.V01 do
   def down do
     drop table(:error_tracker_occurrences)
     drop table(:error_tracker_errors)
+    drop table(:error_tracker_meta)
   end
 end
