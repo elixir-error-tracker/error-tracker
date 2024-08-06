@@ -27,7 +27,5 @@ error_tracker-*.tar
 
 /assets/node_modules
 
-/priv/static/app.js
-/priv/static/app.css
 
 dev.local.exs
