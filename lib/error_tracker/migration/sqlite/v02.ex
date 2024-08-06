@@ -5,7 +5,7 @@ defmodule ErrorTracker.Migration.SQLite.V02 do
 
   def up do
     create table(:error_tracker_meta, primary_key: [name: :key, type: :string]) do
-      add :value, :string
+      add :value, :string, null: false
     end
 
     create table(:error_tracker_errors, primary_key: [name: :id, type: :bigserial]) do
