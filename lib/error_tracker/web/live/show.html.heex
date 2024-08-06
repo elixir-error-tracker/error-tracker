@@ -48,7 +48,7 @@
                 <td class="px-2 align-top"><pre>(<%= line.application || @app %>)</pre></td>
                 <td>
                   <pre><%= "#{sanitize_module(line.module)}.#{line.function}/#{line.arity}" %>
-                <%= "#{line.file}.#{line.line}" %></pre>
+                <%= if line.line, do: "#{line.file}:#{line.line}", else: "nofile" %></pre>
                 </td>
               </tr>
             </tbody>
