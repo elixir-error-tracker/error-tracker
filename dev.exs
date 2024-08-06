@@ -109,7 +109,7 @@ defmodule ErrorTrackerDevWeb.Router do
     get "/exit", ErrorTrackerDevWeb.PageController, :exit
 
     scope "/dev" do
-      error_tracker_dashboard("/errors")
+      error_tracker_dashboard "/errors"
     end
   end
 end
