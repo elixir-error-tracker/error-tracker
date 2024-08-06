@@ -27,7 +27,7 @@ defmodule ErrorTracker.Stacktrace do
           application: to_string(application),
           module: module |> to_string() |> String.replace_prefix("Elixir.", ""),
           function: to_string(function),
-          arity: arity,
+          arity: normalize_arity(arity),
           file: to_string(opts[:file]),
           line: opts[:line]
         }
@@ -38,6 +38,9 @@ defmodule ErrorTracker.Stacktrace do
     |> Ecto.Changeset.cast_embed(:lines, with: &line_changeset/2)
     |> Ecto.Changeset.apply_action(:new)
   end
+
+  defp normalize_arity(a) when is_integer(a), do: a
+  defp normalize_arity(a) when is_list(a), do: length(a)
 
   defp line_changeset(line = %__MODULE__.Line{}, params) do
     Ecto.Changeset.cast(line, params, ~w[application module function arity file line]a)
