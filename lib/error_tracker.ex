@@ -102,8 +102,6 @@ defmodule ErrorTracker do
   messages.
   """
   def report(exception, stacktrace, given_context \\ %{}) do
-    IO.inspect(exception)
-
     {kind, reason} = normalize_exception(exception, stacktrace)
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
     {:ok, error} = Error.new(kind, reason, stacktrace)
