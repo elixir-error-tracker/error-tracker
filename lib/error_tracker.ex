@@ -66,6 +66,7 @@ defmodule ErrorTracker do
 
   alias ErrorTracker.Error
   alias ErrorTracker.Repo
+  alias ErrorTracker.Telemetry
 
   @doc """
   Report an exception to be stored.
@@ -110,9 +111,14 @@ defmodule ErrorTracker do
         conflict_target: :fingerprint
       )
 
-    error
-    |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context, reason: reason)
-    |> Repo.insert!()
+    occurrence =
+      error
+      |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context, reason: reason)
+      |> Repo.insert!()
+
+    Telemetry.execute_new_occurrence(occurrence)
+
+    occurrence
   end
 
   @doc """
