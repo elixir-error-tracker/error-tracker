@@ -4,7 +4,7 @@ defmodule ErrorTracker.Web.Layouts do
 
   alias ErrorTracker.Web.Layouts.Navbar
 
-  @default_docket_config %{path: "/live", transport: :websocket}
+  @default_socket_config %{path: "/live", transport: :websocket}
 
   @css :code.priv_dir(:error_tracker) |> Path.join("static/app.css") |> File.read!()
   @js :code.priv_dir(:error_tracker) |> Path.join("static/app.js") |> File.read!()
@@ -15,7 +15,7 @@ defmodule ErrorTracker.Web.Layouts do
   def get_content(:js), do: @js
 
   def get_socket_config(key) do
-    default = Map.get(@default_docket_config, key)
+    default = Map.get(@default_socket_config, key)
     config = Application.get_env(:error_tracker, :live_view_socket, [])
     Keyword.get(config, key, default)
   end
