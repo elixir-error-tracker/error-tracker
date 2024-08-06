@@ -6,6 +6,12 @@ defmodule ErrorTracker.Migration.Postgres.V01 do
   import Ecto.Query
 
   def up(opts = %{create_schema: create_schema, prefix: prefix}) do
+    # Prior to V02 the migration version was stored in table comments.
+    # As of now the migration version is stored in a new table (created in V02).
+    #
+    # However, systems migrating to V02 may think they need to run V01 too, so
+    # we need to check for the legacy version storage to avoid running this
+    # migration twice.
     if current_version_legacy(opts) == 0 do
       if create_schema, do: execute("CREATE SCHEMA IF NOT EXISTS #{prefix}")
 
