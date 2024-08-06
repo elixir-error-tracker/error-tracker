@@ -42,13 +42,12 @@ defmodule ErrorTracker.Migration.SQLite do
         where: meta.key == "migration_version",
         select: meta.value
 
-    case repo.one(query, log: false) do
-      version when is_binary(version) -> String.to_integer(version)
+    with true <- meta_table_exists?(repo),
+         version when is_binary(version) <- repo.one(query, log: false) do
+      String.to_integer(version)
+    else
       _other -> 0
     end
-  rescue
-    # We get a Exqlite.Error error if the table doesn't exist yet - initial migration
-    Exqlite.Error -> 0
   end
 
   defp change(versions_range, direction) do
@@ -73,5 +72,9 @@ defmodule ErrorTracker.Migration.SQLite do
 
   defp with_defaults(opts, version) do
     Enum.into(opts, %{version: version})
+  end
+
+  defp meta_table_exists?(repo) do
+    Ecto.Adapters.SQL.table_exists?(repo, "error_tracker_meta", log: false)
   end
 end

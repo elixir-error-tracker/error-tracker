@@ -8,7 +8,7 @@ defmodule ErrorTracker.Migration.Postgres do
   import Ecto.Query
 
   @initial_version 1
-  @current_version 1
+  @current_version 2
   @default_prefix "public"
 
   @impl ErrorTracker.Migration
@@ -44,17 +44,14 @@ defmodule ErrorTracker.Migration.Postgres do
     repo = Map.get_lazy(opts, :repo, fn -> repo() end)
 
     query =
-      from pg_class in "pg_class",
-        left_join: pg_description in "pg_description",
-        on: pg_description.objoid == pg_class.oid,
-        left_join: pg_namespace in "pg_namespace",
-        on: pg_namespace.oid == pg_class.relnamespace,
-        where: pg_class.relname == "error_tracker_errors",
-        where: pg_namespace.nspname == ^opts.escaped_prefix,
-        select: pg_description.description
+      from meta in "error_tracker_meta",
+        where: meta.key == "migration_version",
+        select: meta.value
 
-    case repo.one(query, log: false) do
-      version when is_binary(version) -> String.to_integer(version)
+    with true <- meta_table_exists?(repo, opts),
+         version when is_binary(version) <- repo.one(query, log: false, prefix: opts[:prefix]) do
+      String.to_integer(version)
+    else
       _other -> 0
     end
   end
@@ -73,11 +70,13 @@ defmodule ErrorTracker.Migration.Postgres do
     end
   end
 
+  defp record_version(_opts, 0), do: :ok
+
   defp record_version(%{prefix: prefix}, version) do
-    case version do
-      0 -> :ok
-      _other -> execute "COMMENT ON TABLE #{inspect(prefix)}.error_tracker_errors IS '#{version}'"
-    end
+    execute """
+    INSERT INTO #{prefix}.error_tracker_meta (key, value) VALUES ('migration_version', '#{version}')
+    ON CONFLICT (key) DO UPDATE SET value = '#{version}'
+    """
   end
 
   defp with_defaults(opts, version) do
@@ -86,5 +85,16 @@ defmodule ErrorTracker.Migration.Postgres do
     opts
     |> Map.put_new(:create_schema, opts.prefix != @default_prefix)
     |> Map.put_new(:escaped_prefix, String.replace(opts.prefix, "'", "\\'"))
+  end
+
+  defp meta_table_exists?(repo, opts) do
+    Ecto.Adapters.SQL.query!(
+      repo,
+      "SELECT TRUE FROM information_schema.tables WHERE table_name = 'error_tracker_meta' AND table_schema = $1",
+      [opts.prefix],
+      log: false
+    )
+    |> Map.get(:rows)
+    |> Enum.any?()
   end
 end
