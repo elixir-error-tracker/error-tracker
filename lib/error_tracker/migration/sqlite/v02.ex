@@ -3,7 +3,7 @@ defmodule ErrorTracker.Migration.SQLite.V02 do
 
   use Ecto.Migration
 
-  def up do
+  def up(_opts) do
     create table(:error_tracker_meta, primary_key: [name: :key, type: :string]) do
       add :value, :string, null: false
     end
@@ -36,7 +36,7 @@ defmodule ErrorTracker.Migration.SQLite.V02 do
     create index(:error_tracker_occurrences, [:error_id])
   end
 
-  def down do
+  def down(_opts) do
     drop table(:error_tracker_occurrences)
     drop table(:error_tracker_errors)
     drop table(:error_tracker_meta)
