@@ -94,12 +94,8 @@ defmodule ErrorTracker do
   * An exception struct: the module of the exception is stored along with
   the exception message.
 
-  * A `{kind, exception}` tuple in which the `exception` is a struct: it
-  behaves the same as when passing just the exception struct.
-
-  * A `{kind, reason}` tuple: it stores the kind and the message itself cast
-  to strings, which is useful for some errors like EXIT signals or custom error
-  messages.
+  * A `{kind, exception}` tuple in which case the information is converted to
+  an Elixir exception (if possible) and stored.
   """
   def report(exception, stacktrace, given_context \\ %{}) do
     {kind, reason} = normalize_exception(exception, stacktrace)
