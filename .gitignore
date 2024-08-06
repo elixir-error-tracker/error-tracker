@@ -29,3 +29,4 @@ error_tracker-*.tar
 
 
 dev.local.exs
+dev.db*

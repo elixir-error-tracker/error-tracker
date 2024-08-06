@@ -55,7 +55,7 @@ defmodule ErrorTracker.Migration do
   mix ecto.migrate
   ```
 
-  ## Custom prefix
+  ## Custom prefix - PostgreSQL only
 
   ErrorTracker supports namespacing its own tables using PostgreSQL schemas, also known
   as "prefixes" in Ecto. With prefixes your error tables can reside outside of your primary
@@ -112,6 +112,7 @@ defmodule ErrorTracker.Migration do
   defp migrator do
     case ErrorTracker.Repo.__adapter__() do
       Ecto.Adapters.Postgres -> ErrorTracker.Migration.Postgres
+      Ecto.Adapters.SQLite3 -> ErrorTracker.Migration.SQLite
       adapter -> raise "ErrorTracker does not support #{adapter}"
     end
   end

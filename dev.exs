@@ -13,11 +13,18 @@ Logger.configure(level: :debug)
 Code.require_file("dev.local.exs")
 
 # Prepare the repo
+
+adapter =
+  case Application.get_env(:error_tracker, :ecto_adapter) do
+    :postgres -> Ecto.Adapters.Postgres
+    :sqlite3 -> Ecto.Adapters.SQLite3
+  end
+
 defmodule ErrorTrackerDev.Repo do
-  use Ecto.Repo, otp_app: :error_tracker, adapter: Ecto.Adapters.Postgres
+  use Ecto.Repo, otp_app: :error_tracker, adapter: adapter
 end
 
-_ = Ecto.Adapters.Postgres.storage_up(ErrorTrackerDev.Repo.config())
+_ = adapter.storage_up(ErrorTrackerDev.Repo.config())
 
 # Configures the endpoint
 Application.put_env(:error_tracker, ErrorTrackerDevWeb.Endpoint,

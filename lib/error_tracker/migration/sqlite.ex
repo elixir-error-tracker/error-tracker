@@ -1,4 +1,4 @@
-defmodule ErrorTracker.Migration.Postgres do
+defmodule ErrorTracker.Migration.SQLite do
   @moduledoc false
 
   @behaviour ErrorTracker.Migration
@@ -6,9 +6,8 @@ defmodule ErrorTracker.Migration.Postgres do
   use Ecto.Migration
   alias ErrorTracker.Migration.SQLMigrator
 
-  @initial_version 1
+  @initial_version 2
   @current_version 2
-  @default_prefix "public"
 
   @impl ErrorTracker.Migration
   def up(opts) do
@@ -29,10 +28,6 @@ defmodule ErrorTracker.Migration.Postgres do
   end
 
   defp with_defaults(opts, version) do
-    opts = Enum.into(opts, %{prefix: @default_prefix, version: version})
-
-    opts
-    |> Map.put_new(:create_schema, opts.prefix != @default_prefix)
-    |> Map.put_new(:escaped_prefix, String.replace(opts.prefix, "'", "\\'"))
+    Enum.into(opts, %{version: version})
   end
 end

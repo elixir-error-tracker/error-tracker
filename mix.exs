@@ -83,7 +83,8 @@ defmodule ErrorTracker.MixProject do
       {:phoenix_live_view, "~> 0.19 or ~> 1.0"},
       {:phoenix_ecto, "~> 4.6"},
       {:plug, "~> 1.10"},
-      {:postgrex, ">= 0.0.0"},
+      {:postgrex, ">= 0.0.0", optional: true},
+      {:ecto_sqlite3, ">= 0.0.0", optional: true},
       # Dev dependencies
       {:bun, "~> 1.3", only: :dev},
       {:credo, "~> 1.7", only: [:dev, :test]},

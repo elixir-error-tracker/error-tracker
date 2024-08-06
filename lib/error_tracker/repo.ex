@@ -28,10 +28,20 @@ defmodule ErrorTracker.Repo do
   def __adapter__, do: repo().__adapter__()
 
   defp dispatch(action, args, opts) do
-    defaults = [prefix: Application.get_env(:error_tracker, :prefix, "public")]
+    repo = repo()
+
+    defaults =
+      case repo.__adapter__() do
+        Ecto.Adapter.Postgresql ->
+          [prefix: Application.get_env(:error_tracker, :prefix, "public")]
+
+        _ ->
+          []
+      end
+
     opts_w_defaults = Keyword.merge(defaults, opts)
 
-    apply(repo(), action, args ++ [opts_w_defaults])
+    apply(repo, action, args ++ [opts_w_defaults])
   end
 
   defp repo do
