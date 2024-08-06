@@ -15,6 +15,13 @@ defmodule ErrorTracker.Migration.Postgres.V01 do
     if current_version_legacy(opts) == 0 do
       if create_schema, do: execute("CREATE SCHEMA IF NOT EXISTS #{prefix}")
 
+      create table(:error_tracker_meta,
+               primary_key: [name: :key, type: :string],
+               prefix: prefix
+             ) do
+        add :value, :string, null: false
+      end
+
       create table(:error_tracker_errors,
                primary_key: [name: :id, type: :bigserial],
                prefix: prefix
@@ -56,6 +63,7 @@ defmodule ErrorTracker.Migration.Postgres.V01 do
   def down(%{prefix: prefix}) do
     drop table(:error_tracker_occurrences, prefix: prefix)
     drop table(:error_tracker_errors, prefix: prefix)
+    drop_if_exists table(:error_tracker_meta, prefix: prefix)
   end
 
   def current_version_legacy(opts) do
