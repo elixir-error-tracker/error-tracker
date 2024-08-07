@@ -64,8 +64,11 @@ defmodule ErrorTracker do
   """
   @type context :: %{String.t() => any()}
 
+  import Ecto.Query
+
   alias ErrorTracker.Error
   alias ErrorTracker.Repo
+  alias ErrorTracker.Telemetry
 
   @doc """
   Report an exception to be stored.
@@ -104,15 +107,9 @@ defmodule ErrorTracker do
 
     context = Map.merge(get_context(), given_context)
 
-    error =
-      Repo.insert!(error,
-        on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
-        conflict_target: :fingerprint
-      )
+    {_error, occurrence} = upsert_error!(error, stacktrace, context, reason)
 
-    error
-    |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context, reason: reason)
-    |> Repo.insert!()
+    occurrence
   end
 
   @doc """
@@ -124,7 +121,10 @@ defmodule ErrorTracker do
   def resolve(error = %Error{status: :unresolved}) do
     changeset = Ecto.Changeset.change(error, status: :resolved)
 
-    Repo.update(changeset)
+    with {:ok, updated_error} <- Repo.update(changeset) do
+      Telemetry.resolved_error(updated_error)
+      {:ok, updated_error}
+    end
   end
 
   @doc """
@@ -133,7 +133,10 @@ defmodule ErrorTracker do
   def unresolve(error = %Error{status: :resolved}) do
     changeset = Ecto.Changeset.change(error, status: :unresolved)
 
-    Repo.update(changeset)
+    with {:ok, updated_error} <- Repo.update(changeset) do
+      Telemetry.unresolved_error(updated_error)
+      {:ok, updated_error}
+    end
   end
 
   @doc """
@@ -179,5 +182,35 @@ defmodule ErrorTracker do
       other ->
         {to_string(kind), to_string(other)}
     end
+  end
+
+  defp upsert_error!(error, stacktrace, context, reason) do
+    existing_status =
+      Repo.one(from e in Error, where: [fingerprint: ^error.fingerprint], select: e.status)
+
+    error =
+      Repo.insert!(error,
+        on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
+        conflict_target: :fingerprint
+      )
+
+    occurrence =
+      error
+      |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context, reason: reason)
+      |> Repo.insert!()
+
+    # If the error existed and was marked as resolved before this exception,
+    # sent a Telemetry event
+    # If it is a new error, sent a Telemetry event
+    case existing_status do
+      :resolved -> Telemetry.unresolved_error(error)
+      :unresolved -> :noop
+      nil -> Telemetry.new_error(error)
+    end
+
+    # Always send a new occurrence Telemetry event
+    Telemetry.new_occurrence(occurrence)
+
+    {error, occurrence}
   end
 end
