@@ -23,13 +23,13 @@ defmodule ErrorTrackerTest do
       %Occurrence{error: error = %Error{}} =
         report_error(fn -> 1 + string_var end)
 
-      dbg(error)
-
       assert error.kind == to_string(ArithmeticError)
       assert error.reason == "bad argument in arithmetic expression"
 
-      unless dbg(Version.compare("1.7.0", System.version())) == :gt do
-        # This only works from Elixir 1.7.0
+      # Elixir 1.7.0 reports this errors differntly than previous versions
+      if Version.compare(System.version(), "1.7.0") == :lt do
+        assert error.source_line =~ @relative_file_path
+      else
         assert error.source_function == "erlang.+/2"
         assert error.source_line == "nofile"
       end
