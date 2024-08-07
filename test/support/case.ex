@@ -1,4 +1,5 @@
 defmodule ErrorTracker.Test.Case do
+  @moduledoc false
   use ExUnit.CaseTemplate
 
   using do
