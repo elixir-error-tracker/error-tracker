@@ -173,7 +173,7 @@ defmodule ErrorTracker do
 
   defp normalize_exception({kind, ex}, stacktrace) do
     case Exception.normalize(kind, ex, stacktrace) do
-      %struct{} ->
+      %struct{} = ex ->
         {to_string(struct), Exception.message(ex)}
 
       other ->
