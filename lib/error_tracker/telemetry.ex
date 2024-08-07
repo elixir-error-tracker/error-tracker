@@ -18,7 +18,7 @@ defmodule ErrorTracker.Telemetry do
   @doc false
   def resolved_error(error) do
     measurements = %{system_time: System.system_time()}
-    :telemetry.execute([:error_tracker, :unresolved_error], measurements, %{error: error})
+    :telemetry.execute([:error_tracker, :resolved_error], measurements, %{error: error})
   end
 
   @doc false
