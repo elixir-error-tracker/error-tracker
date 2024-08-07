@@ -5,9 +5,6 @@ defmodule ErrorTracker.Telemetry do
   ErrorTracker emits some events to allow third parties to receive information
   of errors and occurrences stored.
 
-  We emit four type of events which allows to track the lifetime of errors of
-  your application.
-
   ### Error events
 
   Those occur during the lifetime of an error:
