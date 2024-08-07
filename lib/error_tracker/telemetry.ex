@@ -7,7 +7,7 @@ defmodule ErrorTracker.Telemetry do
 
   ### Error events
 
-  Those occur during the lifetime of an error:
+  Those occur during the life cycle of an error:
 
   * `[:error_tracker, :error, :new]`: is emitted when a new error is stored and
   no previous occurrences were known.
