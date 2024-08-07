@@ -17,8 +17,8 @@ defmodule ErrorTracker.Repo do
     dispatch(:get!, [queryable, id], opts)
   end
 
-  def get_by(queryable, filters, opts \\ []) do
-    dispatch(:get_by, [queryable, filters], opts)
+  def one(queryable, opts \\ []) do
+    dispatch(:one, [queryable], opts)
   end
 
   def all(queryable, opts \\ []) do

@@ -64,6 +64,8 @@ defmodule ErrorTracker do
   """
   @type context :: %{String.t() => any()}
 
+  import Ecto.Query
+
   alias ErrorTracker.Error
   alias ErrorTracker.Repo
   alias ErrorTracker.Telemetry
@@ -183,7 +185,8 @@ defmodule ErrorTracker do
   end
 
   defp upsert_error!(error, stacktrace, context, reason) do
-    existing_error = Repo.get_by(Error, fingerprint: error.fingerprint)
+    existing_status =
+      Repo.one(from e in Error, where: [fingerprint: ^error.fingerprint], select: e.status)
 
     error =
       Repo.insert!(error,
@@ -198,12 +201,12 @@ defmodule ErrorTracker do
 
     # If the error existed and was marked as resolved before this exception,
     # sent a Telemetry event
-    if existing_error && existing_error.status == :resolved,
-      do: Telemetry.unresolved_error(error)
-
     # If it is a new error, sent a Telemetry event
-    if is_nil(existing_error),
-      do: Telemetry.new_error(error)
+    case existing_status do
+      :resolved -> Telemetry.unresolved_error(error)
+      :unresolved -> :noop
+      nil -> Telemetry.new_error(error)
+    end
 
     # Always send a new occurrence Telemetry event
     Telemetry.new_occurrence(occurrence)
