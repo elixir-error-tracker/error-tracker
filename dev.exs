@@ -9,11 +9,10 @@
 #######################################
 Logger.configure(level: :debug)
 
-# Get local configuration
-Code.require_file("dev.local.exs")
+# Get configuration
+Config.Reader.read!("config/config.exs", env: :dev)
 
 # Prepare the repo
-
 adapter =
   case Application.get_env(:error_tracker, :ecto_adapter) do
     :postgres -> Ecto.Adapters.Postgres
