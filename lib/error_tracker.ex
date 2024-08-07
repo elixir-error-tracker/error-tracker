@@ -105,18 +105,7 @@ defmodule ErrorTracker do
 
     context = Map.merge(get_context(), given_context)
 
-    error =
-      Repo.insert!(error,
-        on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
-        conflict_target: :fingerprint
-      )
-
-    occurrence =
-      error
-      |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context, reason: reason)
-      |> Repo.insert!()
-
-    Telemetry.execute_new_occurrence(occurrence)
+    {_error, occurrence} = upsert_error!(error, stacktrace, context, reason)
 
     occurrence
   end
@@ -185,5 +174,34 @@ defmodule ErrorTracker do
       other ->
         {to_string(kind), to_string(other)}
     end
+  end
+
+  defp upsert_error!(error, stacktrace, context, reason) do
+    existing_error = Repo.get_by(Error, fingerprint: error.fingerprint)
+
+    error =
+      Repo.insert!(error,
+        on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
+        conflict_target: :fingerprint
+      )
+
+    occurrence =
+      error
+      |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context, reason: reason)
+      |> Repo.insert!()
+
+    # If the error existed and was marked as resolved before this exception,
+    # sent a Telemetry event
+    if existing_error && existing_error.status == :resolved,
+      do: Telemetry.unresolved_error(error)
+
+    # If it is a new error, sent a Telemetry event
+    if is_nil(existing_error),
+      do: Telemetry.new_error(error)
+
+    # Always send a new occurrence Telemetry event
+    Telemetry.new_occurrence(occurrence)
+
+    {error, occurrence}
   end
 end
