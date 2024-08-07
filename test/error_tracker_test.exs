@@ -26,12 +26,11 @@ defmodule ErrorTrackerTest do
       assert error.kind == to_string(ArithmeticError)
       assert error.reason == "bad argument in arithmetic expression"
 
-      unless Version.compare("1.7.0", System.version()) do
+      unless Version.compare("1.7.0", System.version()) == :gt do
         # This only works from Elixir 1.7.0
         assert error.source_function == "erlang.+/2"
+        assert error.source_line == "nofile"
       end
-
-      assert error.source_line == "nofile"
     end
 
     test "reports undefined function errors" do
