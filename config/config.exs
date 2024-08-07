@@ -21,13 +21,4 @@ if config_env() == :dev do
     ]
 end
 
-if config_env() == :test do
-  config :error_tracker, ErrorTracker.Test.Repo,
-    url: "ecto://crbelaus:@127.0.0.1/error_tracker_test",
-    pool: Ecto.Adapters.SQL.Sandbox,
-    log: false
-
-  config :error_tracker, ecto_repos: [ErrorTracker.Test.Repo]
-
-  config :error_tracker, repo: ErrorTracker.Test.Repo, otp_app: :error_tracker
-end
+import_config "#{config_env()}.exs"
