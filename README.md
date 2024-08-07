@@ -25,6 +25,13 @@ To run it together with an `IEx` console you can do:
 iex -S mix dev
 ```
 
+If this is the first time that you launch the dev script you may need to generate the configuration files and adapt their content to your local environment:
+
+```
+cp config/dev.example.exs config/dev.exs
+cp config/test.example.exs config/test.exs
+```
+
 ### Assets
 
 In order to participate in the development of this library, you may need to
