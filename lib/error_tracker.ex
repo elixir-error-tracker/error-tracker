@@ -94,26 +94,11 @@ defmodule ErrorTracker do
   * An exception struct: the module of the exception is stored along with
   the exception message.
 
-  * A `{kind, exception}` tuple in which the `exception` is a struct: it
-  behaves the same as when passing just the exception struct.
-
-  * A `{kind, reason}` tuple: it stores the kind and the message itself cast
-  to strings, which is useful for some errors like EXIT signals or custom error
-  messages.
+  * A `{kind, exception}` tuple in which case the information is converted to
+  an Elixir exception (if possible) and stored.
   """
   def report(exception, stacktrace, given_context \\ %{}) do
-    {kind, reason} =
-      case exception do
-        %struct{} = ex when is_exception(ex) ->
-          {to_string(struct), Exception.message(ex)}
-
-        {_kind, %struct{} = ex} when is_exception(ex) ->
-          {to_string(struct), Exception.message(ex)}
-
-        {kind, ex} ->
-          {to_string(kind), to_string(ex)}
-      end
-
+    {kind, reason} = normalize_exception(exception, stacktrace)
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
     {:ok, error} = Error.new(kind, reason, stacktrace)
 
@@ -180,5 +165,19 @@ defmodule ErrorTracker do
   @spec get_context() :: context()
   def get_context do
     Process.get(:error_tracker_context, %{})
+  end
+
+  defp normalize_exception(%struct{} = ex, _stacktrace) when is_exception(ex) do
+    {to_string(struct), Exception.message(ex)}
+  end
+
+  defp normalize_exception({kind, ex}, stacktrace) do
+    case Exception.normalize(kind, ex, stacktrace) do
+      %struct{} = ex ->
+        {to_string(struct), Exception.message(ex)}
+
+      other ->
+        {to_string(kind), to_string(other)}
+    end
   end
 end

@@ -29,10 +29,11 @@ defmodule ErrorTracker.Error do
   @doc false
   def new(kind, reason, stacktrace = %ErrorTracker.Stacktrace{}) do
     source = ErrorTracker.Stacktrace.source(stacktrace)
+    source_line = if source.file, do: "#{source.file}:#{source.line}", else: "nofile"
 
     params = [
       kind: to_string(kind),
-      source_line: "#{source.file}:#{source.line}",
+      source_line: source_line,
       source_function: "#{source.module}.#{source.function}/#{source.arity}"
     ]
 
