@@ -119,7 +119,10 @@ defmodule ErrorTracker do
   def resolve(error = %Error{status: :unresolved}) do
     changeset = Ecto.Changeset.change(error, status: :resolved)
 
-    Repo.update(changeset)
+    with {:ok, updated_error} <- Repo.update(changeset) do
+      Telemetry.resolved_error(updated_error)
+      {:ok, updated_error}
+    end
   end
 
   @doc """
@@ -128,7 +131,10 @@ defmodule ErrorTracker do
   def unresolve(error = %Error{status: :resolved}) do
     changeset = Ecto.Changeset.change(error, status: :unresolved)
 
-    Repo.update(changeset)
+    with {:ok, updated_error} <- Repo.update(changeset) do
+      Telemetry.unresolved_error(updated_error)
+      {:ok, updated_error}
+    end
   end
 
   @doc """
