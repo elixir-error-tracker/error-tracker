@@ -65,12 +65,13 @@ defmodule ErrorTracker.Integrations.Phoenix do
 
   @doc false
   def attach do
-    :telemetry.attach_many(__MODULE__, @events, &__MODULE__.handle_event/4, :no_config)
+    if Application.spec(:phoenix) do
+      :telemetry.attach_many(__MODULE__, @events, &__MODULE__.handle_event/4, :no_config)
+    end
   end
 
   @doc false
   def handle_event([:phoenix, :router_dispatch, :start], _measurements, metadata, :no_config) do
-    dbg(metadata)
     PlugIntegration.set_context(metadata.conn)
   end
 
