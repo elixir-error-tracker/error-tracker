@@ -32,7 +32,7 @@ defmodule ErrorTracker.Repo do
 
     defaults =
       case repo.__adapter__() do
-        Ecto.Adapter.Postgresql ->
+        Ecto.Adapters.Postgres ->
           [prefix: Application.get_env(:error_tracker, :prefix, "public")]
 
         _ ->
