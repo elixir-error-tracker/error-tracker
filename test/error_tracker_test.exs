@@ -3,7 +3,6 @@ defmodule ErrorTrackerTest do
 
   alias ErrorTracker.Error
   alias ErrorTracker.Occurrence
-  alias ErrorTracker.Test.Repo
 
   @relative_file_path Path.relative_to(__ENV__.file, File.cwd!())
 
@@ -83,20 +82,5 @@ defmodule ErrorTrackerTest do
 
       assert {:ok, %Error{status: :unresolved}} = ErrorTracker.unresolve(resolved)
     end
-  end
-
-  defp report_error(fun) do
-    occurrence =
-      try do
-        fun.()
-      rescue
-        exception ->
-          ErrorTracker.report(exception, __STACKTRACE__)
-      catch
-        kind, reason ->
-          ErrorTracker.report({kind, reason}, __STACKTRACE__)
-      end
-
-    Repo.preload(occurrence, :error)
   end
 end
