@@ -126,3 +126,11 @@ You can also use `ErrorTracker.report/3` and set some custom context that will b
 ErrorTracker also provides a dashboard built with Phoenix LiveView that can be used to see and manage the recorded errors.
 
 This is completely optional, and you can find more information about it in the `ErrorTracker.Web` module documentation.
+
+## Notifications
+
+We currently do not support notifications out of the box.
+
+However, we provideo some detailed Telemetry events that you may use to implement your own notifications following your custom rules and notification channels.
+
+If you want to take a look at the events you can attach to, take a look at `ErrorTracker.Telemetry` module documentation.

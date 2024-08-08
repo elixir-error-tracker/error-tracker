@@ -17,6 +17,10 @@ defmodule ErrorTracker.Repo do
     dispatch(:get!, [queryable, id], opts)
   end
 
+  def one(queryable, opts \\ []) do
+    dispatch(:one, [queryable], opts)
+  end
+
   def all(queryable, opts \\ []) do
     dispatch(:all, [queryable], opts)
   end

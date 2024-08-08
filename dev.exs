@@ -148,6 +148,30 @@ defmodule ErrorTrackerDevWeb.Endpoint do
   def maybe_exception(conn, _), do: conn
 end
 
+defmodule ErrorTrackerDev.Telemetry do
+  require Logger
+
+  def start do
+    :telemetry.attach_many(
+      "error-tracker-events",
+      [
+        [:error_tracker, :error, :new],
+        [:error_tracker, :error, :resolved],
+        [:error_tracker, :error, :unresolved],
+        [:error_tracker, :occurrence, :new]
+      ],
+      &__MODULE__.handle_event/4,
+      []
+    )
+
+    Logger.info("Telemtry attached")
+  end
+
+  def handle_event(event, measure, metadata, _opts) do
+    dbg([event, measure, metadata])
+  end
+end
+
 Application.put_env(:phoenix, :serve_endpoints, true)
 
 Task.async(fn ->
@@ -156,6 +180,8 @@ Task.async(fn ->
     ErrorTrackerDev.Repo,
     ErrorTrackerDevWeb.Endpoint
   ]
+
+  ErrorTrackerDev.Telemetry.start()
 
   {:ok, _} = Supervisor.start_link(children, strategy: :one_for_one)
 
