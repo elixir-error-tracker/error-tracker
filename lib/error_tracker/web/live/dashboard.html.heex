@@ -63,8 +63,8 @@
           scope="row"
           class="px-4 py-4 font-medium text-white whitespace-nowrap text-ellipsis relative"
         >
-          <.link navigate={error_path(@socket, error)}>
-            (<%= sanitize_module(error.kind) %>) <%= error.reason %>
+          <.link navigate={error_path(@socket, error)} class="absolute inset-1">
+            <span class="sr-only">(<%= sanitize_module(error.kind) %>) <%= error.reason %></span>
           </.link>
           <p>(<%= sanitize_module(error.kind) %>) <%= error.reason %></p>
           <p class="font-normal text-zinc-400">
