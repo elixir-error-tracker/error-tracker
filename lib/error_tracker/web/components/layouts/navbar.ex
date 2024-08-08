@@ -4,7 +4,7 @@ defmodule ErrorTracker.Web.Layouts.Navbar do
 
   def render(assigns) do
     ~H"""
-    <nav class="border-gray-200 bg-gray-800" phx-click-away={JS.hide(to: "#navbar-main")}>
+    <nav class="border-zinc-400 bg-zinc-900" phx-click-away={JS.hide(to: "#navbar-main")}>
       <div class="container flex flex-wrap items-center justify-between mx-auto p-4">
         <.link
           href={dashboard_path(@socket)}
@@ -14,7 +14,7 @@ defmodule ErrorTracker.Web.Layouts.Navbar do
         </.link>
         <button
           type="button"
-          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded -lg md:hidden focus:outline-none focus:ring-2 text-gray-400 hover:bg-gray-600 focus:ring-gray-500"
+          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded -lg md:hidden focus:outline-none focus:ring-2 text-gray-400 hover:bg-zinc-700 focus:ring-gray-500"
           aria-controls="navbar-main"
           aria-expanded="false"
           phx-click={JS.toggle(to: "#navbar-main")}
@@ -37,7 +37,7 @@ defmodule ErrorTracker.Web.Layouts.Navbar do
           </svg>
         </button>
         <div class="hidden w-full md:block md:w-auto" id="navbar-main">
-          <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-600 rounded-lg bg-gray-700 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-gray-800">
+          <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-zinc-400 bg-zinc-900 rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-gray-800">
             <.navbar_item to="https://github.com" target="_blank">GitHub</.navbar_item>
           </ul>
         </div>
@@ -56,7 +56,7 @@ defmodule ErrorTracker.Web.Layouts.Navbar do
     <li>
       <a
         href={@to}
-        class="block py-2 px-3 text-gray-900 rounded text-white hover:text-white hover:bg-gray-700 md:hover:bg-transparent md:border-0 md:hover:text-blue-500 md:p-0"
+        class="whitespace-nowrap flex-0 block py-2 px-3 rounded-lg text-white hover:text-white hover:bg-zinc-700 md:hover:bg-transparent md:border-0 md:hover:text-blue-500"
         {@rest}
       >
         <%= render_slot(@inner_block) %>
