@@ -9,11 +9,10 @@
 #######################################
 Logger.configure(level: :debug)
 
-# Get local configuration
-Code.require_file("dev.local.exs")
+# Get configuration
+Config.Reader.read!("config/config.exs", env: :dev)
 
 # Prepare the repo
-
 adapter =
   case Application.get_env(:error_tracker, :ecto_adapter) do
     :postgres -> Ecto.Adapters.Postgres
@@ -173,13 +172,6 @@ defmodule ErrorTrackerDev.Telemetry do
   end
 end
 
-defmodule Migration0 do
-  use Ecto.Migration
-
-  def up, do: ErrorTracker.Migration.up(prefix: "private")
-  def down, do: ErrorTracker.Migration.down(prefix: "private")
-end
-
 Application.put_env(:phoenix, :serve_endpoints, true)
 
 Task.async(fn ->
@@ -194,10 +186,7 @@ Task.async(fn ->
   {:ok, _} = Supervisor.start_link(children, strategy: :one_for_one)
 
   # Automatically run the migrations on boot
-  Ecto.Migrator.run(ErrorTrackerDev.Repo, [{0, Migration0}], :up,
-    all: true,
-    log_migrations_sql: :debug
-  )
+  Ecto.Migrator.run(ErrorTrackerDev.Repo, :up, all: true, log_migrations_sql: :debug)
 
   Process.sleep(:infinity)
 end)

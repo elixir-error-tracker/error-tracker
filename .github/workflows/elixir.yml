@@ -39,6 +39,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Generate test configuration
+        run: cp config/test.example.exs config/test.exs
+
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{ matrix.erlang }}

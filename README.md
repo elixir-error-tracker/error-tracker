@@ -15,20 +15,24 @@ Take a look at the [Getting Started](/guides/Getting%20Started.md) guide.
 
 ## Development
 
-### Development server
+### Initial setup and dependencies
 
-We have a `dev.exs` script that starts a development server.
-
-To run it together with an `IEx` console you can do:
+If this is the first time that you set up this project you will to generate the configuration files and adapt their content to your local environment:
 
 ```
-iex -S mix dev
+cp config/dev.example.exs config/dev.exs
+cp config/test.example.exs config/test.exs
+```
+
+Then, you will need to download the dependencies:
+
+```
+mix deps.get
 ```
 
 ### Assets
 
-In order to participate in the development of this library, you may need to
-know how to compile the assets needed to use the Web UI.
+In order to participate in the development of this project, you may need to know how to compile the assets needed to use the Web UI.
 
 To do so, you need to first make a clean build:
 
@@ -48,4 +52,16 @@ To do so you can execute this task in a separate terminal:
 
 ```
 mix assets.watch
+```
+
+
+
+### Development server
+
+We have a `dev.exs` script that starts a development server.
+
+To run it together with an `IEx` console you can do:
+
+```
+iex -S mix dev
 ```

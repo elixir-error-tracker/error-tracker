@@ -63,12 +63,7 @@ defmodule ErrorTracker.Integrations.Phoenix do
     [:phoenix, :live_view, :render, :exception]
   ]
 
-  @doc """
-  Attaches to Phoenix's Telemetry events if the library is detected.
-
-  This function is usually called internally during the startup process so you
-  don't have to.
-  """
+  @doc false
   def attach do
     if Application.spec(:phoenix) do
       :telemetry.attach_many(__MODULE__, @events, &__MODULE__.handle_event/4, :no_config)

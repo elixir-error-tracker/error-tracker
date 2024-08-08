@@ -97,8 +97,8 @@ defmodule ErrorTracker.MixProject do
 
   defp aliases do
     [
-      setup: ["deps.get", "cmd --cd assets npm install"],
       dev: "run --no-halt dev.exs",
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.install": ["bun.install", "cmd _build/bun install --cwd assets/"],
       "assets.watch": ["tailwind default --watch"],
       "assets.build": ["bun default --minify", "tailwind default --minify"]
