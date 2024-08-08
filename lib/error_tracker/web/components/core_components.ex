@@ -20,8 +20,8 @@ defmodule ErrorTracker.Web.CoreComponents do
     ~H"""
     <.link
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-600 hover:bg-zinc-400 py-[11.5px] px-3",
-        "text-sm font-semibold text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 py-[11.5px]",
+        "text-sm font-semibold text-sky-500 hover:text-white/80",
         @class
       ]}
       {@rest}
@@ -36,8 +36,8 @@ defmodule ErrorTracker.Web.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-600 hover:bg-zinc-400 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 rounded-lg bg-sky-500 hover:bg-sky-700 py-2 px-4",
+        "text-sm text-white active:text-white/80",
         @class
       ]}
       {@rest}
@@ -77,7 +77,7 @@ defmodule ErrorTracker.Web.CoreComponents do
 
     ~H"""
     <span
-      class={["text-sm font-medium me-2 px-2.5 py-1.5 rounded-lg ring-1 ring-inset", @color_class]}
+      class={["text-sm font-medium me-2 py-1 px-2 rounded-lg ring-1 ring-inset", @color_class]}
       {@rest}
     >
       <%= render_slot(@inner_block) %>
