@@ -61,18 +61,13 @@ defmodule ErrorTracker.Migration do
   as "prefixes" in Ecto. With prefixes your error tables can reside outside of your primary
   schema (which is usually named "public").
 
-  To use a prefix you need to specify it in your migrations:
+  To use a prefix you need to specify it in your configuration:
 
   ```elixir
-  defmodule MyApp.Repo.Migrations.AddErrorTracker do
-    use Ecto.Migration
-
-    def up, do: ErrorTracker.Migration.up(prefix: "custom_schema")
-    def down, do: ErrorTracker.Migration.down(prefix: "custom_schema")
-  end
+  config :error_tracker, :prefix, "custom_prefix"
   ```
 
-  This will automatically create the database schema for you. If the schema does already exist
+  Migrations will automatically create the database schema for you. If the schema does already exist
   the migration may fail when trying to recreate it. In such cases you can instruct ErrorTracker
   not to create the schema again:
 
@@ -80,16 +75,20 @@ defmodule ErrorTracker.Migration do
   defmodule MyApp.Repo.Migrations.AddErrorTracker do
     use Ecto.Migration
 
-    def up, do: ErrorTracker.Migration.up(prefix: "custom_schema", create_schema: false)
-    def down, do: ErrorTracker.Migration.down(prefix: "custom_schema")
+    def up, do: ErrorTracker.Migration.up(create_schema: false)
+    def down, do: ErrorTracker.Migration.down()
   end
   ```
 
-  If you are using a custom schema other than the default "public" you need to configure
-  ErrorTracker to use that schema:
+  You can also override the configured prefix in the migration:
 
   ```elixir
-  config :error_tracker, :prefix, "custom_schema"
+  defmodule MyApp.Repo.Migrations.AddErrorTracker do
+    use Ecto.Migration
+
+    def up, do: ErrorTracker.Migration.up(prefix: "custom_prefix")
+    def down, do: ErrorTracker.Migration.down(prefix: "custom_prefix")
+  end
   ```
   """
 

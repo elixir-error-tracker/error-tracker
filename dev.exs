@@ -148,13 +148,6 @@ defmodule ErrorTrackerDevWeb.Endpoint do
   def maybe_exception(conn, _), do: conn
 end
 
-defmodule Migration0 do
-  use Ecto.Migration
-
-  def up, do: ErrorTracker.Migration.up(prefix: "private")
-  def down, do: ErrorTracker.Migration.down(prefix: "private")
-end
-
 Application.put_env(:phoenix, :serve_endpoints, true)
 
 Task.async(fn ->
@@ -167,10 +160,7 @@ Task.async(fn ->
   {:ok, _} = Supervisor.start_link(children, strategy: :one_for_one)
 
   # Automatically run the migrations on boot
-  Ecto.Migrator.run(ErrorTrackerDev.Repo, [{0, Migration0}], :up,
-    all: true,
-    log_migrations_sql: :debug
-  )
+  Ecto.Migrator.run(ErrorTrackerDev.Repo, :up, all: true, log_migrations_sql: :debug)
 
   Process.sleep(:infinity)
 end)
