@@ -9,7 +9,7 @@
     value={@search_form[:reason].value}
     type="text"
     placeholder="Error"
-    class="bg-zinc-100 rounded-lg text-zinc-900"
+    class="bg-gray-100 rounded-lg text-gray-900"
     phx-debounce
   />
   <input
@@ -17,7 +17,7 @@
     value={@search_form[:source_line].value}
     type="text"
     placeholder="Source line"
-    class="bg-zinc-100 rounded-lg text-zinc-900"
+    class="bg-gray-100 rounded-lg text-gray-900"
     phx-debounce
   />
   <input
@@ -25,10 +25,10 @@
     value={@search_form[:source_function].value}
     type="text"
     placeholder="Source function"
-    class="bg-zinc-100 rounded-lg text-zinc-900"
+    class="bg-gray-100 rounded-lg text-gray-900"
     phx-debounce
   />
-  <select name={@search_form[:status].name} class="bg-zinc-100 rounded-lg text-zinc-900">
+  <select name={@search_form[:status].name} class="bg-gray-100 rounded-lg text-gray-900">
     <option value="" selected={@search_form[:status].value == ""}>All</option>
     <option value="unresolved" selected={@search_form[:status].value == "unresolved"}>
       Unresolved
@@ -39,9 +39,9 @@
   </select>
 </.form>
 
-<div class="relative overflow-x-auto shadow-md sm:rounded-lg ring-1 ring-zinc-900">
-  <table class="w-full text-sm text-left rtl:text-right text-zinc-400 table-fixed">
-    <thead class="text-xs uppercase bg-zinc-900">
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg ring-1 ring-gray-900">
+  <table class="w-full text-sm text-left rtl:text-right text-gray-400 table-fixed">
+    <thead class="text-xs uppercase bg-gray-900">
       <tr>
         <th scope="col" class="px-4 pr-2 py-3 w-128">Error</th>
         <th scope="col" class="px-4 py-3 w-72">Occurrences</th>
@@ -57,7 +57,7 @@
       </tr>
       <tr
         :for={error <- @errors}
-        class="border-b bg-zinc-400/10 border-y border-zinc-900 hover:bg-zinc-800/60 last-of-type:border-b-0"
+        class="border-b bg-gray-400/10 border-y border-gray-900 hover:bg-gray-800/60 last-of-type:border-b-0"
       >
         <td
           scope="row"
@@ -67,7 +67,7 @@
             <span class="sr-only">(<%= sanitize_module(error.kind) %>) <%= error.reason %></span>
           </.link>
           <p class="whitespace-nowrap text-ellipsis w-full overflow-hidden">(<%= sanitize_module(error.kind) %>) <%= error.reason %></p>
-          <p class="font-normal text-zinc-400">
+          <p class="font-normal text-gray-400">
             <%= sanitize_module(error.source_function) %>
             <br />
             <%= error.source_line %>

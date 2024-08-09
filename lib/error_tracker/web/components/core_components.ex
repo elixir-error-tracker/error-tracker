@@ -64,7 +64,7 @@ defmodule ErrorTracker.Web.CoreComponents do
     color_class =
       case assigns.color do
         :blue -> "bg-blue-900 text-blue-300"
-        :gray -> "bg-zinc-700 text-zinc-300"
+        :gray -> "bg-gray-700 text-gray-300"
         :red -> "bg-red-400/10 text-red-300 ring-red-400/20"
         :green -> "bg-emerald-400/10 text-emerald-300 ring-emerald-400/20"
         :yellow -> "bg-yellow-900 text-yellow-300"
@@ -95,14 +95,14 @@ defmodule ErrorTracker.Web.CoreComponents do
     <div class="mt-10 w-full flex">
       <button
         :if={@page > 1}
-        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400  bg-zinc-900 border border-zinc-400 rounded-lg hover:bg-zinc-800 hover:text-white"
+        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400  bg-gray-900 border border-gray-400 rounded-lg hover:bg-gray-800 hover:text-white"
         phx-click={@event_previous}
       >
         Previous page
       </button>
       <button
         :if={@page < @total_pages}
-        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400 bg-zinc-900 border border-zinc-400 rounded-lg hover:bg-zinc-800 hover:text-white"
+        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400 bg-gray-900 border border-gray-400 rounded-lg hover:bg-gray-800 hover:text-white"
         phx-click={@event_next}
       >
         Next page
@@ -122,7 +122,7 @@ defmodule ErrorTracker.Web.CoreComponents do
     <div>
       <h2
         :if={assigns[:title]}
-        class={["text-sm font-semibold mb-2 uppercase text-zinc-400", @title_class]}
+        class={["text-sm font-semibold mb-2 uppercase text-gray-400", @title_class]}
       >
         <%= @title %>
       </h2>
