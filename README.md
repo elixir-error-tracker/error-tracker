@@ -1,8 +1,14 @@
 # 🐛 ErrorTracker
 
-[![](https://github.com/elixir-error-tracker/error-tracker/workflows/CI/badge.svg)](https://github.com/elixir-error-tracker/error-tracker/actions)
-[![](https://img.shields.io/hexpm/v/error_tracker.svg)](https://hex.pm/packages/error_tracker)
-[![](http://img.shields.io/badge/hex.pm-docs-blue.svg)](https://hexdocs.pm/error_tracker)
+<a href="https://github.com/elixir-error-tracker/error-tracker/actions">
+  <img src="https://github.com/elixir-error-tracker/error-tracker/workflows/CI/badge.svg" alt="Github CI" />
+</a>
+<a href="https://hex.pm/packages/error_tracker">
+  <img src="https://img.shields.io/hexpm/v/error_tracker.svg" alt="Latest release" />
+</a>
+<a href="https://hexdocs.pm/error_tracker">
+  <img src="https://img.shields.io/badge/hex.pm-docs-blue.svg" alt="View documentation" />
+</a>
 
 > An Elixir based built-in error tracking solution.
 
