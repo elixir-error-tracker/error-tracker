@@ -34,3 +34,5 @@ error_tracker-*.tar
 
 # Sqlite3 databases
 *.db
+*.db-shm
+*.db-wal
