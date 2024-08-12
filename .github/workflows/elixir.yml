@@ -74,5 +74,8 @@ jobs:
       - name: Check Credo warnings
         run: mix credo
 
-      - name: Run Tests
-        run: mix test
+      - name: Run Tests - SQLite3
+        run: DB=sqlite3 mix test
+
+      - name: Run Tests - PostgreSQL
+        run: DB=postgres mix test
