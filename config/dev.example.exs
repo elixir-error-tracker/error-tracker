@@ -24,7 +24,7 @@ config :bun,
 # To use SQLite3 on your local development machine uncomment these lines and
 # comment the lines of other adapters.
 
-config :ecto_adapter, :postgres
+config :error_tracker, :ecto_adapter, :postgres
 
 config :error_tracker, ErrorTrackerDev.Repo,
   url: "ecto://postgres:postgres@127.0.0.1/error_tracker_dev"
@@ -34,7 +34,7 @@ config :error_tracker, ErrorTrackerDev.Repo,
 # To use SQLite3 on your local development machine uncomment these lines and
 # comment the lines of other adapters.
 
-# config :ecto_adapter, :sqlite3
+# config :error_tracker, :ecto_adapter, :sqlite3
 
 # config :error_tracker, ErrorTrackerDev.Repo,
 #   database: System.get_env("SQLITE_DB") || "dev.db"
