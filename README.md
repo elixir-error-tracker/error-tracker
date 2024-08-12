@@ -1,4 +1,4 @@
-# ErrorTracker
+# 🐛 ErrorTracker
 
 An Elixir based built-in error tracking solution.
 

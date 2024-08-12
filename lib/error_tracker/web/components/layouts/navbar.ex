@@ -10,7 +10,7 @@ defmodule ErrorTracker.Web.Layouts.Navbar do
           href={dashboard_path(@socket)}
           class="self-center text-2xl font-semibold whitespace-nowrap text-white"
         >
-          ErrorTracker
+          <span class="mr-2">🐛</span>ErrorTracker
         </.link>
         <button
           type="button"
