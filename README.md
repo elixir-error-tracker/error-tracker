@@ -1,12 +1,12 @@
 # 🐛 ErrorTracker
 
-<a href="https://github.com/elixir-error-tracker/error-tracker/actions">
-  <img src="https://github.com/elixir-error-tracker/error-tracker/workflows/CI/badge.svg" alt="Github CI" />
+<a title="GitHub CI" href="https://github.com/elixir-error-tracker/error-tracker/actions">
+  <img src="https://github.com/elixir-error-tracker/error-tracker/workflows/CI/badge.svg" alt="GitHub CI" />
 </a>
-<a href="https://hex.pm/packages/error_tracker">
+<a title="Latest release" href="https://hex.pm/packages/error_tracker">
   <img src="https://img.shields.io/hexpm/v/error_tracker.svg" alt="Latest release" />
 </a>
-<a href="https://hexdocs.pm/error_tracker">
+<a title="View documentation" href="https://hexdocs.pm/error_tracker">
   <img src="https://img.shields.io/badge/hex.pm-docs-blue.svg" alt="View documentation" />
 </a>
 
