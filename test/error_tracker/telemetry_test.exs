@@ -21,6 +21,10 @@ defmodule ErrorTracker.TelemetryTest do
     # The error is already known so the new error event won't be emitted
     report_error(fn -> raise "This is a test" end)
 
+    refute_receive {:telemetry_event, [:error_tracker, :error, :new], _,
+                    %{occurrence: %Occurrence{}}},
+                   150
+
     assert_receive {:telemetry_event, [:error_tracker, :occurrence, :new], _,
                     %{occurrence: %Occurrence{}}}
   end
