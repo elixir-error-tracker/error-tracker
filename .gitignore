@@ -32,7 +32,7 @@ error_tracker-*.tar
 # Assets
 /assets/node_modules
 
-# Sqlite3 databases
+# SQLite3 databases
 *.db
 *.db-shm
 *.db-wal
