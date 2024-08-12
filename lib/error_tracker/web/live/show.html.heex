@@ -65,7 +65,10 @@
   <div class="px-3 md:pl-0 space-y-8">
     <.section title={"Occurrence (#{@total_occurrences} total)"}>
       <form phx-change="occurrence_navigation">
-        <select name="occurrence_id" class="w-full border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500">
+        <select
+          name="occurrence_id"
+          class="w-full border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+        >
           <option
             :for={occurrence <- @occurrences}
             value={occurrence.id}
