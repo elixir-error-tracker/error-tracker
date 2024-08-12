@@ -60,11 +60,13 @@ defmodule ErrorTracker.Migration.SQLMigrator do
 
   defp record_version(_opts, 0), do: :ok
 
-  defp record_version(%{prefix: prefix}, version) do
+  defp record_version(opts, version) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix()
 
     case repo().__adapter__() do
       Ecto.Adapters.Postgres ->
+        prefix = opts[:prefix]
+
         execute """
         INSERT INTO #{prefix}.error_tracker_meta (key, value)
         VALUES ('migration_version', '#{version}'), ('migration_timestamp', #{timestamp})
