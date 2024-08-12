@@ -75,7 +75,11 @@ jobs:
         run: mix credo
 
       - name: Run Tests - SQLite3
-        run: DB=sqlite3 mix test
+        run: mix test
+        env:
+          DB: sqlite
 
       - name: Run Tests - PostgreSQL
-        run: DB=postgres mix test
+        run: mix test
+        env:
+          DB: postgres
