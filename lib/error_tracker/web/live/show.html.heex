@@ -32,7 +32,7 @@
             <input
               type="checkbox"
               id="show-app-frames"
-              class="ml-2 mr-2 mb-1 mt-1 inline-block"
+              class="ml-2 mr-2 mb-1 mt-1 inline-block text-sky-600 rounded focus:ring-sky-600 ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
               phx-click={JS.toggle(to: "#stacktrace tr:not([data-app=#{@app}])")}
             />
             <span class="text-md inline-block">
@@ -65,7 +65,7 @@
   <div class="px-3 md:pl-0 space-y-8">
     <.section title={"Occurrence (#{@total_occurrences} total)"}>
       <form phx-change="occurrence_navigation">
-        <select name="occurrence_id" class="w-full bg-gray-100 rounded-lg text-gray-900">
+        <select name="occurrence_id" class="w-full border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500">
           <option
             :for={occurrence <- @occurrences}
             value={occurrence.id}

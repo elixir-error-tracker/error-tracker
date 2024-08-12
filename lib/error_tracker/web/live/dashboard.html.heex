@@ -9,7 +9,7 @@
     value={@search_form[:reason].value}
     type="text"
     placeholder="Error"
-    class="bg-gray-100 rounded-lg text-gray-900"
+    class="border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
     phx-debounce
   />
   <input
@@ -17,7 +17,7 @@
     value={@search_form[:source_line].value}
     type="text"
     placeholder="Source line"
-    class="bg-gray-100 rounded-lg text-gray-900"
+    class="border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
     phx-debounce
   />
   <input
@@ -25,10 +25,10 @@
     value={@search_form[:source_function].value}
     type="text"
     placeholder="Source function"
-    class="bg-gray-100 rounded-lg text-gray-900"
+    class="border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
     phx-debounce
   />
-  <select name={@search_form[:status].name} class="bg-gray-100 rounded-lg text-gray-900">
+  <select name={@search_form[:status].name} class="border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500">
     <option value="" selected={@search_form[:status].value == ""}>All</option>
     <option value="unresolved" selected={@search_form[:status].value == "unresolved"}>
       Unresolved
