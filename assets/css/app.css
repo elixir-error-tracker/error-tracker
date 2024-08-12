@@ -2,3 +2,13 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+  @apply bg-gray-300;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-500;
+  border-radius: 4px;
+}

@@ -45,7 +45,11 @@ defmodule ErrorTracker.MixProject do
       links: %{
         "GitHub" => "https://github.com/elixir-error-tracker/error-tracker"
       },
-      maintainers: ["Óscar de Arriba González", "Cristian Álvarez Belaustegui"],
+      maintainers: [
+        "Óscar de Arriba González",
+        "Cristian Álvarez Belaustegui",
+        "Víctor Ortiz Heredia"
+      ],
       files: ~w(lib priv/static LICENSE mix.exs README.md .formatter.exs)
     ]
   end
@@ -100,7 +104,7 @@ defmodule ErrorTracker.MixProject do
       dev: "run --no-halt dev.exs",
       "assets.install": ["bun.install", "cmd _build/bun install --cwd assets/"],
       "assets.watch": ["tailwind default --watch"],
-      "assets.build": ["bun default --minify", "tailwind default --minify"]
+      "assets.build": ["bun default", "tailwind default"]
     ]
   end
 end

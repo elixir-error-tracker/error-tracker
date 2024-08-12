@@ -1,12 +1,12 @@
 <div class="my-6">
-  <.button type="link" href={dashboard_path(@socket)}>Back to the dashboard</.button>
+  <.button type="link" href={dashboard_path(@socket)}>« Back to the dashboard</.button>
 </div>
 
 <div id="header">
-  <p class="text-sm uppercase font-semibold text-gray-300">
+  <p class="text-sm uppercase font-semibold text-gray-400">
     Error #<%= @error.id %> @ <%= format_datetime(@occurrence.inserted_at) %>
   </p>
-  <h1 class="my-1 text-2xl font-bold whitespace-nowrap text-ellipsis overflow-hidden">
+  <h1 class="my-1 text-2xl w-full font-semibold whitespace-nowrap text-ellipsis overflow-hidden">
     (<%= sanitize_module(@error.kind) %>) <%= @error.reason
     |> String.replace("\n", " ")
     |> String.trim() %>
@@ -14,25 +14,25 @@
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-4 md:space-x-3 mt-6 gap-2">
-  <div class="px-3 md:col-span-3 md:border-r-2 md:border-gray-500 space-y-8">
+  <div class="md:col-span-3 md:border-r md:border-gray-600 space-y-8 pr-5">
     <.section title="Full message">
-      <pre class="overflow-auto p-4 bg-gray-600"><%= @occurrence.reason %></pre>
+      <pre class="overflow-auto p-4 rounded-lg bg-gray-300/10 border border-gray-900"><%= @occurrence.reason %></pre>
     </.section>
 
     <.section title="Source">
-      <pre class="overflow-auto text-sm p-4 bg-gray-600">
+      <pre class="overflow-auto text-sm p-4 rounded-lg bg-gray-300/10 border border-gray-900">
         <%= sanitize_module(@error.source_function) %>
         <%= @error.source_line %></pre>
     </.section>
 
     <.section title="Stacktrace">
-      <div class="p-4 bg-gray-600">
+      <div class="p-4 bg-gray-300/10 border border-gray-900 rounded-lg">
         <div class="w-full mb-4">
           <label class="flex justify-end">
             <input
               type="checkbox"
               id="show-app-frames"
-              class="ml-2 mr-2 mb-1 mt-1 inline-block"
+              class="ml-2 mr-2 mb-1 mt-1 inline-block text-sky-600 rounded focus:ring-sky-600 ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
               phx-click={JS.toggle(to: "#stacktrace tr:not([data-app=#{@app}])")}
             />
             <span class="text-md inline-block">
@@ -58,14 +58,17 @@
     </.section>
 
     <.section title="Context">
-      <pre class="overflow-auto text-sm p-4 bg-gray-600"><%= Jason.encode!(@occurrence.context, pretty: true) %></pre>
+      <pre class="overflow-auto text-sm p-4 rounded-lg bg-gray-300/10 border border-gray-900"><%= Jason.encode!(@occurrence.context, pretty: true) %></pre>
     </.section>
   </div>
 
   <div class="px-3 md:pl-0 space-y-8">
     <.section title={"Occurrence (#{@total_occurrences} total)"}>
       <form phx-change="occurrence_navigation">
-        <select name="occurrence_id" class="text-black w-full">
+        <select
+          name="occurrence_id"
+          class="w-full border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+        >
           <option
             :for={occurrence <- @occurrences}
             value={occurrence.id}

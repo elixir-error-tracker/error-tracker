@@ -20,8 +20,8 @@ defmodule ErrorTracker.Web.CoreComponents do
     ~H"""
     <.link
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-600 hover:bg-zinc-400 py-[11.5px] px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 py-[11.5px]",
+        "text-sm font-semibold text-sky-500 hover:text-white/80",
         @class
       ]}
       {@rest}
@@ -36,8 +36,8 @@ defmodule ErrorTracker.Web.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-600 hover:bg-zinc-400 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 rounded-lg bg-sky-500 hover:bg-sky-700 py-2 px-4",
+        "text-sm text-white active:text-white/80",
         @class
       ]}
       {@rest}
@@ -65,8 +65,8 @@ defmodule ErrorTracker.Web.CoreComponents do
       case assigns.color do
         :blue -> "bg-blue-900 text-blue-300"
         :gray -> "bg-gray-700 text-gray-300"
-        :red -> "bg-red-900 text-red-300"
-        :green -> "bg-green-900 text-green-300"
+        :red -> "bg-red-400/10 text-red-300 ring-red-400/20"
+        :green -> "bg-emerald-400/10 text-emerald-300 ring-emerald-400/20"
         :yellow -> "bg-yellow-900 text-yellow-300"
         :indigo -> "bg-indigo-900 text-indigo-300"
         :purple -> "bg-purple-900 text-purple-300"
@@ -76,7 +76,10 @@ defmodule ErrorTracker.Web.CoreComponents do
     assigns = Map.put(assigns, :color_class, color_class)
 
     ~H"""
-    <span class={["text-sm font-medium me-2 px-2.5 py-1.5 rounded", @color_class]} {@rest}>
+    <span
+      class={["text-sm font-medium me-2 py-1 px-2 rounded-lg ring-1 ring-inset", @color_class]}
+      {@rest}
+    >
       <%= render_slot(@inner_block) %>
     </span>
     """
@@ -92,14 +95,14 @@ defmodule ErrorTracker.Web.CoreComponents do
     <div class="mt-10 w-full flex">
       <button
         :if={@page > 1}
-        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 hover:text-white"
+        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400  bg-gray-900 border border-gray-400 rounded-lg hover:bg-gray-800 hover:text-white"
         phx-click={@event_previous}
       >
         Previous page
       </button>
       <button
         :if={@page < @total_pages}
-        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 hover:text-white"
+        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400 bg-gray-900 border border-gray-400 rounded-lg hover:bg-gray-800 hover:text-white"
         phx-click={@event_next}
       >
         Next page
@@ -117,7 +120,10 @@ defmodule ErrorTracker.Web.CoreComponents do
   def section(assigns) do
     ~H"""
     <div>
-      <h2 :if={assigns[:title]} class={["text-sm font-bold mb-2 uppercase", @title_class]}>
+      <h2
+        :if={assigns[:title]}
+        class={["text-sm font-semibold mb-2 uppercase text-gray-400", @title_class]}
+      >
         <%= @title %>
       </h2>
       <%= render_slot(@inner_block) %>
