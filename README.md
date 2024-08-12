@@ -1,20 +1,11 @@
-<p align="center">
-<h1 style="text-align: center; font-size: 3.5em; border: none; margin-bottom: 0;"> 🐛 ErrorTracker</h1>
-</p>
+# 🐛 ErrorTracker
 
-<p align="center">
 [![](https://github.com/elixir-error-tracker/error-tracker/workflows/CI/badge.svg)](https://github.com/elixir-error-tracker/error-tracker/actions)
 [![](https://img.shields.io/hexpm/v/error_tracker.svg)](https://hex.pm/packages/error_tracker)
 [![](http://img.shields.io/badge/hex.pm-docs-blue.svg)](https://hexdocs.pm/error_tracker)
-</p>
 
-<p align="center">
-An Elixir based built-in error tracking solution.
-</p>
+> An Elixir based built-in error tracking solution.
 
-
-
-----
 <a href="guides/screenshots/error-dashboard.png">
   <img src="guides/screenshots/error-dashboard.png" alt="ErrorTracker web dashboard" width="400">
 </a>
