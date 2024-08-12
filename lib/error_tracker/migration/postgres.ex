@@ -29,7 +29,8 @@ defmodule ErrorTracker.Migration.Postgres do
   end
 
   defp with_defaults(opts, version) do
-    opts = Enum.into(opts, %{prefix: @default_prefix, version: version})
+    configured_prefix = Application.get_env(:error_tracker, :prefix, "public")
+    opts = Enum.into(opts, %{prefix: configured_prefix, version: version})
 
     opts
     |> Map.put_new(:create_schema, opts.prefix != @default_prefix)

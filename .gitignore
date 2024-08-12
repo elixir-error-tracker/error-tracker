@@ -25,8 +25,14 @@ error_tracker-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 
+# Configuration files (only the examples are committed)
+/config/dev.exs
+/config/test.exs
+
+# Assets
 /assets/node_modules
 
-
-dev.local.exs
-dev.db*
+# SQLite3 databases
+*.db
+*.db-shm
+*.db-wal
