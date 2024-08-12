@@ -6,13 +6,11 @@ defmodule ErrorTracker.Test.Case do
     quote do
       import Ecto.Query
       import ErrorTracker.Test.Case
-
-      alias ErrorTracker.Test.Repo
     end
   end
 
   setup do
-    Ecto.Adapters.SQL.Sandbox.checkout(ErrorTracker.Test.Repo)
+    Ecto.Adapters.SQL.Sandbox.checkout(repo())
   end
 
   @doc """
@@ -30,7 +28,7 @@ defmodule ErrorTracker.Test.Case do
           ErrorTracker.report({kind, reason}, __STACKTRACE__)
       end
 
-    ErrorTracker.Test.Repo.preload(occurrence, :error)
+    repo().preload(occurrence, :error)
   end
 
   @doc """
@@ -56,5 +54,9 @@ defmodule ErrorTracker.Test.Case do
 
   def _send_telemetry(event, measurements, metadata, _opts) do
     send(self(), {:telemetry_event, event, measurements, metadata})
+  end
+
+  def repo do
+    Application.fetch_env!(:error_tracker, :repo)
   end
 end
