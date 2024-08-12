@@ -33,4 +33,4 @@ error_tracker-*.tar
 /assets/node_modules
 
 # Sqlite3 databases
-dev.db*
+*.db
