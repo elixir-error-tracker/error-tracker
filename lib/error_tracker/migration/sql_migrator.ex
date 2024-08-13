@@ -69,14 +69,14 @@ defmodule ErrorTracker.Migration.SQLMigrator do
 
         execute """
         INSERT INTO #{prefix}.error_tracker_meta (key, value)
-        VALUES ('migration_version', '#{version}'), ('migration_timestamp', #{timestamp})
+        VALUES ('migration_version', '#{version}'), ('migration_timestamp', '#{timestamp}')
         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
         """
 
       _other ->
         execute """
         INSERT INTO error_tracker_meta (key, value)
-        VALUES ('migration_version', '#{version}'), ('migration_timestamp', #{timestamp})
+        VALUES ('migration_version', '#{version}'), ('migration_timestamp', '#{timestamp}')
         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
         """
     end
