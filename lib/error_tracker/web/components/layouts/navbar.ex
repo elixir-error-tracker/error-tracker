@@ -38,7 +38,7 @@ defmodule ErrorTracker.Web.Layouts.Navbar do
         </button>
         <div class="hidden w-full md:block md:w-auto" id="navbar-main">
           <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-400 bg-gray-900 rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-gray-800">
-            <.navbar_item to="https://github.com" target="_blank">
+            <.navbar_item to="https://github.com/elixir-error-tracker/error-tracker" target="_blank">
               <svg
                 width="18"
                 height="18"
