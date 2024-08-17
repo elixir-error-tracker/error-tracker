@@ -34,6 +34,15 @@ defmodule ErrorTracker.Web do
   You can find more details on
   `ErrorTracker.Web.Router.error_tracker_dashboard/2`.
 
+  ### Static assets
+
+  Static assets (CSS and JS) are inlined during the compilation. If you have
+  a [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+  be sure to allow inline styles and scripts.
+
+  To do this, ensure that your `style-src` and `script-src` policies include the
+  `unsafe-inline` value.
+
   ## LiveView socket options
 
   By default the library expects you to have your LiveView socket at `/live` and
