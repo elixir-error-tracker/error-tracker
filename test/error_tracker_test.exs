@@ -25,7 +25,7 @@ defmodule ErrorTrackerTest do
       assert error.kind == to_string(ArithmeticError)
       assert error.reason == "bad argument in arithmetic expression"
 
-      # Elixir 1.17.0 reports this errors differntly than previous versions
+      # Elixir 1.17.0 reports these errors differently than previous versions
       if Version.compare(System.version(), "1.17.0") == :lt do
         assert error.source_line =~ @relative_file_path
       else
