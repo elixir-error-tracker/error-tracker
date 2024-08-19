@@ -63,8 +63,8 @@ defmodule ErrorTracker.Migration.SQLMigrator do
   defp record_version(opts, version) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix()
 
-    case repo().__adapter__() do
-      Ecto.Adapters.Postgres ->
+    ErrorTracker.Repo.with_adapter(fn
+      :postgres ->
         prefix = opts[:prefix]
 
         execute """
@@ -79,12 +79,12 @@ defmodule ErrorTracker.Migration.SQLMigrator do
         VALUES ('migration_version', '#{version}'), ('migration_timestamp', '#{timestamp}')
         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
         """
-    end
+    end)
   end
 
   defp meta_table_exists?(repo, opts) do
-    case repo.__adapter__() do
-      Ecto.Adapters.Postgres ->
+    ErrorTracker.Repo.with_adapter(fn
+      :postgres ->
         Ecto.Adapters.SQL.query!(
           repo,
           "SELECT TRUE FROM information_schema.tables WHERE table_name = 'error_tracker_meta' AND table_schema = $1",
@@ -96,6 +96,6 @@ defmodule ErrorTracker.Migration.SQLMigrator do
 
       _other ->
         Ecto.Adapters.SQL.table_exists?(repo, "error_tracker_meta", log: false)
-    end
+    end)
   end
 end
