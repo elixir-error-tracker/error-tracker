@@ -111,6 +111,11 @@ defmodule ErrorTracker.Web.Live.Dashboard do
   end
 
   defp do_filter({field, value}, query) do
-    where(query, [error], ilike(field(error, ^field), ^"%#{value}%"))
+    # Postgres provides the ILIKE operator which produces a case-insensitive match between two
+    # strings. SQLite3 only supports LIKE, which is case-insensitive for ASCII characters.
+    Repo.with_adapter(fn
+      :postgres -> where(query, [error], ilike(field(error, ^field), ^"%#{value}%"))
+      :sqlite -> where(query, [error], like(field(error, ^field), ^"%#{value}%"))
+    end)
   end
 end
