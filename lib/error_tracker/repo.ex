@@ -29,19 +29,24 @@ defmodule ErrorTracker.Repo do
     dispatch(:aggregate, [queryable, aggregate], opts)
   end
 
-  def __adapter__, do: repo().__adapter__()
+  def with_adapter(fun) do
+    adapter =
+      case repo().__adapter__() do
+        Ecto.Adapters.Postgres -> :postgres
+        Ecto.Adapters.SQLite3 -> :sqlite
+      end
+
+    fun.(adapter)
+  end
 
   defp dispatch(action, args, opts) do
     repo = repo()
 
     defaults =
-      case repo.__adapter__() do
-        Ecto.Adapters.Postgres ->
-          [prefix: Application.get_env(:error_tracker, :prefix, "public")]
-
-        _ ->
-          []
-      end
+      with_adapter(fn
+        :postgres -> [prefix: Application.get_env(:error_tracker, :prefix, "public")]
+        _ -> []
+      end)
 
     opts_w_defaults = Keyword.merge(defaults, opts)
 
