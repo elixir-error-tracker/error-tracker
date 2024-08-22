@@ -3,6 +3,8 @@ defmodule ErrorTracker.Web.Router do
   ErrorTracker UI integration into your application's router.
   """
 
+  alias ErrorTracker.Web.Hooks.SetAssigns
+
   @doc """
   Creates the routes needed to use the `ErrorTracker` web interface.
 
@@ -45,17 +47,32 @@ defmodule ErrorTracker.Web.Router do
   @doc false
   def parse_options(opts, path) do
     custom_on_mount = Keyword.get(opts, :on_mount, [])
-
-    on_mount =
-      [{ErrorTracker.Web.Hooks.SetAssigns, {:set_dashboard_path, path}}] ++ custom_on_mount
-
     session_name = Keyword.get(opts, :as, :error_tracker_dashboard)
 
+    csp_nonce_assign_key =
+      case opts[:csp_nonce_assign_key] do
+        nil -> nil
+        key when is_atom(key) -> %{img: key, style: key, script: key}
+        keys when is_map(keys) -> Map.take(keys, [:img, :style, :script])
+      end
+
     session_opts = [
-      on_mount: on_mount,
+      session: {__MODULE__, :__session__, [csp_nonce_assign_key]},
+      on_mount: [{SetAssigns, {:set_dashboard_path, path}}] ++ custom_on_mount,
       root_layout: {ErrorTracker.Web.Layouts, :root}
     ]
 
     {session_name, session_opts}
+  end
+
+  @doc false
+  def __session__(conn, csp_nonce_assign_key) do
+    %{
+      "csp_nonces" => %{
+        img: conn.assigns[csp_nonce_assign_key[:img]],
+        style: conn.assigns[csp_nonce_assign_key[:style]],
+        script: conn.assigns[csp_nonce_assign_key[:script]]
+      }
+    }
   end
 end
