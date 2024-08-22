@@ -12,9 +12,9 @@ defmodule ErrorTracker.Web.Router do
 
   ## Security considerations
 
-  Errors may contain sensitive information so it is recommended to use the `on_mount`
-  option to provide a custom hook that implements authentication and authorization
-  for access control.
+  The dashboard inlines both the JS and CSS assets. This means that, if your
+  application has a Content Security Policy, you need to specify the
+  `csp_nonce_assign_key` option, which is explained below.
 
   ## Options
 
@@ -23,6 +23,10 @@ defmodule ErrorTracker.Web.Router do
 
   * `as`: a session name to use for the dashboard LiveView session. By default
   it uses `:error_tracker_dashboard`.
+
+  * `csp_nonce_assign_key`: an assign key to find the CSP nonce value used for assets.
+  Supports either `atom()` or a map of type
+  `%{optional(:img) => atom(), optional(:script) => atom(), optional(:style) => atom()}`
   """
   defmacro error_tracker_dashboard(path, opts \\ []) do
     quote bind_quoted: [path: path, opts: opts] do
