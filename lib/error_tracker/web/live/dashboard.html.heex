@@ -83,30 +83,32 @@
           <.badge :if={error.status == :resolved} color={:green}>Resolved</.badge>
           <.badge :if={error.status == :unresolved} color={:red}>Unresolved</.badge>
         </td>
-        <td class="px-4 py-4 text-center flex align-center mt-4">
-          <.button
-            :if={error.status == :unresolved}
-            phx-click="resolve"
-            phx-value-error_id={error.id}
-          >
-            Resolve
-          </.button>
+        <td class="px-4 py-4 text-center">
+          <div class="flex">
+            <.button
+              :if={error.status == :unresolved}
+              phx-click="resolve"
+              phx-value-error_id={error.id}
+            >
+              Resolve
+            </.button>
 
-          <.button
-            :if={error.status == :resolved}
-            phx-click="unresolve"
-            phx-value-error_id={error.id}
-          >
-            Unresolve
-          </.button>
+            <.button
+              :if={error.status == :resolved}
+              phx-click="unresolve"
+              phx-value-error_id={error.id}
+            >
+              Unresolve
+            </.button>
 
-          <button
-            class="ml-2 rounded-lg bg-red-400 hover:bg-red-600 py-2 px-4 text-sm text-white active:text-white/80"
-            phx-click="delete"
-            phx-value-error_id={error.id}
-          >
-            Delete
-          </button>
+            <button
+              class="ml-2 rounded-lg bg-red-400 hover:bg-red-600 py-2 px-4 text-sm text-white active:text-white/80"
+              phx-click="delete"
+              phx-value-error_id={error.id}
+            >
+              Delete
+            </button>
+          </div>
         </td>
       </tr>
     </tbody>
