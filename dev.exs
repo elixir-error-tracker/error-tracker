@@ -115,7 +115,7 @@ defmodule ErrorTrackerDevWeb.Router do
     get "/exit", ErrorTrackerDevWeb.PageController, :exit
 
     scope "/dev" do
-      error_tracker_dashboard "/errors"
+      error_tracker_dashboard "/errors", csp_nonce_assign_key: :my_csp_nonce
     end
   end
 end
@@ -142,10 +142,24 @@ defmodule ErrorTrackerDevWeb.Endpoint do
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
   plug :maybe_exception
+  plug :set_csp
   plug ErrorTrackerDevWeb.Router
 
   def maybe_exception(%Plug.Conn{path_info: ["plug-exception"]}, _), do: raise("Plug exception")
   def maybe_exception(conn, _), do: conn
+
+  defp set_csp(conn, _opts) do
+    nonce = 10 |> :crypto.strong_rand_bytes() |> Base.encode64()
+
+    policies = [
+      "script-src 'self' 'nonce-#{nonce}';",
+      "style-src 'self' 'nonce-#{nonce}';"
+    ]
+
+    conn
+    |> Plug.Conn.assign(:my_csp_nonce, "#{nonce}")
+    |> Plug.Conn.put_resp_header("content-security-policy", Enum.join(policies, " "))
+  end
 end
 
 defmodule ErrorTrackerDev.Telemetry do

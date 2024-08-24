@@ -10,10 +10,10 @@
 
     <title><%= assigns[:page_title] || "🐛 ErrorTracker" %></title>
 
-    <style>
+    <style nonce={@csp_nonces[:style]}>
       <%= raw get_content(:css) %>
     </style>
-    <script>
+    <script nonce={@csp_nonces[:script]}>
       <%= raw get_content(:js) %>
     </script>
   </head>
