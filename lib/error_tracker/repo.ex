@@ -29,6 +29,10 @@ defmodule ErrorTracker.Repo do
     dispatch(:aggregate, [queryable, aggregate], opts)
   end
 
+  def transaction(fun_or_multi, opts \\ []) do
+    dispatch(:transaction, [fun_or_multi], opts)
+  end
+
   def with_adapter(fun) do
     adapter =
       case repo().__adapter__() do
