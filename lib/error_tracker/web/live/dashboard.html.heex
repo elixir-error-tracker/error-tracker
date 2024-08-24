@@ -48,8 +48,8 @@
       <tr>
         <th scope="col" class="px-4 pr-2 py-3 w-72">Error</th>
         <th scope="col" class="px-4 py-3 w-72">Occurrences</th>
-        <th scope="col" class="px-4 py-3 w-28">Status</th>
-        <th scope="col" class="px-4 py-3 w-32"></th>
+        <th scope="col" class="px-4 py-3 w-28 text-center">Status</th>
+        <th scope="col" class="px-4 py-3 w-32 text-center">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -80,8 +80,10 @@
           <p>Total: <%= @occurrences[error.id] %></p>
         </td>
         <td class="px-4 py-4">
-          <.badge :if={error.status == :resolved} color={:green}>Resolved</.badge>
-          <.badge :if={error.status == :unresolved} color={:red}>Unresolved</.badge>
+          <div class="flex justify-center">
+            <.badge :if={error.status == :resolved} color={:green}>Resolved</.badge>
+            <.badge :if={error.status == :unresolved} color={:red}>Unresolved</.badge>
+          </div>
         </td>
         <td class="px-4 py-4 text-center">
           <div class="flex">
