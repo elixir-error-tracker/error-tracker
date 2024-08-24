@@ -47,7 +47,7 @@
     <thead class="text-xs uppercase bg-gray-900">
       <tr>
         <th scope="col" class="px-4 pr-2 py-3 w-72">Error</th>
-        <th scope="col" class="px-4 py-3 w-72">Occurrences</th>
+        <th scope="col" class="px-4 py-3 w-32">Occurrences</th>
         <th scope="col" class="px-4 py-3 w-28 text-center">Status</th>
         <th scope="col" class="px-4 py-3 w-32 text-center">Actions</th>
       </tr>
@@ -86,7 +86,7 @@
           </div>
         </td>
         <td class="px-4 py-4 text-center">
-          <div class="flex">
+          <div class="flex justify-between">
             <.button
               :if={error.status == :unresolved}
               phx-click="resolve"
@@ -104,7 +104,7 @@
             </.button>
 
             <button
-              class="ml-2 rounded-lg bg-red-400 hover:bg-red-600 py-2 px-4 text-sm text-white active:text-white/80"
+              class="rounded-lg bg-red-400 hover:bg-red-600 py-2 px-4 text-sm text-white active:text-white/80"
               phx-click="delete"
               phx-value-error_id={error.id}
             >
