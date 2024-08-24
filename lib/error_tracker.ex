@@ -188,16 +188,25 @@ defmodule ErrorTracker do
     existing_status =
       Repo.one(from e in Error, where: [fingerprint: ^error.fingerprint], select: e.status)
 
-    error =
-      Repo.insert!(error,
-        on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
-        conflict_target: :fingerprint
-      )
+    {:ok, {error, occurrence}} =
+      Repo.transaction(fn ->
+        error =
+          Repo.insert!(error,
+            on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
+            conflict_target: :fingerprint
+          )
 
-    occurrence =
-      error
-      |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context, reason: reason)
-      |> Repo.insert!()
+        occurrence =
+          error
+          |> Ecto.build_assoc(:occurrences,
+            stacktrace: stacktrace,
+            context: context,
+            reason: reason
+          )
+          |> Repo.insert!()
+
+        {error, occurrence}
+      end)
 
     # If the error existed and was marked as resolved before this exception,
     # sent a Telemetry event
