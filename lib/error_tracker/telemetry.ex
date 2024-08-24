@@ -12,6 +12,8 @@ defmodule ErrorTracker.Telemetry do
   * `[:error_tracker, :error, :new]`: is emitted when a new error is stored and
   no previous occurrences were known.
 
+  * `[:error_tracker, :error, :delete]`: is emitted when an existing error is deleted
+
   * `[:error_tracker, :error, :resolved]`: is emitted when a new error is marked
   as resolved on the UI.
 
@@ -34,6 +36,7 @@ defmodule ErrorTracker.Telemetry do
   | event                                   | measures       | metadata      |
   | --------------------------------------- | -------------- | ------------- |
   | `[:error_tracker, :error, :new]`        | `:system_time` | `:error`      |
+  | `[:error_tracker, :error, :delete]`     | `:system_time` | `:error`      |
   | `[:error_tracker, :error, :unresolved]` | `:system_time` | `:error`      |
   | `[:error_tracker, :error, :resolved]`   | `:system_time` | `:error`      |
   | `[:error_tracker, :occurrence, :new]`   | `:system_time` | `:occurrence` |
@@ -44,6 +47,13 @@ defmodule ErrorTracker.Telemetry do
     measurements = %{system_time: System.system_time()}
     metadata = %{error: error}
     :telemetry.execute([:error_tracker, :error, :new], measurements, metadata)
+  end
+
+  @doc false
+  def delete_error(error) do
+    measurements = %{system_time: System.system_time()}
+    metadata = %{error: error}
+    :telemetry.execute([:error_tracker, :error, :delete], measurements, metadata)
   end
 
   @doc false

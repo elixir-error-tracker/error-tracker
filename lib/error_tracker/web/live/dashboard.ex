@@ -62,6 +62,8 @@ defmodule ErrorTracker.Web.Live.Dashboard do
     error = Repo.get(Error, id)
     Repo.delete(error)
 
+    {:ok} = ErrorTracker.delete(error)
+
     {:noreply, paginate_errors(socket)}
   end
 

@@ -113,6 +113,17 @@ defmodule ErrorTracker do
   end
 
   @doc """
+  Delete an existing error.
+
+  """
+  def delete(error) do
+    with {:ok} <- Repo.delete(error) do
+      Telemetry.delete_error(error)
+      {:ok, error}
+    end
+  end
+
+  @doc """
   Marks an error as resolved.
 
   If an error is marked as resolved and it happens again, it will automatically

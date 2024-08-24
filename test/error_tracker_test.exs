@@ -66,6 +66,15 @@ defmodule ErrorTrackerTest do
     end
   end
 
+  describe inspect(&ErrorTracker.delete/1) do
+    test "deletes an exisiting error" do
+      error = report_error(fn -> raise "This is a test" end)
+
+      assert {:ok, deleted_error} = ErrorTracker.delete(error)
+      assert deleted_error.id == error.id
+    end
+  end
+
   describe inspect(&ErrorTracker.resolve/1) do
     test "marks the error as resolved" do
       %Occurrence{error: error} = report_error(fn -> raise "This is a test" end)
