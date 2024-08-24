@@ -53,8 +53,15 @@ Open the generated migration and call the `up` and `down` functions on `ErrorTra
 defmodule MyApp.Repo.Migrations.AddErrorTracker do
   use Ecto.Migration
 
-  def up, do: ErrorTracker.Migration.up()
-  def down, do: ErrorTracker.Migration.down()
+  def up do
+    ErrorTracker.Migration.up(version: 2)
+  end
+
+  # We specify `version: 1` in `down`, ensuring that we'll roll all the way back down if
+  # necessary, regardless of which version we've migrated `up` to.
+  def down do
+    ErrorTracker.Migration.down(version: 1)
+  end
 end
 ```
 
