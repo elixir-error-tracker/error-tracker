@@ -1068,6 +1068,11 @@ select {
   background-color: rgb(113 63 18 / var(--tw-bg-opacity));
 }
 
+.bg-red-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 113 113 / var(--tw-bg-opacity));
+}
+
 .p-2 {
   padding: 0.5rem;
 }
@@ -1330,6 +1335,11 @@ select {
 
 .hover\:bg-gray-800\/60:hover {
   background-color: rgb(31 41 55 / 0.6);
+}
+
+.hover\:bg-red-600:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(220 38 38 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-sky-700:hover {

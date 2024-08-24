@@ -57,6 +57,14 @@ defmodule ErrorTracker.Web.Live.Dashboard do
     {:noreply, paginate_errors(socket)}
   end
 
+  @impl Phoenix.LiveView
+  def handle_event("delete", %{"error_id" => id}, socket) do
+    error = Repo.get(Error, id)
+    Repo.delete(error)
+
+    {:noreply, paginate_errors(socket)}
+  end
+
   defp paginate_errors(socket) do
     %{page: page, search: search} = socket.assigns
 

@@ -69,6 +69,13 @@ defmodule ErrorTracker.Web.Live.Show do
     {:noreply, assign(socket, :error, updated_error)}
   end
 
+  @impl Phoenix.LiveView
+  def handle_event("delete", _params, socket) do
+    error = Repo.get!(Error, socket.assigns.error.id)
+    {:ok, _} = Repo.delete(error)
+    {:noreply, redirect(socket, to: dashboard_path(socket))}
+  end
+
   defp load_related_occurrences(socket) do
     current_occurrence = socket.assigns.occurrence
     base_query = Ecto.assoc(socket.assigns.error, :occurrences)
