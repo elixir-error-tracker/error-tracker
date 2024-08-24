@@ -849,6 +849,10 @@ select {
   display: inline-block;
 }
 
+.inline {
+  display: inline;
+}
+
 .flex {
   display: flex;
 }
@@ -1054,6 +1058,11 @@ select {
   background-color: rgb(88 28 135 / var(--tw-bg-opacity));
 }
 
+.bg-red-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 113 113 / var(--tw-bg-opacity));
+}
+
 .bg-red-400\/10 {
   background-color: rgb(248 113 113 / 0.1);
 }
@@ -1068,9 +1077,9 @@ select {
   background-color: rgb(113 63 18 / var(--tw-bg-opacity));
 }
 
-.bg-red-400 {
+.bg-red-800 {
   --tw-bg-opacity: 1;
-  background-color: rgb(248 113 113 / var(--tw-bg-opacity));
+  background-color: rgb(153 27 27 / var(--tw-bg-opacity));
 }
 
 .p-2 {
