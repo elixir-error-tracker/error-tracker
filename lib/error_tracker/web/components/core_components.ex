@@ -77,7 +77,7 @@ defmodule ErrorTracker.Web.CoreComponents do
 
     ~H"""
     <span
-      class={["text-sm font-medium me-2 py-1 px-2 rounded-lg ring-1 ring-inset", @color_class]}
+      class={["text-sm font-medium me-2 py-2 px-3 rounded-lg ring-1 ring-inset", @color_class]}
       {@rest}
     >
       <%= render_slot(@inner_block) %>
