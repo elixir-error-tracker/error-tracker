@@ -48,7 +48,11 @@ defmodule ErrorTracker.Migration.Postgres.V01 do
         add :stacktrace, :map, null: false
 
         add :error_id,
-            references(:error_tracker_errors, on_delete: :delete_all, type: :bigserial),
+            references(:error_tracker_errors,
+              on_delete: :delete_all,
+              column: :id,
+              type: :bigserial
+            ),
             null: false
 
         timestamps(type: :utc_datetime_usec, updated_at: false)

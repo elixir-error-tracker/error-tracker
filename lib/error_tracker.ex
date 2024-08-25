@@ -41,6 +41,9 @@ defmodule ErrorTracker do
   can gather, but aside from that, you can also add your own information. You can
   do this in a per-process basis or in a per-call basis (or both).
 
+  There are some requirements on the type of data that can be included in the
+  context, so we recommend taking a look at `set_context/1` documentation.
+
   **Per process**
 
   This allows you to set a general context for the current process such as a Phoenix
@@ -163,6 +166,17 @@ defmodule ErrorTracker do
 
   That means that any existing data on deep levels for he current context will
   be replaced if the first level key is received on the new contents.
+
+  ## Content serialization
+
+  The content stored on the context should be serializable using the JSON library
+  used by the application (usually `Jason`), so it is rather recommended to use
+  primitive types (strings, numbers, booleans...).
+
+  If you still need to pass more complex data types to your context, please test
+  that they can be encoded to JSON or storing the errors will fail. In the case
+  of `Jason` that may require defining an Encoder for that data type if not
+  included by default.
   """
   @spec set_context(context()) :: context()
   def set_context(params) when is_map(params) do
@@ -199,16 +213,25 @@ defmodule ErrorTracker do
     existing_status =
       Repo.one(from e in Error, where: [fingerprint: ^error.fingerprint], select: e.status)
 
-    error =
-      Repo.insert!(error,
-        on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
-        conflict_target: :fingerprint
-      )
+    {:ok, {error, occurrence}} =
+      Repo.transaction(fn ->
+        error =
+          Repo.insert!(error,
+            on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
+            conflict_target: :fingerprint
+          )
 
-    occurrence =
-      error
-      |> Ecto.build_assoc(:occurrences, stacktrace: stacktrace, context: context, reason: reason)
-      |> Repo.insert!()
+        occurrence =
+          error
+          |> Ecto.build_assoc(:occurrences,
+            stacktrace: stacktrace,
+            context: context,
+            reason: reason
+          )
+          |> Repo.insert!()
+
+        {error, occurrence}
+      end)
 
     # If the error existed and was marked as resolved before this exception,
     # sent a Telemetry event

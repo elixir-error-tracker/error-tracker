@@ -27,8 +27,9 @@ defmodule ErrorTracker.Migration.SQLite.V02 do
       add :reason, :text, null: false
       add :stacktrace, :map, null: false
 
-      add :error_id, references(:error_tracker_errors, on_delete: :delete_all, type: :bigserial),
-        null: false
+      add :error_id,
+          references(:error_tracker_errors, on_delete: :delete_all, column: :id, type: :bigserial),
+          null: false
 
       timestamps(type: :utc_datetime_usec, updated_at: false)
     end

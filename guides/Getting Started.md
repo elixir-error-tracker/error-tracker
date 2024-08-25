@@ -53,8 +53,10 @@ Open the generated migration and call the `up` and `down` functions on `ErrorTra
 defmodule MyApp.Repo.Migrations.AddErrorTracker do
   use Ecto.Migration
 
-  def up, do: ErrorTracker.Migration.up()
-  def down, do: ErrorTracker.Migration.down()
+  def up, do: ErrorTracker.Migration.up(version: 2)
+
+  # We specify `version: 1` in `down`, to ensure we remove all migrations.
+  def down, do: ErrorTracker.Migration.down(version: 1)
 end
 ```
 
@@ -105,6 +107,8 @@ The `ErrorTracker.set_context/1` function stores the given context in the curren
 ```elixir
 ErrorTracker.set_context(%{user_id: conn.assigns.current_user.id})
 ```
+
+There are some requirements on the type of data that can be included in the context, so we recommend taking a look at `set_context/1` documentation
 
 ## Manual error tracking
 
