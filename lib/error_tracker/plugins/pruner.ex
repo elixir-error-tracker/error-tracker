@@ -78,25 +78,33 @@ defmodule ErrorTracker.Plugins.Pruner do
   """
   @spec prune_errors(keyword()) :: {:ok, list(pruned_error())}
   def prune_errors(opts \\ []) do
-    limit = opts[:limit] || 1000
-    max_age = opts[:max_age] || :timer.minutes(5)
+    limit = opts[:limit] || raise ":limit option is required"
+    max_age = opts[:max_age] || raise ":max_age option is required"
     time = DateTime.add(DateTime.utc_now(), max_age, :millisecond)
 
-    to_prune_query =
-      from error in Error,
-        select: map(error, [:id, :kind, :source_line, :source_function]),
-        where: error.status == :resolved,
-        where: error.last_occurrence_at >= ^time,
-        limit: ^limit
+    pruned =
+      Repo.all(
+        from error in Error,
+          select: map(error, [:id, :kind, :source_line, :source_function]),
+          where: error.status == :resolved,
+          where: error.last_occurrence_at < ^time,
+          limit: ^limit
+      )
 
-    {_count, pruned} = Repo.delete_all(to_prune_query)
+    if Enum.any?(pruned) do
+      Repo.delete_all(from error in Error, where: error.id in ^Enum.map(pruned, & &1.id))
+    end
 
     {:ok, pruned}
   end
 
+  def start_link(state \\ []) do
+    GenServer.start_link(__MODULE__, state, name: __MODULE__)
+  end
+
   @impl GenServer
   @doc false
-  def init(state) do
+  def init(state \\ []) do
     state = %{
       limit: state[:limit] || 1000,
       max_age: state[:max_age] || :timer.minutes(5),
