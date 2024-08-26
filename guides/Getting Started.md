@@ -138,3 +138,11 @@ We currently do not support notifications out of the box.
 However, we provideo some detailed Telemetry events that you may use to implement your own notifications following your custom rules and notification channels.
 
 If you want to take a look at the events you can attach to, take a look at `ErrorTracker.Telemetry` module documentation.
+
+## Pruning resolved errors
+
+By default errors are kept in the database indefinitely. This is not ideal for production
+environments where you may want to prune old errors that have been resolved.
+
+The `ErrorTracker.Plugins.Pruner` module provides automatic pruning functionality with a configurable
+interval and error age.
