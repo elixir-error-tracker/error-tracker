@@ -64,6 +64,14 @@ defmodule ErrorTrackerTest do
       assert error.reason == "This is a test"
       assert error.source_line =~ @relative_file_path
     end
+
+    @tag capture_log: true
+    test "reports errors with invalid context" do
+      # It's invalid because cannot be serialized to JSON
+      invalid_context = %{foo: %ErrorTracker.Error{}}
+
+      assert %Occurrence{} = report_error(fn -> raise "test" end, invalid_context)
+    end
   end
 
   describe inspect(&ErrorTracker.resolve/1) do
