@@ -70,6 +70,7 @@ defmodule ErrorTracker do
   import Ecto.Query
 
   alias ErrorTracker.Error
+  alias ErrorTracker.Occurrence
   alias ErrorTracker.Repo
   alias ErrorTracker.Telemetry
 
@@ -212,11 +213,12 @@ defmodule ErrorTracker do
 
         occurrence =
           error
-          |> Ecto.build_assoc(:occurrences,
+          |> Ecto.build_assoc(:occurrences)
+          |> Occurrence.changeset(%{
             stacktrace: stacktrace,
             context: context,
             reason: reason
-          )
+          })
           |> Repo.insert!()
 
         {error, occurrence}
