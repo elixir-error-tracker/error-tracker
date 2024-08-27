@@ -3,8 +3,8 @@ defmodule ErrorTracker.OccurrenceTest do
 
   import Ecto.Changeset
 
-  alias ErrorTracker.Stacktrace
   alias ErrorTracker.Occurrence
+  alias ErrorTracker.Stacktrace
 
   describe inspect(&Occurrence.changeset/2) do
     test "works as expected with valid data" do
