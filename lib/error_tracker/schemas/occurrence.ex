@@ -21,12 +21,13 @@ defmodule ErrorTracker.Occurrence do
     timestamps(type: :utc_datetime_usec, updated_at: false)
   end
 
+  @doc false
   def changeset(occurrence, attrs) do
     occurrence
     |> cast(attrs, [:context, :reason])
     |> maybe_put_stacktrace()
+    |> validate_required([:reason, :stacktrace])
     |> validate_context()
-    |> validate_required([:context, :reason, :stacktrace])
     |> foreign_key_constraint(:error)
   end
 
