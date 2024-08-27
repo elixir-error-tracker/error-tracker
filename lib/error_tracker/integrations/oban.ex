@@ -59,7 +59,8 @@ defmodule ErrorTracker.Integrations.Oban do
 
   def handle_event([:oban, :job, :exception], _measurements, metadata, :no_config) do
     %{reason: exception, stacktrace: stacktrace} = metadata
+    state = Map.get(metadata, :state, :failure)
 
-    ErrorTracker.report(exception, stacktrace)
+    ErrorTracker.report(exception, stacktrace, %{state: state})
   end
 end

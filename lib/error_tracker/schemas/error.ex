@@ -29,12 +29,21 @@ defmodule ErrorTracker.Error do
   @doc false
   def new(kind, reason, stacktrace = %ErrorTracker.Stacktrace{}) do
     source = ErrorTracker.Stacktrace.source(stacktrace)
-    source_line = if source.file, do: "#{source.file}:#{source.line}", else: "nofile"
+
+    {source_line, source_function} =
+      if source do
+        source_line = if source.line, do: "#{source.file}:#{source.line}", else: "nofile"
+        source_function = "#{source.module}.#{source.function}/#{source.arity}"
+
+        {source_line, source_function}
+      else
+        {"-", "-"}
+      end
 
     params = [
       kind: to_string(kind),
       source_line: source_line,
-      source_function: "#{source.module}.#{source.function}/#{source.arity}"
+      source_function: source_function
     ]
 
     fingerprint = :crypto.hash(:sha256, params |> Keyword.values() |> Enum.join())
