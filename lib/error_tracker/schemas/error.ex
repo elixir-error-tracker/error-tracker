@@ -55,4 +55,14 @@ defmodule ErrorTracker.Error do
     |> Ecto.Changeset.put_change(:last_occurrence_at, DateTime.utc_now())
     |> Ecto.Changeset.apply_action(:new)
   end
+
+  @doc """
+  Returns if the Error has information of the source or not.
+
+  Errors usually have information about in which line and function occurred, but
+  in some cases (like an Oban job ending with `{:error, any()}`) we cannot get
+  that information and no source is stored.
+  """
+  def has_source_info?(%__MODULE__{source_function: "-", source_line: "-"}), do: false
+  def has_source_info?(%__MODULE__{}), do: true
 end

@@ -19,7 +19,7 @@
       <pre class="overflow-auto p-4 rounded-lg bg-gray-300/10 border border-gray-900"><%= @occurrence.reason %></pre>
     </.section>
 
-    <.section :if={error_has_source_info?(@error)} title="Source">
+    <.section :if={ErrorTracker.Error.has_source_info?(@error)} title="Source">
       <pre class="overflow-auto text-sm p-4 rounded-lg bg-gray-300/10 border border-gray-900">
         <%= sanitize_module(@error.source_function) %>
         <%= @error.source_line %></pre>

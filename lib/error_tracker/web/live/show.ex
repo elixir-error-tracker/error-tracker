@@ -121,7 +121,4 @@ defmodule ErrorTracker.Web.Live.Show do
     |> limit(^num_results)
     |> Repo.all()
   end
-
-  defp error_has_source_info?(%Error{source_function: "-", source_line: "-"}), do: false
-  defp error_has_source_info?(%Error{}), do: true
 end
