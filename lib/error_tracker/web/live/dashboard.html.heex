@@ -69,7 +69,7 @@
           <p class="whitespace-nowrap text-ellipsis w-full overflow-hidden">
             (<%= sanitize_module(error.kind) %>) <%= error.reason %>
           </p>
-          <p class="font-normal text-gray-400">
+          <p :if={ErrorTracker.Error.has_source_info?(error)} class="font-normal text-gray-400">
             <%= sanitize_module(error.source_function) %>
             <br />
             <%= error.source_line %>

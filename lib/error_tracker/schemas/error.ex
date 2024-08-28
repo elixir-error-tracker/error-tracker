@@ -29,12 +29,21 @@ defmodule ErrorTracker.Error do
   @doc false
   def new(kind, reason, stacktrace = %ErrorTracker.Stacktrace{}) do
     source = ErrorTracker.Stacktrace.source(stacktrace)
-    source_line = if source.file, do: "#{source.file}:#{source.line}", else: "nofile"
+
+    {source_line, source_function} =
+      if source do
+        source_line = if source.line, do: "#{source.file}:#{source.line}", else: "nofile"
+        source_function = "#{source.module}.#{source.function}/#{source.arity}"
+
+        {source_line, source_function}
+      else
+        {"-", "-"}
+      end
 
     params = [
       kind: to_string(kind),
       source_line: source_line,
-      source_function: "#{source.module}.#{source.function}/#{source.arity}"
+      source_function: source_function
     ]
 
     fingerprint = :crypto.hash(:sha256, params |> Keyword.values() |> Enum.join())
@@ -46,4 +55,14 @@ defmodule ErrorTracker.Error do
     |> Ecto.Changeset.put_change(:last_occurrence_at, DateTime.utc_now())
     |> Ecto.Changeset.apply_action(:new)
   end
+
+  @doc """
+  Returns if the Error has information of the source or not.
+
+  Errors usually have information about in which line and function occurred, but
+  in some cases (like an Oban job ending with `{:error, any()}`) we cannot get
+  that information and no source is stored.
+  """
+  def has_source_info?(%__MODULE__{source_function: "-", source_line: "-"}), do: false
+  def has_source_info?(%__MODULE__{}), do: true
 end
