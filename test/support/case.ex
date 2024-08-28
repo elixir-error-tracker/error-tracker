@@ -16,16 +16,16 @@ defmodule ErrorTracker.Test.Case do
   @doc """
   Reports the error produced by the given function.
   """
-  def report_error(fun) do
+  def report_error(fun, context \\ %{}) do
     occurrence =
       try do
         fun.()
       rescue
         exception ->
-          ErrorTracker.report(exception, __STACKTRACE__)
+          ErrorTracker.report(exception, __STACKTRACE__, context)
       catch
         kind, reason ->
-          ErrorTracker.report({kind, reason}, __STACKTRACE__)
+          ErrorTracker.report({kind, reason}, __STACKTRACE__, context)
       end
 
     repo().preload(occurrence, :error)
