@@ -21,10 +21,10 @@ defmodule ErrorTracker.Plugins.Pruner do
   ## Options
 
   - `:limit`  - the maximum number of errors to prune on each execution. Occurrences are removed
-    along the errors. The default is 1000 to prevent timeouts and unnecesary database load.
+    along the errors. The default is 200 to prevent timeouts and unnecesary database load.
 
-  - `:max_age` - the number of milliseconds after a resolved error may be pruned. The default is 5
-    minutes.
+  - `:max_age` - the number of milliseconds after a resolved error may be pruned. The default is 24
+    hours.
 
   - `:interval` - the interval in milliseconds between pruning runs. The default is 30 minutes.
 
@@ -71,10 +71,10 @@ defmodule ErrorTracker.Plugins.Pruner do
   ## Options
 
   - `:limit`  - the maximum number of errors to prune on each execution. Occurrences are removed
-    along the errors. The default is 1000 to prevent timeouts and unnecesary database load.
+    along the errors. The default is 200 to prevent timeouts and unnecesary database load.
 
-  - `:max_age` - the number of milliseconds after a resolved error may be pruned. The default is 5
-    minutes. You may find the `:timer` module functions useful to pass readable values to this option.
+  - `:max_age` - the number of milliseconds after a resolved error may be pruned. The default is 24
+    hours. You may find the `:timer` module functions useful to pass readable values to this option.
   """
   @spec prune_errors(keyword()) :: {:ok, list(pruned_error())}
   def prune_errors(opts \\ []) do
@@ -106,8 +106,8 @@ defmodule ErrorTracker.Plugins.Pruner do
   @doc false
   def init(state \\ []) do
     state = %{
-      limit: state[:limit] || 1000,
-      max_age: state[:max_age] || :timer.minutes(5),
+      limit: state[:limit] || 200,
+      max_age: state[:max_age] || :timer.hours(24),
       interval: state[:interval] || :timer.minutes(30)
     }
 
