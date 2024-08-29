@@ -16,3 +16,6 @@ config :error_tracker, ecto_repos: [ErrorTracker.Test.Repo]
 
 # Repo is selected in the test_helper.exs based on the given ENV vars
 config :error_tracker, otp_app: :error_tracker
+
+# Mocks for tests
+config :error_tracker, :utils, ErrorTracker.Integrations.UtilsMock
