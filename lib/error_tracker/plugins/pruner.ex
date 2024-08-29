@@ -86,12 +86,12 @@ defmodule ErrorTracker.Plugins.Pruner do
       )
 
     if Enum.any?(errors) do
-      :ok =
+      _pruned_occurrences_count =
         errors
         |> Ecto.assoc(:occurrences)
         |> limit(1000)
         |> prune_occurrences()
-        |> Stream.run()
+        |> Enum.sum()
 
       Repo.delete_all(from error in Error, where: error.id in ^Enum.map(errors, & &1.id))
     end
