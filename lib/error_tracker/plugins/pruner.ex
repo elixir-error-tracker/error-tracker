@@ -53,14 +53,8 @@ defmodule ErrorTracker.Plugins.Pruner do
   import Ecto.Query
 
   alias ErrorTracker.Error
+  alias ErrorTracker.Occurrence
   alias ErrorTracker.Repo
-
-  @type pruned_error :: %{
-          id: :integer,
-          kind: String.t(),
-          source_line: String.t(),
-          source_function: String.t()
-        }
 
   @doc """
   Prunes resolved errors.
@@ -76,26 +70,44 @@ defmodule ErrorTracker.Plugins.Pruner do
   - `:max_age` - the number of milliseconds after a resolved error may be pruned. The default is 24
     hours. You may find the `:timer` module functions useful to pass readable values to this option.
   """
-  @spec prune_errors(keyword()) :: {:ok, list(pruned_error())}
+  @spec prune_errors(keyword()) :: {:ok, list(Error.t())}
   def prune_errors(opts \\ []) do
     limit = opts[:limit] || raise ":limit option is required"
     max_age = opts[:max_age] || raise ":max_age option is required"
     time = DateTime.add(DateTime.utc_now(), max_age, :millisecond)
 
-    pruned =
+    errors =
       Repo.all(
         from error in Error,
-          select: map(error, [:id, :kind, :source_line, :source_function]),
+          select: [:id, :kind, :source_line, :source_function],
           where: error.status == :resolved,
           where: error.last_occurrence_at < ^time,
           limit: ^limit
       )
 
-    if Enum.any?(pruned) do
-      Repo.delete_all(from error in Error, where: error.id in ^Enum.map(pruned, & &1.id))
+    if Enum.any?(errors) do
+      :ok =
+        errors
+        |> Ecto.assoc(:occurrences)
+        |> limit(1000)
+        |> prune_occurrences()
+        |> Stream.run()
+
+      Repo.delete_all(from error in Error, where: error.id in ^Enum.map(errors, & &1.id))
     end
 
-    {:ok, pruned}
+    {:ok, errors}
+  end
+
+  defp prune_occurrences(occurrences_query) do
+    Stream.unfold(occurrences_query, fn occurrences_query ->
+      occurrences_ids = Repo.all(from occurrence in occurrences_query, select: occurrence.id)
+
+      case Repo.delete_all(from o in Occurrence, where: o.id in ^occurrences_ids) do
+        {0, _} -> nil
+        {deleted, _} -> {deleted, occurrences_query}
+      end
+    end)
   end
 
   def start_link(state \\ []) do
