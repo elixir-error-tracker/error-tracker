@@ -58,7 +58,6 @@ defmodule ErrorTracker.Integrations.Phoenix do
     [:phoenix, :live_view, :mount, :exception],
     [:phoenix, :live_view, :handle_params, :start],
     [:phoenix, :live_view, :handle_params, :exception],
-    [:phoenix, :live_view, :handle_event, :start],
     [:phoenix, :live_view, :handle_event, :exception],
     [:phoenix, :live_view, :render, :exception],
     [:phoenix, :live_component, :update, :exception],
