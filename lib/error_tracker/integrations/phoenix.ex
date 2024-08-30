@@ -65,7 +65,7 @@ defmodule ErrorTracker.Integrations.Phoenix do
 
   @doc false
   def attach do
-    if ErrorTracker.Integrations.Utils.application_spec(:phoenix) do
+    if Application.spec(:phoenix) do
       :telemetry.attach_many(__MODULE__, @events, &__MODULE__.handle_event/4, :no_config)
     end
   end

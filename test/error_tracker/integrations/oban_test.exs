@@ -5,12 +5,14 @@ defmodule ErrorTracker.Integrations.ObanTest do
   alias ErrorTracker.Occurrence
 
   setup do
+    ErrorTracker.Integrations.Oban.attach(true)
     attach_telemetry()
 
     :ok
   end
 
-  test "attaches to Oban events" do
+  test "attached to Oban events" do
+    assert attached?([:oban, :job, :start])
     assert attached?([:oban, :job, :exception])
   end
 
