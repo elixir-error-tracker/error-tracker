@@ -60,7 +60,9 @@ defmodule ErrorTracker.Integrations.Phoenix do
     [:phoenix, :live_view, :handle_params, :exception],
     [:phoenix, :live_view, :handle_event, :start],
     [:phoenix, :live_view, :handle_event, :exception],
-    [:phoenix, :live_view, :render, :exception]
+    [:phoenix, :live_view, :render, :exception],
+    [:phoenix, :live_component, :update, :exception],
+    [:phoenix, :live_component, :handle_event, :exception]
   ]
 
   @doc false
@@ -110,5 +112,24 @@ defmodule ErrorTracker.Integrations.Phoenix do
 
   def handle_event([:phoenix, :live_view, _action, :exception], _, metadata, :no_config) do
     ErrorTracker.report({metadata.kind, metadata.reason}, metadata.stacktrace)
+  end
+
+  def handle_event([:phoenix, :live_component, :update, :exception], _, metadata, :no_config) do
+    ErrorTracker.report({metadata.kind, metadata.reason}, metadata.stacktrace, %{
+      "live_view.component" => metadata.component
+    })
+  end
+
+  def handle_event(
+        [:phoenix, :live_component, :handle_event, :exception],
+        _,
+        metadata,
+        :no_config
+      ) do
+    ErrorTracker.report({metadata.kind, metadata.reason}, metadata.stacktrace, %{
+      "live_view.component" => metadata.component,
+      "live_view.event" => metadata.event,
+      "live_view.event_params" => metadata.params
+    })
   end
 end
