@@ -103,8 +103,8 @@ defmodule ErrorTracker.Integrations.Phoenix do
     })
   end
 
-  def handle_event([:phoenix, :live_view, :handle_event, :start], _, metadata, :no_config) do
-    ErrorTracker.set_context(%{
+  def handle_event([:phoenix, :live_view, :handle_event, :exception], _, metadata, :no_config) do
+    ErrorTracker.report({metadata.kind, metadata.reason}, metadata.stacktrace, %{
       "live_view.event" => metadata.event,
       "live_view.event_params" => metadata.params
     })
