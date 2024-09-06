@@ -197,7 +197,7 @@ defmodule ErrorTracker do
   defp ignored?(error, context) do
     ignorer = Application.get_env(:error_tracker, :ignorer)
 
-    ignorer && !ignorer.ignore?(error, context)
+    ignorer && ignorer.ignore?(error, context)
   end
 
   defp normalize_exception(%struct{} = ex, _stacktrace) when is_exception(ex) do

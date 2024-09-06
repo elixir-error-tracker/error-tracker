@@ -6,8 +6,8 @@ defmodule ErrorTracker.IgnorerTest do
   end
 
   test "ignores errors" do
-    refute report_error(fn -> raise "[IGNORE] Sample error" end)
-    assert report_error(fn -> raise "Sample error" end)
+    assert :noop = report_error(fn -> raise "[IGNORE] Sample error" end)
+    assert %ErrorTracker.Occurrence{} = report_error(fn -> raise "Sample error" end)
   end
 end
 
