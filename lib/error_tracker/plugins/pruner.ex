@@ -74,7 +74,7 @@ defmodule ErrorTracker.Plugins.Pruner do
   def prune_errors(opts \\ []) do
     limit = opts[:limit] || raise ":limit option is required"
     max_age = opts[:max_age] || raise ":max_age option is required"
-    time = DateTime.add(DateTime.utc_now(), max_age, :millisecond)
+    time = DateTime.add(DateTime.utc_now(), -max_age, :millisecond)
 
     errors =
       Repo.all(
