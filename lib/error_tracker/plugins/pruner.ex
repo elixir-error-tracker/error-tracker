@@ -89,7 +89,6 @@ defmodule ErrorTracker.Plugins.Pruner do
       _pruned_occurrences_count =
         errors
         |> Ecto.assoc(:occurrences)
-        |> limit(1000)
         |> prune_occurrences()
         |> Enum.sum()
 
@@ -101,7 +100,8 @@ defmodule ErrorTracker.Plugins.Pruner do
 
   defp prune_occurrences(occurrences_query) do
     Stream.unfold(occurrences_query, fn occurrences_query ->
-      occurrences_ids = Repo.all(from occurrence in occurrences_query, select: occurrence.id)
+      occurrences_ids =
+        Repo.all(from occurrence in occurrences_query, select: occurrence.id, limit: 1000)
 
       case Repo.delete_all(from o in Occurrence, where: o.id in ^occurrences_ids) do
         {0, _} -> nil
