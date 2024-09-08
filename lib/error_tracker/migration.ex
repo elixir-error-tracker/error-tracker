@@ -96,14 +96,17 @@ defmodule ErrorTracker.Migration do
   @callback down(Keyword.t()) :: :ok
   @callback current_version(Keyword.t()) :: non_neg_integer()
 
+  @spec up(Keyword.t()) :: :ok
   def up(opts \\ []) when is_list(opts) do
     migrator().up(opts)
   end
 
+  @spec down(Keyword.t()) :: :ok
   def down(opts \\ []) when is_list(opts) do
     migrator().down(opts)
   end
 
+  @spec migrated_version(Keyword.t()) :: non_neg_integer()
   def migrated_version(opts \\ []) when is_list(opts) do
     migrator().migrated_version(opts)
   end
