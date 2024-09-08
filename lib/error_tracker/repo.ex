@@ -25,6 +25,10 @@ defmodule ErrorTracker.Repo do
     dispatch(:all, [queryable], opts)
   end
 
+  def delete_all(queryable, opts \\ []) do
+    dispatch(:delete_all, [queryable], opts)
+  end
+
   def aggregate(queryable, aggregate, opts \\ []) do
     dispatch(:aggregate, [queryable, aggregate], opts)
   end

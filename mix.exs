@@ -65,6 +65,9 @@ defmodule ErrorTracker.MixProject do
         ErrorTracker.Integrations.Phoenix,
         ErrorTracker.Integrations.Plug
       ],
+      Plugins: [
+        ErrorTracker.Plugins.Pruner
+      ],
       Schemas: [
         ErrorTracker.Error,
         ErrorTracker.Occurrence,

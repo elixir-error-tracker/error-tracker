@@ -4,7 +4,7 @@ defmodule ErrorTracker.Application do
   use Application
 
   def start(_type, _args) do
-    children = []
+    children = Application.get_env(:error_tracker, :plugins, [])
 
     attach_handlers()
 

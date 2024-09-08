@@ -56,7 +56,7 @@ Open the generated migration and call the `up` and `down` functions on `ErrorTra
 defmodule MyApp.Repo.Migrations.AddErrorTracker do
   use Ecto.Migration
 
-  def up, do: ErrorTracker.Migration.up(version: 2)
+  def up, do: ErrorTracker.Migration.up(version: 3)
 
   # We specify `version: 1` in `down`, to ensure we remove all migrations.
   def down, do: ErrorTracker.Migration.down(version: 1)
@@ -141,3 +141,11 @@ We currently do not support notifications out of the box.
 However, we provideo some detailed Telemetry events that you may use to implement your own notifications following your custom rules and notification channels.
 
 If you want to take a look at the events you can attach to, take a look at `ErrorTracker.Telemetry` module documentation.
+
+## Pruning resolved errors
+
+By default errors are kept in the database indefinitely. This is not ideal for production
+environments where you may want to prune old errors that have been resolved.
+
+The `ErrorTracker.Plugins.Pruner` module provides automatic pruning functionality with a configurable
+interval and error age.
