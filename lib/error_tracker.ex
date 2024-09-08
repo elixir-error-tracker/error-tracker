@@ -77,8 +77,8 @@ defmodule ErrorTracker do
   @doc """
   Report an exception to be stored.
 
-  Returns the occurrence stored or `:noop` if the ErrorTracker is disabled and the
-  exception has not been stored.
+  Returns the occurrence stored or `:noop` if the ErrorTracker is disabled by
+  configuration the exception has not been stored.
 
   Aside from the exception, it is expected to receive the stack trace and,
   optionally, a context map which will be merged with the current process
