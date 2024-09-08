@@ -28,7 +28,10 @@ defmodule ErrorTracker.Test.Case do
           ErrorTracker.report({kind, reason}, __STACKTRACE__, context)
       end
 
-    repo().preload(occurrence, :error)
+    case occurrence do
+      %ErrorTracker.Occurrence{} -> repo().preload(occurrence, :error)
+      other -> other
+    end
   end
 
   @doc """

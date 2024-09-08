@@ -7,6 +7,16 @@ defmodule ErrorTrackerTest do
   @relative_file_path Path.relative_to(__ENV__.file, File.cwd!())
 
   describe inspect(&ErrorTracker.report/3) do
+    setup context do
+      if Map.has_key?(context, :enabled) do
+        Application.put_env(:error_tracker, :enabled, context[:enabled])
+        # Ensure that the application env is restored after each test
+        on_exit(fn -> Application.delete_env(:error_tracker, :enabled) end)
+      end
+
+      []
+    end
+
     test "reports exceptions" do
       %Occurrence{error: error = %Error{}} =
         report_error(fn -> raise "This is a test" end)
@@ -71,6 +81,23 @@ defmodule ErrorTrackerTest do
       invalid_context = %{foo: %ErrorTracker.Error{}}
 
       assert %Occurrence{} = report_error(fn -> raise "test" end, invalid_context)
+    end
+
+    test "without enabled flag it works as expected" do
+      # Ensure no value is set
+      Application.delete_env(:error_tracker, :enabled)
+
+      assert %Occurrence{} = report_error(fn -> raise "Sample error" end)
+    end
+
+    @tag enabled: true
+    test "with enabled flag to true it works as expected" do
+      assert %Occurrence{} = report_error(fn -> raise "Sample error" end)
+    end
+
+    @tag enabled: false
+    test "with enabled flag to false it does not store the exception" do
+      assert report_error(fn -> raise "Sample error" end) == :noop
     end
   end
 
