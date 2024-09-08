@@ -32,12 +32,15 @@ ErrorTracker needs a few configuration options to work. This configuration shoul
 ```elixir
 config :error_tracker,
   repo: MyApp.Repo,
-  otp_app: :my_app
+  otp_app: :my_app,
+  enabled: true
 ```
 
 The `:repo` option specifies the repository that will be used by ErrorTracker. You can use your regular application repository or a different one if you prefer to keep errors in a different database.
 
 The `:otp_app` option specifies your application name. When an error occurs, ErrorTracker will use this information to understand which parts of the stack trace belong to your application and which parts belong to third-party dependencies. This allows you to filter in-app vs third-party frames when viewing errors.
+
+The `:enabled` option (defaults to `true` if not present) allows to disable the ErrorTracker on certain environments. This is useful to avoid filling your dev database with errors, for example.
 
 ## Setting up the database
 

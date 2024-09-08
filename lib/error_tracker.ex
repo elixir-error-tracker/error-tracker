@@ -77,6 +77,9 @@ defmodule ErrorTracker do
   @doc """
   Report an exception to be stored.
 
+  Returns the occurrence stored or `:noop` if the ErrorTracker is disabled by
+  configuration the exception has not been stored.
+
   Aside from the exception, it is expected to receive the stack trace and,
   optionally, a context map which will be merged with the current process
   context.
@@ -111,9 +114,12 @@ defmodule ErrorTracker do
 
     context = Map.merge(get_context(), given_context)
 
-    {_error, occurrence} = upsert_error!(error, stacktrace, context, reason)
-
-    occurrence
+    if enabled?() do
+      {_error, occurrence} = upsert_error!(error, stacktrace, context, reason)
+      occurrence
+    else
+      :noop
+    end
   end
 
   @doc """
@@ -183,6 +189,10 @@ defmodule ErrorTracker do
   @spec get_context() :: context()
   def get_context do
     Process.get(:error_tracker_context, %{})
+  end
+
+  defp enabled? do
+    !!Application.get_env(:error_tracker, :enabled, true)
   end
 
   defp normalize_exception(%struct{} = ex, _stacktrace) when is_exception(ex) do
