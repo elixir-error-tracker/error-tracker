@@ -109,7 +109,7 @@ defmodule ErrorTracker do
   """
 
   @type exception :: struct() | {atom(), struct()}
-  @type stack_trace :: {atom(), fun(), integer(), Keyword.t()}
+  @type stack_trace :: [{atom(), fun(), integer(), Keyword.t()}]
 
   @spec report(exception(), stack_trace()) :: %Occurrence{} | :noop
   def report(exception, stacktrace, given_context \\ %{}) do
