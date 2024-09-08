@@ -136,9 +136,9 @@ This is completely optional, and you can find more information about it in the `
 
 ## Notifications
 
-We currently do not support notifications out of the box.
+Currently ErrorTracker does not support notifications out of the box.
 
-However, we provideo some detailed Telemetry events that you may use to implement your own notifications following your custom rules and notification channels.
+However, it provides some detailed Telemetry events that you may use to implement your own notifications following your custom rules and notification channels.
 
 If you want to take a look at the events you can attach to, take a look at `ErrorTracker.Telemetry` module documentation.
 
@@ -149,3 +149,10 @@ environments where you may want to prune old errors that have been resolved.
 
 The `ErrorTracker.Plugins.Pruner` module provides automatic pruning functionality with a configurable
 interval and error age.
+
+## Ignoring errors
+
+ErrorTracker tracks every error by default. In certain cases some errors may be expected or just not interesting to track.
+ErrorTracker provides functionality that allows you to ignore errors based on their attributes and context.
+
+Take a look at the `ErrorTracker.Ignorer` behaviour for more information about how to implement your own ignorer.
