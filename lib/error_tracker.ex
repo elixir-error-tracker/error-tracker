@@ -132,7 +132,8 @@ defmodule ErrorTracker do
   If an error is marked as resolved and it happens again, it will automatically
   appear as unresolved again.
   """
-  @spec resolve(%Error{status: :unresolved}) :: {:ok, %Error{status: :resolved}}
+  @spec resolve(%Error{status: :unresolved}) ::
+          {:ok, %Error{status: :resolved}} | {:error, Ecto.Changeset.t()}
   def resolve(error = %Error{status: :unresolved}) do
     changeset = Ecto.Changeset.change(error, status: :resolved)
 
@@ -145,7 +146,8 @@ defmodule ErrorTracker do
   @doc """
   Marks an error as unresolved.
   """
-  @spec unresolve(%Error{status: :resolved}) :: {:ok, %Error{status: :unresolved}}
+  @spec unresolve(%Error{status: :resolved}) ::
+          {:ok, %Error{status: :unresolved}} | {:error, Ecto.Changeset.t()}
   def unresolve(error = %Error{status: :resolved}) do
     changeset = Ecto.Changeset.change(error, status: :unresolved)
 
