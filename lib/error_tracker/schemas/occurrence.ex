@@ -14,12 +14,12 @@ defmodule ErrorTracker.Occurrence do
 
   @type t :: %__MODULE__{
           context: map(),
-          reason: binary(),
+          reason: String.t(),
           stacktrace: map(),
           error_id: non_neg_integer(),
           inserted_at: DateTime.t(),
           id: non_neg_integer(),
-          error: %ErrorTracker.Error{}
+          error: ErrorTracker.Error.t()
         }
 
   schema "error_tracker_occurrences" do
