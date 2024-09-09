@@ -111,7 +111,7 @@ defmodule ErrorTracker do
   @type exception :: struct() | {atom(), struct()}
   @type stack_trace :: [{atom(), fun(), integer(), Keyword.t()}]
 
-  @spec report(exception(), stack_trace()) :: %Occurrence{} | :noop
+  @spec report(exception(), stack_trace()) :: Occurrence.t() | :noop
   def report(exception, stacktrace, given_context \\ %{}) do
     {kind, reason} = normalize_exception(exception, stacktrace)
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
