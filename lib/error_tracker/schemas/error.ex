@@ -13,6 +13,7 @@ defmodule ErrorTracker.Error do
   use Ecto.Schema
 
   @type t :: %__MODULE__{
+          id: non_neg_integer(),
           kind: String.t(),
           reason: String.t(),
           source_line: String.t(),

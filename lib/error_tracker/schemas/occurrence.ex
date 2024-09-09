@@ -13,13 +13,13 @@ defmodule ErrorTracker.Occurrence do
   require Logger
 
   @type t :: %__MODULE__{
+          id: non_neg_integer(),
           context: map(),
           reason: String.t(),
           stacktrace: map(),
           error_id: non_neg_integer(),
-          inserted_at: DateTime.t(),
-          id: non_neg_integer(),
-          error: ErrorTracker.Error.t()
+          error: ErrorTracker.Error.t(),
+          inserted_at: DateTime.t()
         }
 
   schema "error_tracker_occurrences" do
