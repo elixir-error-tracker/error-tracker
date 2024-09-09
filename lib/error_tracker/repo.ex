@@ -41,6 +41,7 @@ defmodule ErrorTracker.Repo do
     adapter =
       case repo().__adapter__() do
         Ecto.Adapters.Postgres -> :postgres
+        Ecto.Adapters.MyXQL -> :mysql
         Ecto.Adapters.SQLite3 -> :sqlite
       end
 

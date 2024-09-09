@@ -91,6 +91,7 @@ defmodule ErrorTracker.MixProject do
       {:phoenix_ecto, "~> 4.6"},
       {:plug, "~> 1.10"},
       {:postgrex, ">= 0.0.0", optional: true},
+      {:myxql, ">= 0.0.0", optional: true},
       {:ecto_sqlite3, ">= 0.0.0", optional: true},
       # Dev dependencies
       {:bun, "~> 1.3", only: :dev},

@@ -111,6 +111,7 @@ defmodule ErrorTracker.Migration do
   defp migrator do
     ErrorTracker.Repo.with_adapter(fn
       :postgres -> ErrorTracker.Migration.Postgres
+      :mysql -> ErrorTracker.Migration.MySQL
       :sqlite -> ErrorTracker.Migration.SQLite
       adapter -> raise "ErrorTracker does not support #{adapter}"
     end)

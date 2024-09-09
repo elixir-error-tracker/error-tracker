@@ -17,7 +17,7 @@ defmodule ErrorTracker do
   ## Requirements
 
   ErrorTracker requires Elixir 1.15+, Ecto 3.11+, Phoenix LiveView 0.19+, and
-  PostgreSQL or SQLite3 as database.
+  PostgreSQL, MySQL/MariaDB or SQLite3 as database.
 
   ## Integrations
 
@@ -221,10 +221,18 @@ defmodule ErrorTracker do
     {:ok, {error, occurrence}} =
       Repo.transaction(fn ->
         error =
-          Repo.insert!(error,
-            on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
-            conflict_target: :fingerprint
-          )
+          ErrorTracker.Repo.with_adapter(fn
+            :mysql ->
+              Repo.insert!(error,
+                on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]]
+              )
+
+            _other ->
+              Repo.insert!(error,
+                on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
+                conflict_target: :fingerprint
+              )
+          end)
 
         occurrence =
           error

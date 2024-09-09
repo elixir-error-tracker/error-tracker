@@ -1,9 +1,17 @@
 # Use the appropriate repo for the desired database
 repo =
   case System.get_env("DB") do
-    "sqlite" -> ErrorTracker.Test.LiteRepo
-    "postgres" -> ErrorTracker.Test.Repo
-    _other -> raise "Please run either `DB=sqlite mix test` or `DB=postgres mix test`"
+    "sqlite" ->
+      ErrorTracker.Test.LiteRepo
+
+    "mysql" ->
+      ErrorTracker.Test.MySQLRepo
+
+    "postgres" ->
+      ErrorTracker.Test.Repo
+
+    _other ->
+      raise "Please run either `DB=sqlite mix test`, `DB=postgres mix test` or `DB=mysql mix test`"
   end
 
 Application.put_env(:error_tracker, :repo, repo)

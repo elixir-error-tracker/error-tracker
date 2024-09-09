@@ -35,6 +35,16 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      mariadb:
+        image: mariadb:11
+        ports: ["3306:3306"]
+        env:
+          MARIADB_ROOT_PASSWORD: root
+        options: >-
+          --health-cmd "healthcheck.sh --connect --innodb_initialized"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     name: Elixir v${{ matrix.elixir }}, Erlang v${{ matrix.erlang }}
     steps:
       - uses: actions/checkout@v4
@@ -83,3 +93,8 @@ jobs:
         run: mix test
         env:
           DB: postgres
+
+      - name: Run Tests - MySQL/MariaDB
+        run: mix test
+        env:
+          DB: mysql
