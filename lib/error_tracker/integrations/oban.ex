@@ -12,6 +12,20 @@ defmodule ErrorTracker.Integrations.Oban do
   It works using Oban's Telemetry events, so you don't need to modify anything
   on your application.
 
+  > #### A note on errors grouping {: .warning}
+  >
+  > All errors reported using `:error` or `{:error, any()}` as the output of
+  > your `perform/2` worker function are going to be grouped together (one group
+  > of those of errors per worker).
+  >
+  > The reason of that behaviour is that those errors do not generate an exception,
+  > so no stack trace is detected and they are stored as happening in the same
+  > place.
+  >
+  > If you want errors of your workers to be grouped as you may expect on other
+  > integrations, you should raise exceptions to report errors instead of gracefully
+  > returning an error value.
+
   ### Default context
 
   By default we store some context for you on errors generated in an Oban
