@@ -32,7 +32,7 @@ defmodule ErrorTracker.Error do
 
     {source_line, source_function} =
       if source do
-        source_line = if source.line, do: "#{source.file}:#{source.line}", else: "nofile"
+        source_line = if source.line, do: "#{source.file}:#{source.line}", else: "(nofile)"
         source_function = "#{source.module}.#{source.function}/#{source.arity}"
 
         {source_line, source_function}

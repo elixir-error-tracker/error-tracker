@@ -40,7 +40,7 @@ defmodule ErrorTrackerTest do
         assert error.source_line =~ @relative_file_path
       else
         assert error.source_function == "erlang.+/2"
-        assert error.source_line == "nofile"
+        assert error.source_line == "(nofile)"
       end
     end
 
@@ -54,7 +54,7 @@ defmodule ErrorTrackerTest do
       assert error.kind == to_string(UndefinedFunctionError)
       assert error.reason =~ "is undefined or private"
       assert error.source_function == Exception.format_mfa(m, f, Enum.count(a))
-      assert error.source_line == "nofile"
+      assert error.source_line == "(nofile)"
     end
 
     test "reports throws" do
