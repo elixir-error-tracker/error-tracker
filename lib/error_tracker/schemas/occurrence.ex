@@ -12,15 +12,7 @@ defmodule ErrorTracker.Occurrence do
 
   require Logger
 
-  @type t :: %__MODULE__{
-          id: non_neg_integer(),
-          context: map(),
-          reason: String.t(),
-          stacktrace: map(),
-          error_id: non_neg_integer(),
-          error: ErrorTracker.Error.t(),
-          inserted_at: DateTime.t()
-        }
+  @type t :: %__MODULE__{}
 
   schema "error_tracker_occurrences" do
     field :context, :map

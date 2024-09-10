@@ -6,6 +6,8 @@ defmodule ErrorTracker.Stacktrace do
 
   use Ecto.Schema
 
+  @type t :: %__MODULE__{}
+
   @primary_key false
   embedded_schema do
     embeds_many :lines, Line, primary_key: false do
