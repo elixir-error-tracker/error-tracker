@@ -34,7 +34,7 @@ defmodule ErrorTracker.Web.Router do
       # paths for navigating through the dashboard.
       scoped_path = Phoenix.Router.scoped_path(__MODULE__, path)
       # Generate the session name and session hooks.
-      {session_name, session_opts} = __parse_options__(opts, scoped_path)
+      {session_name, session_opts} = ErrorTracker.Web.Router.__parse_options__(opts, scoped_path)
 
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
