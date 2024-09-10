@@ -58,8 +58,13 @@ defmodule ErrorTracker.Integrations.Oban do
   end
 
   def handle_event([:oban, :job, :exception], _measurements, metadata, :no_config) do
-    %{reason: exception, stacktrace: stacktrace} = metadata
+    %{reason: exception, stacktrace: stacktrace, job: job} = metadata
     state = Map.get(metadata, :state, :failure)
+
+    stacktrace =
+      if stacktrace == [],
+        do: [{String.to_existing_atom("Elixir." <> job.worker), :perform, 2, []}],
+        else: stacktrace
 
     ErrorTracker.report(exception, stacktrace, %{state: state})
   end
