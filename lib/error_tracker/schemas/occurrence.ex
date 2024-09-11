@@ -6,10 +6,13 @@ defmodule ErrorTracker.Occurrence do
   in which the exception raised.
   """
 
+  import Ecto.Changeset
+
   use Ecto.Schema
 
   require Logger
-  import Ecto.Changeset
+
+  @type t :: %__MODULE__{}
 
   schema "error_tracker_occurrences" do
     field :context, :map

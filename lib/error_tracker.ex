@@ -67,6 +67,11 @@ defmodule ErrorTracker do
   """
   @type context :: %{String.t() => any()}
 
+  @typedoc """
+  An `Exception` or a `{kind, payload}` tuple compatible with `Exception.normalize/3`.
+  """
+  @type exception :: Exception.t() | {:error, any()} | {Exception.non_error_kind(), any()}
+
   import Ecto.Query
 
   alias ErrorTracker.Error
@@ -107,6 +112,8 @@ defmodule ErrorTracker do
   * A `{kind, exception}` tuple in which case the information is converted to
   an Elixir exception (if possible) and stored.
   """
+
+  @spec report(exception(), Exception.stacktrace(), context()) :: Occurrence.t() | :noop
   def report(exception, stacktrace, given_context \\ %{}) do
     {kind, reason} = normalize_exception(exception, stacktrace)
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
@@ -127,6 +134,7 @@ defmodule ErrorTracker do
   If an error is marked as resolved and it happens again, it will automatically
   appear as unresolved again.
   """
+  @spec resolve(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
   def resolve(error = %Error{status: :unresolved}) do
     changeset = Ecto.Changeset.change(error, status: :resolved)
 
@@ -139,6 +147,7 @@ defmodule ErrorTracker do
   @doc """
   Marks an error as unresolved.
   """
+  @spec unresolve(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
   def unresolve(error = %Error{status: :resolved}) do
     changeset = Ecto.Changeset.change(error, status: :unresolved)
 

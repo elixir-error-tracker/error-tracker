@@ -12,6 +12,8 @@ defmodule ErrorTracker.Error do
 
   use Ecto.Schema
 
+  @type t :: %__MODULE__{}
+
   schema "error_tracker_errors" do
     field :kind, :string
     field :reason, :string
