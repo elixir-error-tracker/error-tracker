@@ -14,7 +14,7 @@ The first step to add ErrorTracker to your application is to declare the package
 # mix.exs
 defp deps do
   [
-    {:error_tracker, "~> 0.2"}
+    {:error_tracker, "~> 0.3"}
   ]
 end
 ```

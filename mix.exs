@@ -4,7 +4,7 @@ defmodule ErrorTracker.MixProject do
   def project do
     [
       app: :error_tracker,
-      version: "0.2.6",
+      version: "0.3.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
