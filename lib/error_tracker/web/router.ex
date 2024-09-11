@@ -34,7 +34,7 @@ defmodule ErrorTracker.Web.Router do
       # paths for navigating through the dashboard.
       scoped_path = Phoenix.Router.scoped_path(__MODULE__, path)
       # Generate the session name and session hooks.
-      {session_name, session_opts} = parse_options(opts, scoped_path)
+      {session_name, session_opts} = ErrorTracker.Web.Router.__parse_options__(opts, scoped_path)
 
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
@@ -49,7 +49,7 @@ defmodule ErrorTracker.Web.Router do
   end
 
   @doc false
-  def parse_options(opts, path) do
+  def __parse_options__(opts, path) do
     custom_on_mount = Keyword.get(opts, :on_mount, [])
     session_name = Keyword.get(opts, :as, :error_tracker_dashboard)
 
