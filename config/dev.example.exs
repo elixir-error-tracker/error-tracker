@@ -29,6 +29,16 @@ config :error_tracker, :ecto_adapter, :postgres
 config :error_tracker, ErrorTrackerDev.Repo,
   url: "ecto://postgres:postgres@127.0.0.1/error_tracker_dev"
 
+# MySQL/MariaDB adapter
+#
+# To use MySQL/MariaDB on your local development machine uncomment these lines and
+# comment the lines of other adapters.
+
+# config :error_tracker, :ecto_adapter, :mysql
+
+# config :error_tracker, ErrorTrackerDev.Repo,
+#   url: "ecto://root:root@127.0.0.1/error_tracker_dev"
+
 # SQLite3 adapter
 #
 # To use SQLite3 on your local development machine uncomment these lines and

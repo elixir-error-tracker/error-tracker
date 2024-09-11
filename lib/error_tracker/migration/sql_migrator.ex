@@ -73,6 +73,13 @@ defmodule ErrorTracker.Migration.SQLMigrator do
         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
         """
 
+      :mysql ->
+        execute """
+        INSERT INTO error_tracker_meta (`key`, value)
+        VALUES ('migration_version', '#{version}'), ('migration_timestamp', '#{timestamp}')
+        ON DUPLICATE KEY UPDATE value = VALUES(value)
+        """
+
       _other ->
         execute """
         INSERT INTO error_tracker_meta (key, value)

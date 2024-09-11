@@ -16,6 +16,7 @@ Config.Reader.read!("config/config.exs", env: :dev)
 adapter =
   case Application.get_env(:error_tracker, :ecto_adapter) do
     :postgres -> Ecto.Adapters.Postgres
+    :mysql -> Ecto.Adapters.MyXQL
     :sqlite3 -> Ecto.Adapters.SQLite3
   end
 

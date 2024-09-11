@@ -59,7 +59,7 @@ defmodule ErrorTracker.Web.Live.Dashboard do
 
   defp paginate_errors(socket) do
     %{page: page, search: search} = socket.assigns
-
+    offset = (page - 1) * @per_page
     query = filter(Error, search)
 
     total_errors = Repo.aggregate(query, :count)
@@ -68,7 +68,7 @@ defmodule ErrorTracker.Web.Live.Dashboard do
       Repo.all(
         from query,
           order_by: [desc: :last_occurrence_at],
-          offset: (^page - 1) * @per_page,
+          offset: ^offset,
           limit: @per_page
       )
 
@@ -115,6 +115,7 @@ defmodule ErrorTracker.Web.Live.Dashboard do
     # strings. SQLite3 only supports LIKE, which is case-insensitive for ASCII characters.
     Repo.with_adapter(fn
       :postgres -> where(query, [error], ilike(field(error, ^field), ^"%#{value}%"))
+      :mysql -> where(query, [error], like(field(error, ^field), ^"%#{value}%"))
       :sqlite -> where(query, [error], like(field(error, ^field), ^"%#{value}%"))
     end)
   end

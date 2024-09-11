@@ -47,6 +47,7 @@ defmodule ErrorTracker.Occurrence do
       json_encoder =
         ErrorTracker.Repo.with_adapter(fn
           :postgres -> Application.get_env(:postgrex, :json_library, Jason)
+          :mysql -> Application.get_env(:myxql, :json_library, Jason)
           :sqlite -> Application.get_env(:ecto_sqlite3, :json_library, Jason)
         end)
 
