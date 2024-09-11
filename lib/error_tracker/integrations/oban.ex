@@ -12,6 +12,20 @@ defmodule ErrorTracker.Integrations.Oban do
   It works using Oban's Telemetry events, so you don't need to modify anything
   on your application.
 
+  > #### A note on errors grouping {: .warning}
+  >
+  > All errors reported using `:error` or `{:error, any()}` as the output of
+  > your `perform/2` worker function are going to be grouped together (one group
+  > of those of errors per worker).
+  >
+  > The reason of that behaviour is that those errors do not generate an exception,
+  > so no stack trace is detected and they are stored as happening in the same
+  > place.
+  >
+  > If you want errors of your workers to be grouped as you may expect on other
+  > integrations, you should raise exceptions to report errors instead of gracefully
+  > returning an error value.
+
   ### Default context
 
   By default we store some context for you on errors generated in an Oban
@@ -58,8 +72,13 @@ defmodule ErrorTracker.Integrations.Oban do
   end
 
   def handle_event([:oban, :job, :exception], _measurements, metadata, :no_config) do
-    %{reason: exception, stacktrace: stacktrace} = metadata
+    %{reason: exception, stacktrace: stacktrace, job: job} = metadata
     state = Map.get(metadata, :state, :failure)
+
+    stacktrace =
+      if stacktrace == [],
+        do: [{String.to_existing_atom("Elixir." <> job.worker), :perform, 2, []}],
+        else: stacktrace
 
     ErrorTracker.report(exception, stacktrace, %{state: state})
   end
