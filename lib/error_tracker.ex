@@ -67,6 +67,11 @@ defmodule ErrorTracker do
   """
   @type context :: %{String.t() => any()}
 
+  @typedoc """
+  An `Exception` or a `{kind, payload}` tuple compatible with `Exception.normalize/3`.
+  """
+  @type exception :: Exception.t() | {:error, any()} | {Exception.non_error_kind(), any()}
+
   import Ecto.Query
 
   alias ErrorTracker.Error
@@ -108,10 +113,7 @@ defmodule ErrorTracker do
   an Elixir exception (if possible) and stored.
   """
 
-  @type exception :: Exception.t() | {:error, any()} | {Exception.non_error_kind(), any()}
-  @type stack_trace :: [{atom(), fun(), integer(), Keyword.t()}]
-
-  @spec report(exception(), stack_trace()) :: Occurrence.t() | :noop
+  @spec report(exception(), Exception.stacktrace(), context()) :: Occurrence.t() | :noop
   def report(exception, stacktrace, given_context \\ %{}) do
     {kind, reason} = normalize_exception(exception, stacktrace)
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
