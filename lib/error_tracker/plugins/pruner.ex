@@ -8,7 +8,7 @@ defmodule ErrorTracker.Plugins.Pruner do
   ## Using the pruner
 
   To enable the pruner you must register the plugin in the ErrorTracker configuration. This will use
-  the default options, which is to prune errors resolved after 5 minutes.
+  the default options, which is to prune errors resolved after 24 hours.
 
       config :error_tracker,
         plugins: [ErrorTracker.Plugins.Pruner]
