@@ -111,7 +111,7 @@ The `ErrorTracker.set_context/1` function stores the given context in the curren
 ErrorTracker.set_context(%{user_id: conn.assigns.current_user.id})
 ```
 
-There are some requirements on the type of data that can be included in the context, so we recommend taking a look at `set_context/1` documentation
+There are some requirements on the type of data that can be included in the context, so we recommend taking a look at `ErrorTracker.set_context/1` documentation
 
 ## Manual error tracking
 
