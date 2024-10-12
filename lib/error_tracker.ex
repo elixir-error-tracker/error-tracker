@@ -118,10 +118,11 @@ defmodule ErrorTracker do
     {kind, reason} = normalize_exception(exception, stacktrace)
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
     {:ok, error} = Error.new(kind, reason, stacktrace)
-    context = get_context() |> Map.merge(given_context) |> filter_context_data()
+    context = Map.merge(get_context(), given_context)
 
     if enabled?() && !ignored?(error, context) do
-      {_error, occurrence} = upsert_error!(error, stacktrace, context, reason)
+      sanitized_context = sanitize_context(context)
+      {_error, occurrence} = upsert_error!(error, stacktrace, sanitized_context, reason)
       occurrence
     else
       :noop
@@ -209,14 +210,12 @@ defmodule ErrorTracker do
     ignorer && ignorer.ignore?(error, context)
   end
 
-  defp filter_context_data(context) do
+  defp sanitize_context(context) do
     filter_mod = Application.get_env(:error_tracker, :filter)
 
-    if filter_mod do
-      filter_mod.sanitize(context)
-    else
-      context
-    end
+    if filter_mod,
+      do: filter_mod.sanitize(context),
+      else: context
   end
 
   defp normalize_exception(%struct{} = ex, _stacktrace) when is_exception(ex) do
