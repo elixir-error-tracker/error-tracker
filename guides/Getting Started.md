@@ -107,11 +107,13 @@ In certain cases, you may want to include some additional information when track
 
 The `ErrorTracker.set_context/1` function stores the given context in the current process so any errors that occur in that process (for example, a Phoenix request or an Oban job) will include this given context along with the default integration context.
 
+There are some requirements on the type of data that can be included in the context, so we recommend taking a look at `ErrorTracker.set_context/1` documentation
+
 ```elixir
 ErrorTracker.set_context(%{user_id: conn.assigns.current_user.id})
 ```
 
-There are some requirements on the type of data that can be included in the context, so we recommend taking a look at `ErrorTracker.set_context/1` documentation
+You may also want to sanitize of filter out some information from the context before saving it. To do that you can take a look at the `ErrorTracker.Filter` behaviour.
 
 ## Manual error tracking
 
