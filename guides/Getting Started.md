@@ -113,7 +113,7 @@ There are some requirements on the type of data that can be included in the cont
 ErrorTracker.set_context(%{user_id: conn.assigns.current_user.id})
 ```
 
-You may also want to sanitize of filter out some information from the context before saving it. To do that you can take a look at the `ErrorTracker.Filter` behaviour.
+You may also want to sanitize or filter out some information from the context before saving it. To do that you can take a look at the `ErrorTracker.Filter` behaviour.
 
 ## Manual error tracking
 
