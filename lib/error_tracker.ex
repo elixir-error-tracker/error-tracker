@@ -65,7 +65,7 @@ defmodule ErrorTracker do
   @typedoc """
   A map containing the relevant context for a particular error.
   """
-  @type context :: %{String.t() => any()}
+  @type context :: %{(String.t() | atom()) => any()}
 
   @typedoc """
   An `Exception` or a `{kind, payload}` tuple compatible with `Exception.normalize/3`.
