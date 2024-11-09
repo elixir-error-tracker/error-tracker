@@ -15,8 +15,10 @@ defmodule ErrorTracker.Occurrence do
   @type t :: %__MODULE__{}
 
   schema "error_tracker_occurrences" do
-    field :context, :map
     field :reason, :string
+
+    field :context, :map
+    field :bread_crumbs, {:array, :string}
 
     embeds_one :stacktrace, ErrorTracker.Stacktrace
     belongs_to :error, ErrorTracker.Error
@@ -27,7 +29,7 @@ defmodule ErrorTracker.Occurrence do
   @doc false
   def changeset(occurrence, attrs) do
     occurrence
-    |> cast(attrs, [:context, :reason])
+    |> cast(attrs, [:context, :reason, :bread_crumbs])
     |> maybe_put_stacktrace()
     |> validate_required([:reason, :stacktrace])
     |> validate_context()
