@@ -99,6 +99,17 @@ defmodule ErrorTrackerTest do
     test "with enabled flag to false it does not store the exception" do
       assert report_error(fn -> raise "Sample error" end) == :noop
     end
+
+    test "includes bread crumbs in the context if present" do
+      bread_crumbs = ["bread crumb 1", "bread crumb 2"]
+
+      occurrence =
+        report_error(fn ->
+          raise ErrorWithBreadcrumbs, message: "test", bread_crumbs: bread_crumbs
+        end)
+
+      assert occurrence.context["bread_crumbs"] == bread_crumbs
+    end
   end
 
   describe inspect(&ErrorTracker.resolve/1) do
@@ -118,4 +129,8 @@ defmodule ErrorTrackerTest do
       assert {:ok, %Error{status: :unresolved}} = ErrorTracker.unresolve(resolved)
     end
   end
+end
+
+defmodule ErrorWithBreadcrumbs do
+  defexception [:message, :bread_crumbs]
 end

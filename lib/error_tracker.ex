@@ -120,6 +120,11 @@ defmodule ErrorTracker do
     {:ok, error} = Error.new(kind, reason, stacktrace)
     context = Map.merge(get_context(), given_context)
 
+    context =
+      if bread_crumbs = bread_crumbs(exception),
+        do: Map.put(context, "bread_crumbs", bread_crumbs),
+        else: context
+
     if enabled?() && !ignored?(error, context) do
       sanitized_context = sanitize_context(context)
       {_error, occurrence} = upsert_error!(error, stacktrace, sanitized_context, reason)
@@ -229,6 +234,14 @@ defmodule ErrorTracker do
 
       other ->
         {to_string(kind), to_string(other)}
+    end
+  end
+
+  defp bread_crumbs(exception) do
+    case exception do
+      {_kind, exception} -> bread_crumbs(exception)
+      %{bread_crumbs: bread_crumbs} -> bread_crumbs
+      _other -> nil
     end
   end
 
