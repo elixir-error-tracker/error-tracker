@@ -885,10 +885,6 @@ select {
   width: 2.5rem;
 }
 
-.w-11 {
-  width: 2.75rem;
-}
-
 .w-28 {
   width: 7rem;
 }
@@ -907,6 +903,42 @@ select {
 
 .w-full {
   width: 100%;
+}
+
+.w-16 {
+  width: 4rem;
+}
+
+.w-12 {
+  width: 3rem;
+}
+
+.w-8 {
+  width: 2rem;
+}
+
+.w-7 {
+  width: 1.75rem;
+}
+
+.w-6 {
+  width: 1.5rem;
+}
+
+.w-\[5rem\] {
+  width: 5rem;
+}
+
+.w-11 {
+  width: 2.75rem;
+}
+
+.min-w-12 {
+  min-width: 3rem;
+}
+
+.table-auto {
+  table-layout: auto;
 }
 
 .table-fixed {
@@ -1133,16 +1165,16 @@ select {
   padding-bottom: 11.5px;
 }
 
-.pl-2 {
-  padding-left: 0.5rem;
-}
-
 .pr-2 {
   padding-right: 0.5rem;
 }
 
 .pr-5 {
   padding-right: 1.25rem;
+}
+
+.pl-2 {
+  padding-left: 0.5rem;
 }
 
 .text-left {
@@ -1330,7 +1362,29 @@ select {
   border-radius: 4px;
 }
 
+.first\:border-y-0:first-child {
+  border-top-width: 0px;
+  border-bottom-width: 0px;
+}
+
+.first\:border-t-0:first-child {
+  border-top-width: 0px;
+}
+
 .last\:border-b-0:last-child {
+  border-bottom-width: 0px;
+}
+
+.first-of-type\:border-y-0:first-of-type {
+  border-top-width: 0px;
+  border-bottom-width: 0px;
+}
+
+.first-of-type\:border-t-0:first-of-type {
+  border-top-width: 0px;
+}
+
+.first-of-type\:border-b-0:first-of-type {
   border-bottom-width: 0px;
 }
 

@@ -32,8 +32,10 @@
             :for={{bread_crumb, index} <- Enum.with_index(@occurrence.bread_crumbs)}
             class="border-b bg-gray-400/10 border-gray-900 last:border-b-0"
           >
-          <td class="w-11 pl-2 py-4 font-medium text-white relative text-right"><%= length(@occurrence.bread_crumbs) - index %>.</td>
-          <td class="px-2 py-4 font-medium text-white relative"><%= bread_crumb %></td>
+            <td class="w-11 pl-2 py-4 font-medium text-white relative text-right">
+              <%= length(@occurrence.bread_crumbs) - index %>.
+            </td>
+            <td class="px-2 py-4 font-medium text-white relative"><%= bread_crumb %></td>
           </tr>
         </table>
       </div>
