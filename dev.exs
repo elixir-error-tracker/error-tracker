@@ -71,17 +71,17 @@ defmodule ErrorTrackerDevWeb.PageController do
   end
 
   def call(conn, :noroute) do
-    ErrorTracker.add_bread_crumb("ErrorTrackerDevWeb.PageController.no_route")
+    ErrorTracker.add_breadcrumb("ErrorTrackerDevWeb.PageController.no_route")
     raise Phoenix.Router.NoRouteError, conn: conn, router: ErrorTrackerDevWeb.Router
   end
 
   def call(_conn, :exception) do
-    ErrorTracker.add_bread_crumb("ErrorTrackerDevWeb.PageController.exception")
+    ErrorTracker.add_breadcrumb("ErrorTrackerDevWeb.PageController.exception")
     raise "This is a controller exception"
   end
 
   def call(_conn, :exit) do
-    ErrorTracker.add_bread_crumb("ErrorTrackerDevWeb.PageController.exit")
+    ErrorTracker.add_breadcrumb("ErrorTrackerDevWeb.PageController.exit")
     exit(:timeout)
   end
 
@@ -145,13 +145,13 @@ defmodule ErrorTrackerDevWeb.Endpoint do
 
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
-  plug :add_bread_crumb
+  plug :add_breadcrumb
   plug :maybe_exception
   plug :set_csp
   plug ErrorTrackerDevWeb.Router
 
-  def add_bread_crumb(conn, _) do
-    ErrorTracker.add_bread_crumb("ErrorTrackerDevWeb.Endpoint.add_bread_crumb")
+  def add_breadcrumb(conn, _) do
+    ErrorTracker.add_breadcrumb("ErrorTrackerDevWeb.Endpoint.add_breadcrumb")
     conn
   end
 

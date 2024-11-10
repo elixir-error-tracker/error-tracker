@@ -101,14 +101,14 @@ defmodule ErrorTrackerTest do
     end
 
     test "includes bread crumbs if present" do
-      bread_crumbs = ["bread crumb 1", "bread crumb 2"]
+      breadcrumbs = ["breadcrumb 1", "breadcrumb 2"]
 
       occurrence =
         report_error(fn ->
-          raise ErrorWithBreadcrumbs, message: "test", bread_crumbs: bread_crumbs
+          raise ErrorWithBreadcrumbs, message: "test", bread_crumbs: breadcrumbs
         end)
 
-      assert occurrence.bread_crumbs == bread_crumbs
+      assert occurrence.breadcrumbs == breadcrumbs
     end
   end
 

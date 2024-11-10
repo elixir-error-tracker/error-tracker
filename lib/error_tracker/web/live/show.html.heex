@@ -25,17 +25,17 @@
         <%= @error.source_line %></pre>
     </.section>
 
-    <.section :if={@occurrence.bread_crumbs != []} title="Bread crumbs">
+    <.section :if={@occurrence.breadcrumbs != []} title="Bread crumbs">
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg ring-1 ring-gray-900">
         <table class="w-full text-sm text-gray-400 table-fixed">
           <tr
-            :for={{bread_crumb, index} <- Enum.with_index(@occurrence.bread_crumbs)}
+            :for={{breadcrumb, index} <- Enum.with_index(@occurrence.breadcrumbs)}
             class="border-b bg-gray-400/10 border-gray-900 last:border-b-0"
           >
             <td class="w-11 pl-2 py-4 font-medium text-white relative text-right">
-              <%= length(@occurrence.bread_crumbs) - index %>.
+              <%= length(@occurrence.breadcrumbs) - index %>.
             </td>
-            <td class="px-2 py-4 font-medium text-white relative"><%= bread_crumb %></td>
+            <td class="px-2 py-4 font-medium text-white relative"><%= breadcrumb %></td>
           </tr>
         </table>
       </div>

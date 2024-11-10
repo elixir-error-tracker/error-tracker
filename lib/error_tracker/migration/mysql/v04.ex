@@ -5,13 +5,13 @@ defmodule ErrorTracker.Migration.MySQL.V04 do
 
   def up(_opts) do
     alter table(:error_tracker_occurrences) do
-      add :bread_crumbs, :json, null: true
+      add :breadcrumbs, :json, null: true
     end
   end
 
   def down(_opts) do
     alter table(:error_tracker_occurrences) do
-      remove :bread_crumbs
+      remove :breadcrumbs
     end
   end
 end
