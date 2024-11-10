@@ -119,15 +119,14 @@ defmodule ErrorTracker do
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
     {:ok, error} = Error.new(kind, reason, stacktrace)
     context = Map.merge(get_context(), given_context)
-
-    context =
-      if bread_crumbs = bread_crumbs(exception),
-        do: Map.put(context, "bread_crumbs", bread_crumbs),
-        else: context
+    bread_crumbs = exception_bread_crumbs(exception) ++ get_bread_crumbs()
 
     if enabled?() && !ignored?(error, context) do
       sanitized_context = sanitize_context(context)
-      {_error, occurrence} = upsert_error!(error, stacktrace, sanitized_context, reason)
+
+      {_error, occurrence} =
+        upsert_error!(error, stacktrace, sanitized_context, bread_crumbs, reason)
+
       occurrence
     else
       :noop
@@ -205,6 +204,24 @@ defmodule ErrorTracker do
     Process.get(:error_tracker_context, %{})
   end
 
+  @spec set_context(String.t()) :: list(String.t())
+  def add_bread_crumb(bread_crumb) when is_binary(bread_crumb) do
+    current_bread_crumbs = Process.get(:error_tracker_bread_crumbs, [])
+    new_bread_crumbs = current_bread_crumbs ++ [bread_crumb]
+
+    Process.put(:error_tracker_bread_crumbs, new_bread_crumbs)
+
+    new_bread_crumbs
+  end
+
+  @doc """
+  Obtain the context of the current process.
+  """
+  @spec get_bread_crumbs() :: list(String.t())
+  def get_bread_crumbs do
+    Process.get(:error_tracker_bread_crumbs, [])
+  end
+
   defp enabled? do
     !!Application.get_env(:error_tracker, :enabled, true)
   end
@@ -237,15 +254,15 @@ defmodule ErrorTracker do
     end
   end
 
-  defp bread_crumbs(exception) do
+  defp exception_bread_crumbs(exception) do
     case exception do
-      {_kind, exception} -> bread_crumbs(exception)
-      %{bread_crumbs: bread_crumbs} -> bread_crumbs
-      _other -> nil
+      {_kind, exception} -> exception_bread_crumbs(exception)
+      %{bread_crumbs: bread_crumbs} -> [bread_crumbs]
+      _other -> []
     end
   end
 
-  defp upsert_error!(error, stacktrace, context, reason) do
+  defp upsert_error!(error, stacktrace, context, bread_crumbs, reason) do
     existing_status =
       Repo.one(from e in Error, where: [fingerprint: ^error.fingerprint], select: e.status)
 
@@ -271,6 +288,7 @@ defmodule ErrorTracker do
           |> Occurrence.changeset(%{
             stacktrace: stacktrace,
             context: context,
+            bread_crumbs: bread_crumbs,
             reason: reason
           })
           |> Repo.insert!()
