@@ -257,7 +257,7 @@ defmodule ErrorTracker do
   defp exception_bread_crumbs(exception) do
     case exception do
       {_kind, exception} -> exception_bread_crumbs(exception)
-      %{bread_crumbs: bread_crumbs} -> [bread_crumbs]
+      %{bread_crumbs: bread_crumbs} -> bread_crumbs
       _other -> []
     end
   end
