@@ -100,7 +100,7 @@ defmodule ErrorTrackerTest do
       assert report_error(fn -> raise "Sample error" end) == :noop
     end
 
-    test "includes bread crumbs in the context if present" do
+    test "includes bread crumbs if present" do
       bread_crumbs = ["bread crumb 1", "bread crumb 2"]
 
       occurrence =
@@ -108,7 +108,7 @@ defmodule ErrorTrackerTest do
           raise ErrorWithBreadcrumbs, message: "test", bread_crumbs: bread_crumbs
         end)
 
-      assert occurrence.context["bread_crumbs"] == bread_crumbs
+      assert occurrence.bread_crumbs == bread_crumbs
     end
   end
 
