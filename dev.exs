@@ -77,7 +77,10 @@ defmodule ErrorTrackerDevWeb.PageController do
 
   def call(_conn, :exception) do
     ErrorTracker.add_breadcrumb("ErrorTrackerDevWeb.PageController.exception")
-    raise "This is a controller exception"
+
+    raise CustomException,
+      message: "This is a controller exception",
+      bread_crumbs: ["First", "Second"]
   end
 
   def call(_conn, :exit) do
@@ -90,6 +93,10 @@ defmodule ErrorTrackerDevWeb.PageController do
     |> put_resp_header("content-type", "text/html")
     |> send_resp(200, "<!doctype html><html><body>#{content}</body></html>")
   end
+end
+
+defmodule CustomException do
+  defexception [:message, :bread_crumbs]
 end
 
 defmodule ErrorTrackerDevWeb.ErrorView do
