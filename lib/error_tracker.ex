@@ -204,7 +204,7 @@ defmodule ErrorTracker do
     Process.get(:error_tracker_context, %{})
   end
 
-  @spec set_context(String.t()) :: list(String.t())
+  @spec add_breadcrumb(String.t()) :: list(String.t())
   def add_breadcrumb(breadcrumb) when is_binary(breadcrumb) do
     current_breadcrumbs = Process.get(:error_tracker_breadcrumbs, [])
     new_breadcrumbs = current_breadcrumbs ++ [breadcrumb]
