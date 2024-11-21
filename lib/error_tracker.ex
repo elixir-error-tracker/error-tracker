@@ -60,6 +60,24 @@ defmodule ErrorTracker do
   As we had seen before, you can use `ErrorTracker.report/3` to manually report an
   error. The third parameter of this function is optional and allows you to include
   extra context that will be tracked along with the error.
+
+  ## Breadcrumbs
+
+  Aside from contextual information, it is sometimes useful to know in which points
+  of your code the code was executed in a given request / process.
+
+  Using breadcrumbs allows you to add that information to any error generated and
+  stored on a given process / request. And if you are using `Ash` or `Splode`their
+  exceptions' breadcrumbs will be automatically populated.
+
+  If you want to add a breadcrumb you can do so:
+
+  ```elixir
+  ErrorTracker.add_breadcrumb("Executed my super secret code")
+  ```
+
+  Breadcrumbs can be viewed in the dashboard while viewing the details of an
+  occurrence.
   """
 
   @typedoc """
@@ -204,6 +222,22 @@ defmodule ErrorTracker do
     Process.get(:error_tracker_context, %{})
   end
 
+  @doc """
+  Adds a breadcrumb to the current process.
+
+  The new breadcrumb will be added as the most recent entry of the breadcrumbs
+  list.
+
+  ## Breadcrumbs limit
+
+  Breadcrumbs are a powerful tool that allows to add an infinite number of
+  entries. However, it is not recommended to store errors with an excessive
+  amount of breadcrumbs.
+
+  As they are stored as an array of strings under the hood, storing many
+  entries per error can lead to some delays and using extra disk space on the
+  database.
+  """
   @spec add_breadcrumb(String.t()) :: list(String.t())
   def add_breadcrumb(breadcrumb) when is_binary(breadcrumb) do
     current_breadcrumbs = Process.get(:error_tracker_breadcrumbs, [])
@@ -215,7 +249,7 @@ defmodule ErrorTracker do
   end
 
   @doc """
-  Obtain the context of the current process.
+  Obtain the breadcrumbs of the current process.
   """
   @spec get_breadcrumbs() :: list(String.t())
   def get_breadcrumbs do
