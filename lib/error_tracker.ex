@@ -119,7 +119,7 @@ defmodule ErrorTracker do
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
     {:ok, error} = Error.new(kind, reason, stacktrace)
     context = Map.merge(get_context(), given_context)
-    breadcrumbs = exception_breadcrumbs(exception) ++ get_breadcrumbs()
+    breadcrumbs = get_breadcrumbs() ++ exception_breadcrumbs(exception)
 
     if enabled?() && !ignored?(error, context) do
       sanitized_context = sanitize_context(context)
