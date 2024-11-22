@@ -229,12 +229,16 @@ defmodule ErrorTracker do
 
   defp normalize_exception({kind, ex}, stacktrace) do
     case Exception.normalize(kind, ex, stacktrace) do
-      %struct{} = ex ->
-        {to_string(struct), Exception.message(ex)}
-
-      other ->
-        {to_string(kind), to_string(other)}
+      %struct{} = ex -> {to_string(struct), Exception.message(ex)}
+      payload -> {to_string(kind), safe_to_string(payload)}
     end
+  end
+
+  defp safe_to_string(term) do
+    to_string(term)
+  rescue
+    Protocol.UndefinedError ->
+      inspect(term)
   end
 
   defp bread_crumbs(exception) do
