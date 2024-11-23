@@ -26,6 +26,29 @@ defmodule Migration0 do
   def down, do: ErrorTracker.Migration.down(prefix: "private")
 end
 
+defmodule ErrorTrackerDev.TimeoutGenServer do
+  use GenServer
+
+  # Client
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, %{})
+  end
+
+  # Server (callbacks)
+
+  @impl true
+  def init(initial_state) do
+    {:ok, initial_state}
+  end
+
+  @impl true
+  def handle_call(:timeout, _from, state) do
+    :timer.sleep(5000)
+    {:reply, state, state}
+  end
+end
+
 defmodule DemoLive do
   use Phoenix.LiveView
 
@@ -47,6 +70,7 @@ defmodule DemoLive do
     <button phx-click="inc">+</button>
     <button phx-click="dec">-</button>
     <button phx-click="error">Crash on handle_event</button>
+    <button phx-click="genserver-timeout">GenServer timeout</button>
 
     <.link href="/?crash=mount">Crash on mount</.link>
     <.link patch="/?crash=handle_params">Crash on handle_params</.link>
@@ -69,6 +93,11 @@ defmodule DemoLive do
     raise "Crash on handle_event"
   end
 
+  def handle_event("genserver-timeout", _params, socket) do
+    GenServer.call(TimeoutGenServer, :timeout, 2000)
+    {:noreply, socket}
+  end
+
   def handle_params(params, _uri, socket) do
     if params["crash"] == "handle_params" do
       raise "Crash on handle_params"
@@ -78,7 +107,42 @@ defmodule DemoLive do
   end
 end
 
-PhoenixPlayground.start(live: DemoLive, child_specs: [ErrorTrackerDev.Repo])
+defmodule DemoRouter do
+  use Phoenix.Router
+  use ErrorTracker.Web, :router
+
+  import Phoenix.LiveView.Router
+
+  pipeline :browser do
+    plug :put_root_layout, html: {PhoenixPlayground.Layout, :root}
+  end
+
+  scope "/" do
+    pipe_through :browser
+    live "/", DemoLive
+    error_tracker_dashboard "/errors"
+  end
+end
+
+defmodule DemoEndpoint do
+  use Phoenix.Endpoint, otp_app: :phoenix_playground
+  plug Plug.Logger
+  socket "/live", Phoenix.LiveView.Socket
+  plug Plug.Static, from: {:phoenix, "priv/static"}, at: "/assets/phoenix"
+  plug Plug.Static, from: {:phoenix_live_view, "priv/static"}, at: "/assets/phoenix_live_view"
+  socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
+  plug Phoenix.LiveReloader
+  plug Phoenix.CodeReloader, reloader: &PhoenixPlayground.CodeReloader.reload/2
+  plug DemoRouter
+end
+
+PhoenixPlayground.start(
+  endpoint: DemoEndpoint,
+  child_specs: [
+    {ErrorTrackerDev.Repo, []},
+    {ErrorTrackerDev.TimeoutGenServer, [name: TimeoutGenServer]}
+  ]
+)
 
 # Create the database if it does not exist and run migrations if needed
 _ = Ecto.Adapters.Postgres.storage_up(ErrorTrackerDev.Repo.config())
