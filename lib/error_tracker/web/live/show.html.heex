@@ -25,6 +25,25 @@
         <%= @error.source_line %></pre>
     </.section>
 
+    <.section :if={@occurrence.breadcrumbs != []} title="Bread crumbs">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg ring-1 ring-gray-900">
+        <table class="w-full text-sm text-gray-400 table-fixed">
+          <tr
+            :for={
+              {breadcrumb, index} <-
+                @occurrence.breadcrumbs |> Enum.reverse() |> Enum.with_index()
+            }
+            class="border-b bg-gray-400/10 border-gray-900 last:border-b-0"
+          >
+            <td class="w-11 pl-2 py-4 font-medium text-white relative text-right">
+              <%= length(@occurrence.breadcrumbs) - index %>.
+            </td>
+            <td class="px-2 py-4 font-medium text-white relative"><%= breadcrumb %></td>
+          </tr>
+        </table>
+      </div>
+    </.section>
+
     <.section :if={@occurrence.stacktrace.lines != []} title="Stacktrace">
       <div class="p-4 bg-gray-300/10 border border-gray-900 rounded-lg">
         <div class="w-full mb-4">

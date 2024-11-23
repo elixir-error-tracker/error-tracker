@@ -100,15 +100,36 @@ defmodule ErrorTrackerTest do
       assert report_error(fn -> raise "Sample error" end) == :noop
     end
 
-    test "includes bread crumbs in the context if present" do
-      bread_crumbs = ["bread crumb 1", "bread crumb 2"]
+    test "includes breadcrumbs if present" do
+      breadcrumbs = ["breadcrumb 1", "breadcrumb 2"]
 
       occurrence =
         report_error(fn ->
-          raise ErrorWithBreadcrumbs, message: "test", bread_crumbs: bread_crumbs
+          raise ErrorWithBreadcrumbs, message: "test", bread_crumbs: breadcrumbs
         end)
 
-      assert occurrence.context["bread_crumbs"] == bread_crumbs
+      assert occurrence.breadcrumbs == breadcrumbs
+    end
+
+    test "includes breadcrumbs if stored by the user" do
+      ErrorTracker.add_breadcrumb("breadcrumb 1")
+      ErrorTracker.add_breadcrumb("breadcrumb 2")
+
+      occurrence = report_error(fn -> raise "Sample error" end)
+
+      assert occurrence.breadcrumbs == ["breadcrumb 1", "breadcrumb 2"]
+    end
+
+    test "merges breadcrumbs stored by the user and contained on the exception" do
+      ErrorTracker.add_breadcrumb("breadcrumb 1")
+      ErrorTracker.add_breadcrumb("breadcrumb 2")
+
+      occurrence =
+        report_error(fn ->
+          raise ErrorWithBreadcrumbs, message: "test", bread_crumbs: ["breadcrumb 3"]
+        end)
+
+      assert occurrence.breadcrumbs == ["breadcrumb 1", "breadcrumb 2", "breadcrumb 3"]
     end
   end
 
@@ -127,6 +148,15 @@ defmodule ErrorTrackerTest do
       {:ok, resolved} = ErrorTracker.resolve(error)
 
       assert {:ok, %Error{status: :unresolved}} = ErrorTracker.unresolve(resolved)
+    end
+  end
+
+  describe inspect(&ErrorTracker.add_breadcrumb/1) do
+    test "adds an entry to the breadcrumbs list" do
+      ErrorTracker.add_breadcrumb("breadcrumb 1")
+      ErrorTracker.add_breadcrumb("breadcrumb 2")
+
+      assert ["breadcrumb 1", "breadcrumb 2"] = ErrorTracker.get_breadcrumbs()
     end
   end
 end

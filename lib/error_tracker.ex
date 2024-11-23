@@ -60,6 +60,24 @@ defmodule ErrorTracker do
   As we had seen before, you can use `ErrorTracker.report/3` to manually report an
   error. The third parameter of this function is optional and allows you to include
   extra context that will be tracked along with the error.
+
+  ## Breadcrumbs
+
+  Aside from contextual information, it is sometimes useful to know in which points
+  of your code the code was executed in a given request / process.
+
+  Using breadcrumbs allows you to add that information to any error generated and
+  stored on a given process / request. And if you are using `Ash` or `Splode`their
+  exceptions' breadcrumbs will be automatically populated.
+
+  If you want to add a breadcrumb you can do so:
+
+  ```elixir
+  ErrorTracker.add_breadcrumb("Executed my super secret code")
+  ```
+
+  Breadcrumbs can be viewed in the dashboard while viewing the details of an
+  occurrence.
   """
 
   @typedoc """
@@ -119,15 +137,14 @@ defmodule ErrorTracker do
     {:ok, stacktrace} = ErrorTracker.Stacktrace.new(stacktrace)
     {:ok, error} = Error.new(kind, reason, stacktrace)
     context = Map.merge(get_context(), given_context)
-
-    context =
-      if bread_crumbs = bread_crumbs(exception),
-        do: Map.put(context, "bread_crumbs", bread_crumbs),
-        else: context
+    breadcrumbs = get_breadcrumbs() ++ exception_breadcrumbs(exception)
 
     if enabled?() && !ignored?(error, context) do
       sanitized_context = sanitize_context(context)
-      {_error, occurrence} = upsert_error!(error, stacktrace, sanitized_context, reason)
+
+      {_error, occurrence} =
+        upsert_error!(error, stacktrace, sanitized_context, breadcrumbs, reason)
+
       occurrence
     else
       :noop
@@ -205,6 +222,40 @@ defmodule ErrorTracker do
     Process.get(:error_tracker_context, %{})
   end
 
+  @doc """
+  Adds a breadcrumb to the current process.
+
+  The new breadcrumb will be added as the most recent entry of the breadcrumbs
+  list.
+
+  ## Breadcrumbs limit
+
+  Breadcrumbs are a powerful tool that allows to add an infinite number of
+  entries. However, it is not recommended to store errors with an excessive
+  amount of breadcrumbs.
+
+  As they are stored as an array of strings under the hood, storing many
+  entries per error can lead to some delays and using extra disk space on the
+  database.
+  """
+  @spec add_breadcrumb(String.t()) :: list(String.t())
+  def add_breadcrumb(breadcrumb) when is_binary(breadcrumb) do
+    current_breadcrumbs = Process.get(:error_tracker_breadcrumbs, [])
+    new_breadcrumbs = current_breadcrumbs ++ [breadcrumb]
+
+    Process.put(:error_tracker_breadcrumbs, new_breadcrumbs)
+
+    new_breadcrumbs
+  end
+
+  @doc """
+  Obtain the breadcrumbs of the current process.
+  """
+  @spec get_breadcrumbs() :: list(String.t())
+  def get_breadcrumbs do
+    Process.get(:error_tracker_breadcrumbs, [])
+  end
+
   defp enabled? do
     !!Application.get_env(:error_tracker, :enabled, true)
   end
@@ -237,15 +288,15 @@ defmodule ErrorTracker do
     end
   end
 
-  defp bread_crumbs(exception) do
+  defp exception_breadcrumbs(exception) do
     case exception do
-      {_kind, exception} -> bread_crumbs(exception)
-      %{bread_crumbs: bread_crumbs} -> bread_crumbs
-      _other -> nil
+      {_kind, exception} -> exception_breadcrumbs(exception)
+      %{bread_crumbs: breadcrumbs} -> breadcrumbs
+      _other -> []
     end
   end
 
-  defp upsert_error!(error, stacktrace, context, reason) do
+  defp upsert_error!(error, stacktrace, context, breadcrumbs, reason) do
     existing_status =
       Repo.one(from e in Error, where: [fingerprint: ^error.fingerprint], select: e.status)
 
@@ -271,6 +322,7 @@ defmodule ErrorTracker do
           |> Occurrence.changeset(%{
             stacktrace: stacktrace,
             context: context,
+            breadcrumbs: breadcrumbs,
             reason: reason
           })
           |> Repo.insert!()
