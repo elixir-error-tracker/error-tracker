@@ -71,14 +71,20 @@ defmodule ErrorTrackerDevWeb.PageController do
   end
 
   def call(conn, :noroute) do
+    ErrorTracker.add_breadcrumb("ErrorTrackerDevWeb.PageController.no_route")
     raise Phoenix.Router.NoRouteError, conn: conn, router: ErrorTrackerDevWeb.Router
   end
 
   def call(_conn, :exception) do
-    raise "This is a controller exception"
+    ErrorTracker.add_breadcrumb("ErrorTrackerDevWeb.PageController.exception")
+
+    raise CustomException,
+      message: "This is a controller exception",
+      bread_crumbs: ["First", "Second"]
   end
 
   def call(_conn, :exit) do
+    ErrorTracker.add_breadcrumb("ErrorTrackerDevWeb.PageController.exit")
     exit(:timeout)
   end
 
@@ -87,6 +93,10 @@ defmodule ErrorTrackerDevWeb.PageController do
     |> put_resp_header("content-type", "text/html")
     |> send_resp(200, "<!doctype html><html><body>#{content}</body></html>")
   end
+end
+
+defmodule CustomException do
+  defexception [:message, :bread_crumbs]
 end
 
 defmodule ErrorTrackerDevWeb.ErrorView do
@@ -142,9 +152,15 @@ defmodule ErrorTrackerDevWeb.Endpoint do
 
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
+  plug :add_breadcrumb
   plug :maybe_exception
   plug :set_csp
   plug ErrorTrackerDevWeb.Router
+
+  def add_breadcrumb(conn, _) do
+    ErrorTracker.add_breadcrumb("ErrorTrackerDevWeb.Endpoint.add_breadcrumb")
+    conn
+  end
 
   def maybe_exception(%Plug.Conn{path_info: ["plug-exception"]}, _), do: raise("Plug exception")
   def maybe_exception(conn, _), do: conn
