@@ -66,10 +66,13 @@
           <.link navigate={error_path(@socket, error)} class="absolute inset-1">
             <span class="sr-only">(<%= sanitize_module(error.kind) %>) <%= error.reason %></span>
           </.link>
-          <p class="whitespace-nowrap text-ellipsis w-full overflow-hidden">
+          <p class="whitespace-nowrap text-ellipsis overflow-hidden">
             (<%= sanitize_module(error.kind) %>) <%= error.reason %>
           </p>
-          <p :if={ErrorTracker.Error.has_source_info?(error)} class="font-normal text-gray-400">
+          <p
+            :if={ErrorTracker.Error.has_source_info?(error)}
+            class="whitespace-nowrap text-ellipsis overflow-hidden font-normal text-gray-400"
+          >
             <%= sanitize_module(error.source_function) %>
             <br />
             <%= error.source_line %>
