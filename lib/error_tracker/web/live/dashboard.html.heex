@@ -1,7 +1,7 @@
 <.form
   for={@search_form}
   id="search"
-  class="mb-4 text-black grid grid-cols-4 gap-2"
+  class="mb-4 text-black grid md:grid-cols-4 grid-cols-2 gap-2"
   phx-change="search"
 >
   <input
@@ -46,10 +46,10 @@
   <table class="w-full text-sm text-left rtl:text-right text-gray-400 table-fixed">
     <thead class="text-xs uppercase bg-gray-900">
       <tr>
-        <th scope="col" class="px-4 pr-2 py-3 w-128">Error</th>
+        <th scope="col" class="px-4 pr-2 w-72">Error</th>
         <th scope="col" class="px-4 py-3 w-72">Occurrences</th>
         <th scope="col" class="px-4 py-3 w-28">Status</th>
-        <th scope="col" class="px-4 py-3 w-32"></th>
+        <th scope="col" class="px-4 py-3 w-28"></th>
       </tr>
     </thead>
     <tbody>
@@ -66,10 +66,13 @@
           <.link navigate={error_path(@socket, error)} class="absolute inset-1">
             <span class="sr-only">(<%= sanitize_module(error.kind) %>) <%= error.reason %></span>
           </.link>
-          <p class="whitespace-nowrap text-ellipsis w-full overflow-hidden">
+          <p class="whitespace-nowrap text-ellipsis overflow-hidden">
             (<%= sanitize_module(error.kind) %>) <%= error.reason %>
           </p>
-          <p :if={ErrorTracker.Error.has_source_info?(error)} class="font-normal text-gray-400">
+          <p
+            :if={ErrorTracker.Error.has_source_info?(error)}
+            class="whitespace-nowrap text-ellipsis overflow-hidden font-normal text-gray-400"
+          >
             <%= sanitize_module(error.source_function) %>
             <br />
             <%= error.source_line %>

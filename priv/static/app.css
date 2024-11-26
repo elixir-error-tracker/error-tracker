@@ -893,10 +893,6 @@ select {
   width: 7rem;
 }
 
-.w-32 {
-  width: 8rem;
-}
-
 .w-5 {
   width: 1.25rem;
 }
@@ -917,8 +913,8 @@ select {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
-.grid-cols-4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .flex-col {
