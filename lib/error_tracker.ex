@@ -67,17 +67,16 @@ defmodule ErrorTracker do
   of your code the code was executed in a given request / process.
 
   Using breadcrumbs allows you to add that information to any error generated and
-  stored on a given process / request. And if you are using `Ash` or `Splode`their
+  stored on a given process / request. And if you are using `Ash` or `Splode` their
   exceptions' breadcrumbs will be automatically populated.
 
-  If you want to add a breadcrumb you can do so:
+  If you want to add a breadcrumb in a point of your code you can do so:
 
   ```elixir
   ErrorTracker.add_breadcrumb("Executed my super secret code")
   ```
 
-  Breadcrumbs can be viewed in the dashboard while viewing the details of an
-  occurrence.
+  Breadcrumbs can be viewed in the dashboard on the details page of an occurrence.
   """
 
   @typedoc """
