@@ -10,6 +10,9 @@ defmodule ErrorTracker.Web.Router do
 
   It requires a path in which you are going to serve the web interface.
 
+  In order to work properly, the route should be in a scope with CSRF protection
+  (usually the `:browser` pipeline).
+
   ## Security considerations
 
   The dashboard inlines both the JS and CSS assets. This means that, if your

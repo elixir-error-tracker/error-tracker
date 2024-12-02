@@ -13,11 +13,19 @@ defmodule ErrorTracker.Web do
 
     ...
 
-    error_tracker_dashboard "/errors"
+    scope "/" do
+      ...
+
+      error_tracker_dashboard "/errors"
+    end
   end
   ```
 
   This will add the routes needed for ErrorTracker's dashboard to work.
+
+  **Note:** when adding the dashboard routes, make sure you do it in an scope that
+  has CSRF protection (usually the `:browser` pipeline in most projects), as
+  otherwise you may experience LiveView issues like crashes and redirections.
 
   ## Security considerations
 
