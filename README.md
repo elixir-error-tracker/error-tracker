@@ -4,7 +4,7 @@
 <a title="Latest release" href="https://hex.pm/packages/error_tracker"><img src="https://img.shields.io/hexpm/v/error_tracker.svg" alt="Latest release" /></a>
 <a title="View documentation" href="https://hexdocs.pm/error_tracker"><img src="https://img.shields.io/badge/hex.pm-docs-blue.svg" alt="View documentation" /></a>
 
-> An Elixir based built-in error tracking solution.
+**An Elixir based built-in error tracking solution.** ErrorTracker captures errors in your application and stores them in the database. It also provides a web dashboard from where you can find, inspect and resolve captured errors.
 
 <a href="guides/screenshots/error-dashboard.png">
   <img src="guides/screenshots/error-dashboard.png" alt="ErrorTracker web dashboard" width="400">
