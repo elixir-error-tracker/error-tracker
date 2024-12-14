@@ -62,10 +62,8 @@ mix assets.watch
 
 ### Development server
 
-We have a `dev.exs` script that starts a development server.
-
-To run it together with an `IEx` console you can do:
+We have a `dev.exs` script based on [Phoenix Playground](https://github.com/phoenix-playground/phoenix_playground) that starts a development server.
 
 ```
-iex -S mix dev
+iex dev.exs
 ```
