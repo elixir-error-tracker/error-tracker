@@ -44,7 +44,7 @@ defmodule ErrorTrackerDev.Controller do
   plug :put_layout, false
   plug :put_view, __MODULE__
 
-  def index(conn, _opts) do
+  def index(conn, _params) do
     render(conn)
   end
 
@@ -78,7 +78,7 @@ defmodule ErrorTrackerDev.Live do
     {:noreply, socket}
   end
 
-  def handle_event("crash_on_handle_event", _params, socket) do
+  def handle_event("crash_on_handle_event", _params, _socket) do
     raise "Crashed on handle_event/3"
   end
 
@@ -198,7 +198,9 @@ PhoenixPlayground.start(
   child_specs: [
     {ErrorTrackerDev.Repo, []},
     {ErrorTrackerDev.GenServer, [name: ErrorTrackerDev.GenServer]}
-  ]
+  ],
+  open_browser: false,
+  debug_errors: false
 )
 
 ErrorTrackerDev.Repo.migrate()
