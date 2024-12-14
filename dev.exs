@@ -185,7 +185,7 @@ defmodule ErrorTrackerDev.Router do
     get "/exit", ErrorTrackerDev.Controller, :exit
 
     scope "/dev" do
-      error_tracker_dashboard "/errors"
+      error_tracker_dashboard "/errors", csp_nonce_assign_key: :custom_csp_nonce
     end
   end
 end
@@ -203,8 +203,23 @@ defmodule ErrorTrackerDev.Endpoint do
   plug Phoenix.LiveReloader
   plug Phoenix.CodeReloader, reloader: &PhoenixPlayground.CodeReloader.reload/2
 
+  # Use a custom Content Security Policy
+  plug :set_csp
   # Our custom router which allows us to have regular controllers and live views
   plug ErrorTrackerDev.Router
+
+  defp set_csp(conn, _opts) do
+    nonce = 10 |> :crypto.strong_rand_bytes() |> Base.encode64()
+
+    policies = [
+      "script-src 'self' 'nonce-#{nonce}';",
+      "style-src 'self' 'nonce-#{nonce}';"
+    ]
+
+    conn
+    |> Plug.Conn.assign(:custom_csp_nonce, "#{nonce}")
+    |> Plug.Conn.put_resp_header("content-security-policy", Enum.join(policies, " "))
+  end
 end
 
 defmodule ErrorTrackerDev.ErrorView do
