@@ -244,6 +244,12 @@ defmodule ErrorTrackerDev.Exception do
   defexception [:message, :bread_crumbs]
 end
 
+defmodule ErrorTrackerDev.Telemetry do
+  def handle_event(event, measure, metadata, _opts) do
+    dbg([event, measure, metadata])
+  end
+end
+
 PhoenixPlayground.start(
   endpoint: ErrorTrackerDev.Endpoint,
   child_specs: [
@@ -255,3 +261,15 @@ PhoenixPlayground.start(
 )
 
 ErrorTrackerDev.Repo.migrate()
+
+:telemetry.attach_many(
+  "error-tracker-events",
+  [
+    [:error_tracker, :error, :new],
+    [:error_tracker, :error, :resolved],
+    [:error_tracker, :error, :unresolved],
+    [:error_tracker, :occurrence, :new]
+  ],
+  &ErrorTrackerDev.Telemetry.handle_event/4,
+  []
+)
