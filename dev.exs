@@ -101,7 +101,13 @@ defmodule ErrorTrackerDev.Live do
 
     <.link href="/dev/errors" target="_blank">Open the ErrorTracker dashboard</.link>
 
-    <h2>LiveView example</h2>
+    <p>
+      Errors are stored in the <code>priv/repo/dev.db</code>
+      database, which is automatically created by this script.<br />
+      If you want to clear the state stop the script, run the following command and start it again. <pre>rm priv/repo/dev.db priv/repo/dev.db-shm priv/repo/dev.db-wal</pre>
+    </p>
+
+    <h2>LiveView examples</h2>
 
     <ul>
       <li>
