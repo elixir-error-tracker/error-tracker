@@ -57,6 +57,26 @@ defmodule ErrorTrackerDev.Controller do
     </ul>
     """
   end
+
+  def noroute(conn, _params) do
+    ErrorTracker.add_breadcrumb("ErrorTrackerDev.Controller.noroute/2")
+
+    raise Phoenix.Router.NoRouteError, conn: conn, router: ErrorTrackerDev.Router
+  end
+
+  def exception(_conn, _params) do
+    ErrorTracker.add_breadcrumb("ErrorTrackerDev.Controller.exception/2")
+
+    raise ErrorTrackerDev.Exception,
+      message: "This is a controller exception",
+      bread_crumbs: ["First", "Second"]
+  end
+
+  def exit(_conn, _params) do
+    ErrorTracker.add_breadcrumb("ErrorTrackerDev.Controller.exit/2")
+
+    exit(:timeout)
+  end
 end
 
 defmodule ErrorTrackerDev.Live do
@@ -127,7 +147,19 @@ defmodule ErrorTrackerDev.Live do
       </li>
     </ul>
 
-    <h2>Controller example</h2>
+    <h2>Controller examples</h2>
+
+    <ul>
+      <li>
+        <.link href="/noroute">Generate a 404 error from the controller</.link>
+      </li>
+      <li>
+        <.link href="/exception">Generate an exception from the controller</.link>
+      </li>
+      <li>
+        <.link href="/exit">Generate an exit from the controller</.link>
+      </li>
+    </ul>
     """
   end
 end
@@ -148,6 +180,9 @@ defmodule ErrorTrackerDev.Router do
     pipe_through :browser
 
     live "/", ErrorTrackerDev.Live
+    get "/noroute", ErrorTrackerDev.Controller, :noroute
+    get "/exception", ErrorTrackerDev.Controller, :exception
+    get "/exit", ErrorTrackerDev.Controller, :exit
 
     scope "/dev" do
       error_tracker_dashboard "/errors"
@@ -156,8 +191,10 @@ defmodule ErrorTrackerDev.Router do
 end
 
 defmodule ErrorTrackerDev.Endpoint do
-  # Default PhoenixPlayground.Endpoint
   use Phoenix.Endpoint, otp_app: :phoenix_playground
+  use ErrorTracker.Integrations.Plug
+
+  # Default PhoenixPlayground.Endpoint
   plug Plug.Logger
   socket "/live", Phoenix.LiveView.Socket
   plug Plug.Static, from: {:phoenix, "priv/static"}, at: "/assets/phoenix"
@@ -168,6 +205,16 @@ defmodule ErrorTrackerDev.Endpoint do
 
   # Our custom router which allows us to have regular controllers and live views
   plug ErrorTrackerDev.Router
+end
+
+defmodule ErrorTrackerDev.ErrorView do
+  def render("404.html", _assigns) do
+    "This is a 404"
+  end
+
+  def render("500.html", _assigns) do
+    "This is a 500"
+  end
 end
 
 defmodule ErrorTrackerDev.GenServer do
@@ -191,6 +238,10 @@ defmodule ErrorTrackerDev.GenServer do
     :timer.sleep(5000)
     {:reply, state, state}
   end
+end
+
+defmodule ErrorTrackerDev.Exception do
+  defexception [:message, :bread_crumbs]
 end
 
 PhoenixPlayground.start(
