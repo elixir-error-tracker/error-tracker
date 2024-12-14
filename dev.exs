@@ -86,6 +86,11 @@ defmodule ErrorTrackerDev.Live do
     {:noreply, assign(socket, crash_on_render: true)}
   end
 
+  def handle_event("genserver-timeout", _params, socket) do
+    GenServer.call(ErrorTrackerDev.GenServer, :timeout, 2000)
+    {:noreply, socket}
+  end
+
   def render(assigns) do
     if Map.has_key?(assigns, :crash_on_render) do
       raise "Crashed on render/1"
@@ -110,6 +115,9 @@ defmodule ErrorTrackerDev.Live do
       </li>
       <li>
         <.link phx-click="crash_on_handle_event">Crash on handle_event/3</.link>
+      </li>
+      <li>
+        <.link phx-click="genserver-timeout">Crash with a GenServer timeout</.link>
       </li>
     </ul>
 
@@ -156,9 +164,35 @@ defmodule ErrorTrackerDev.Endpoint do
   plug ErrorTrackerDev.Router
 end
 
+defmodule ErrorTrackerDev.GenServer do
+  use GenServer
+
+  # Client
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, %{})
+  end
+
+  # Server (callbacks)
+
+  @impl true
+  def init(initial_state) do
+    {:ok, initial_state}
+  end
+
+  @impl true
+  def handle_call(:timeout, _from, state) do
+    :timer.sleep(5000)
+    {:reply, state, state}
+  end
+end
+
 PhoenixPlayground.start(
   endpoint: ErrorTrackerDev.Endpoint,
-  child_specs: [{ErrorTrackerDev.Repo, []}]
+  child_specs: [
+    {ErrorTrackerDev.Repo, []},
+    {ErrorTrackerDev.GenServer, [name: ErrorTrackerDev.GenServer]}
+  ]
 )
 
 ErrorTrackerDev.Repo.migrate()
