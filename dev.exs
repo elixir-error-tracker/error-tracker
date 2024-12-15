@@ -157,6 +157,9 @@ defmodule ErrorTrackerDev.Live do
         <.link href="/exception">Generate an exception from the controller</.link>
       </li>
       <li>
+        <.link href="/plug_exception">Generate an exception from the router</.link>
+      </li>
+      <li>
         <.link href="/exit">Generate an exit from the controller</.link>
       </li>
     </ul>
@@ -205,6 +208,8 @@ defmodule ErrorTrackerDev.Endpoint do
 
   # Use a custom Content Security Policy
   plug :set_csp
+  # Raise an exception in the /plug_exception path
+  plug :plug_exception
   # Our custom router which allows us to have regular controllers and live views
   plug ErrorTrackerDev.Router
 
@@ -219,6 +224,12 @@ defmodule ErrorTrackerDev.Endpoint do
     conn
     |> Plug.Conn.assign(:custom_csp_nonce, "#{nonce}")
     |> Plug.Conn.put_resp_header("content-security-policy", Enum.join(policies, " "))
+  end
+
+  defp plug_exception(conn = %Plug.Conn{path_info: path_info}, _opts) when is_list(path_info) do
+    if "plug_exception" in path_info,
+      do: raise("Crashed in Endpoint"),
+      else: conn
   end
 end
 
