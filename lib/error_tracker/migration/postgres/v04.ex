@@ -3,14 +3,14 @@ defmodule ErrorTracker.Migration.Postgres.V04 do
 
   use Ecto.Migration
 
-  def up(_opts) do
-    alter table(:error_tracker_occurrences) do
+  def up(%{prefix: prefix}) do
+    alter table(:error_tracker_occurrences, prefix: prefix) do
       add :breadcrumbs, {:array, :string}, default: [], null: false
     end
   end
 
-  def down(_opts) do
-    alter table(:error_tracker_occurrences) do
+  def down(%{prefix: prefix}) do
+    alter table(:error_tracker_occurrences, prefix: prefix) do
       remove :breadcrumbs
     end
   end
