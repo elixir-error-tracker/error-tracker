@@ -41,7 +41,7 @@ defmodule ErrorTracker.Plugins.Pruner do
   capabilities and have a more granular control over when pruning is run.
 
       defmodule MyApp.ErrorPruner do
-        use Oban.Job
+        use Oban.Worker
 
         def perform(%Job{}) do
           ErrorTracker.Plugins.Pruner.prune_errors(limit: 10_000, max_age: :timer.minutes(60))
