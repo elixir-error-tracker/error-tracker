@@ -320,8 +320,12 @@ defmodule ErrorTracker do
   end
 
   defp upsert_error!(error, stacktrace, context, breadcrumbs, reason) do
-    existing_status =
-      Repo.one(from e in Error, where: [fingerprint: ^error.fingerprint], select: e.status)
+    {existing_status, muted} =
+      Repo.one(
+        from e in Error,
+          where: [fingerprint: ^error.fingerprint],
+          select: {e.status, e.muted}
+      )
 
     {:ok, {error, occurrence}} =
       Repo.transaction(fn ->
@@ -362,8 +366,8 @@ defmodule ErrorTracker do
       nil -> Telemetry.new_error(error)
     end
 
-    # Always send a new occurrence Telemetry event
-    Telemetry.new_occurrence(occurrence)
+    # Send telemetry for new occurrences if not muted
+    if !muted, do: Telemetry.new_occurrence(occurrence)
 
     {error, occurrence}
   end
