@@ -117,21 +117,23 @@
     </.section>
 
     <.section>
-      <.button :if={@error.status == :unresolved} phx-click="resolve">
-        Mark as resolved
-      </.button>
+      <div class="flex flex-col gap-y-4">
+        <.button :if={@error.status == :unresolved} phx-click="resolve">
+          Mark as resolved
+        </.button>
 
-      <.button :if={@error.status == :resolved} phx-click="unresolve">
-        Mark as unresolved
-      </.button>
+        <.button :if={@error.status == :resolved} phx-click="unresolve">
+          Mark as unresolved
+        </.button>
 
-      <.button :if={!@error.muted} phx-click="mute" type="link">
-        Mute
-      </.button>
+        <.button :if={!@error.muted} phx-click="mute" type="link">
+          <.icon name="bell-slash" /> Mute
+        </.button>
 
-      <.button :if={@error.muted} phx-click="unmute" type="link">
-        Unmute
-      </.button>
+        <.button :if={@error.muted} phx-click="unmute" type="link">
+          <.icon name="bell" /> Unmute
+        </.button>
+      </div>
     </.section>
   </div>
 </div>

@@ -87,29 +87,36 @@
           <.badge :if={error.status == :unresolved} color={:red}>Unresolved</.badge>
         </td>
         <td class="px-4 py-4 text-center">
-          <.button
-            :if={error.status == :unresolved}
-            phx-click="resolve"
-            phx-value-error_id={error.id}
-          >
-            Resolve
-          </.button>
+          <div class="flex justify-between">
+            <.button
+              :if={error.status == :unresolved}
+              phx-click="resolve"
+              phx-value-error_id={error.id}
+            >
+              Resolve
+            </.button>
 
-          <.button
-            :if={error.status == :resolved}
-            phx-click="unresolve"
-            phx-value-error_id={error.id}
-          >
-            Unresolve
-          </.button>
+            <.button
+              :if={error.status == :resolved}
+              phx-click="unresolve"
+              phx-value-error_id={error.id}
+            >
+              Unresolve
+            </.button>
 
-          <.button :if={!error.muted} phx-click="mute" type="link" phx-value-error_id={error.id}>
-            Mute
-          </.button>
+            <.button :if={!error.muted} phx-click="mute" type="link" phx-value-error_id={error.id}>
+              <.icon name="bell-slash" /> Mute
+            </.button>
 
-          <.button :if={error.muted} phx-click="unmute" type="link" phx-value-error_id={error.id}>
-            Unmute
-          </.button>
+            <.button
+              :if={error.muted}
+              phx-click="unmute"
+              type="link"
+              phx-value-error_id={error.id}
+            >
+              <.icon name="bell" /> Unmute
+            </.button>
+          </div>
         </td>
       </tr>
     </tbody>
