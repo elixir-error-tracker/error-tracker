@@ -102,6 +102,14 @@
           >
             Unresolve
           </.button>
+
+          <.button :if={!error.muted} phx-click="mute" type="link" phx-value-error_id={error.id}>
+            Mute
+          </.button>
+
+          <.button :if={error.muted} phx-click="unmute" type="link" phx-value-error_id={error.id}>
+            Unmute
+          </.button>
         </td>
       </tr>
     </tbody>

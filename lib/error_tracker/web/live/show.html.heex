@@ -124,6 +124,14 @@
       <.button :if={@error.status == :resolved} phx-click="unresolve">
         Mark as unresolved
       </.button>
+
+      <.button :if={!@error.muted} phx-click="mute" type="link">
+        Mute
+      </.button>
+
+      <.button :if={@error.muted} phx-click="unmute" type="link">
+        Unmute
+      </.button>
     </.section>
   </div>
 </div>

@@ -180,6 +180,26 @@ defmodule ErrorTracker do
   end
 
   @doc """
+  Mutes the error so next ocurrences won't send telemetry events.
+  """
+  @spec mute(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
+  def mute(error = %Error{muted: false}) do
+    changeset = Ecto.Changeset.change(error, muted: true)
+
+    Repo.update(changeset)
+  end
+
+  @doc """
+  Unmutes the error so next ocurrences will send telemetry events.
+  """
+  @spec unmute(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
+  def unmute(error = %Error{muted: true}) do
+    changeset = Ecto.Changeset.change(error, muted: false)
+
+    Repo.update(changeset)
+  end
+
+  @doc """
   Sets the current process context.
 
   The given context will be merged into the current process context. The given context
