@@ -141,10 +141,7 @@ defmodule ErrorTracker do
     if enabled?() && !ignored?(error, context) do
       sanitized_context = sanitize_context(context)
 
-      {_error, occurrence} =
-        upsert_error!(error, stacktrace, sanitized_context, breadcrumbs, reason)
-
-      occurrence
+      upsert_error!(error, stacktrace, sanitized_context, breadcrumbs, reason)
     else
       :noop
     end
@@ -183,7 +180,7 @@ defmodule ErrorTracker do
   Mutes the error so next ocurrences won't send telemetry events.
   """
   @spec mute(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
-  def mute(error = %Error{muted: false}) do
+  def mute(error = %Error{}) do
     changeset = Ecto.Changeset.change(error, muted: true)
 
     Repo.update(changeset)
@@ -193,7 +190,7 @@ defmodule ErrorTracker do
   Unmutes the error so next ocurrences will send telemetry events.
   """
   @spec unmute(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
-  def unmute(error = %Error{muted: true}) do
+  def unmute(error = %Error{}) do
     changeset = Ecto.Changeset.change(error, muted: false)
 
     Repo.update(changeset)
@@ -320,12 +317,16 @@ defmodule ErrorTracker do
   end
 
   defp upsert_error!(error, stacktrace, context, breadcrumbs, reason) do
+    status_and_muted_query =
+      from e in Error,
+        where: [fingerprint: ^error.fingerprint],
+        select: {e.status, e.muted}
+
     {existing_status, muted} =
-      Repo.one(
-        from e in Error,
-          where: [fingerprint: ^error.fingerprint],
-          select: {e.status, e.muted}
-      )
+      case Repo.one(status_and_muted_query) do
+        {existing_status, muted} -> {existing_status, muted}
+        nil -> {nil, nil}
+      end
 
     {:ok, {error, occurrence}} =
       Repo.transaction(fn ->
@@ -369,6 +370,6 @@ defmodule ErrorTracker do
     # Send telemetry for new occurrences if not muted
     if !muted, do: Telemetry.new_occurrence(occurrence)
 
-    {error, occurrence}
+    %Occurrence{occurrence | error: error}
   end
 end
