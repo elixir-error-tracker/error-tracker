@@ -22,7 +22,7 @@ defmodule ErrorTracker.Error do
     field :status, Ecto.Enum, values: [:resolved, :unresolved], default: :unresolved
     field :fingerprint, :binary
     field :last_occurrence_at, :utc_datetime_usec
-    field :muted, :boolean
+    field :muted, :boolean, default: false
 
     has_many :occurrences, ErrorTracker.Occurrence
 
