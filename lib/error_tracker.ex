@@ -177,7 +177,15 @@ defmodule ErrorTracker do
   end
 
   @doc """
-  Mutes the error so next ocurrences won't send telemetry events.
+  Mutes the error so new occurrences won't send telemetry events.
+
+  When an error is muted:
+  - New occurrences are still tracked and stored in the database
+  - No telemetry events are emitted for new occurrences
+  - You can still see the error and its occurrences in the web UI
+
+  This is useful for noisy errors that you want to keep tracking but don't want to
+  receive notifications about.
   """
   @spec mute(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
   def mute(error = %Error{}) do
@@ -187,7 +195,10 @@ defmodule ErrorTracker do
   end
 
   @doc """
-  Unmutes the error so next ocurrences will send telemetry events.
+  Unmutes the error so new occurrences will send telemetry events again.
+
+  This reverses the effect of `mute/1`, allowing telemetry events to be emitted
+  for new occurrences of this error again.
   """
   @spec unmute(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
   def unmute(error = %Error{}) do

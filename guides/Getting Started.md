@@ -56,7 +56,7 @@ Open the generated migration and call the `up` and `down` functions on `ErrorTra
 defmodule MyApp.Repo.Migrations.AddErrorTracker do
   use Ecto.Migration
 
-  def up, do: ErrorTracker.Migration.up(version: 4)
+  def up, do: ErrorTracker.Migration.up(version: 5)
 
   # We specify `version: 1` in `down`, to ensure we remove all migrations.
   def down, do: ErrorTracker.Migration.down(version: 1)
@@ -152,9 +152,27 @@ environments where you may want to prune old errors that have been resolved.
 The `ErrorTracker.Plugins.Pruner` module provides automatic pruning functionality with a configurable
 interval and error age.
 
-## Ignoring errors
+## Ignoring and Muting Errors
+
+ErrorTracker provides two different ways to silence errors:
+
+### Ignoring Errors
 
 ErrorTracker tracks every error by default. In certain cases some errors may be expected or just not interesting to track.
-ErrorTracker provides functionality that allows you to ignore errors based on their attributes and context.
+The `ErrorTracker.Ignorer` behaviour allows you to ignore errors based on their attributes and context.
 
-Take a look at the `ErrorTracker.Ignorer` behaviour for more information about how to implement your own ignorer.
+When an error is ignored, its occurrences are not tracked at all. This is useful for expected errors that you don't want to store in your database.
+
+### Muting Errors
+
+Sometimes you may want to keep tracking error occurrences but avoid receiving notifications about them. For these cases,
+ErrorTracker allows you to mute specific errors.
+
+When an error is muted:
+- New occurrences are still tracked and stored in the database
+- No telemetry events are emitted for new occurrences
+- You can still see the error and its occurrences in the web UI
+
+This is particularly useful for noisy errors that you want to keep tracking but don't want to receive notifications about.
+
+You can mute and unmute errors manually through the web UI or programmatically using the `ErrorTracker.mute/1` and `ErrorTracker.unmute/1` functions.
