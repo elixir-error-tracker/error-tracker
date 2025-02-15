@@ -873,12 +873,20 @@ select {
   display: none;
 }
 
+.\!h-4 {
+  height: 1rem !important;
+}
+
 .h-10 {
   height: 2.5rem;
 }
 
 .h-5 {
   height: 1.25rem;
+}
+
+.\!w-4 {
+  width: 1rem !important;
 }
 
 .w-10 {
@@ -943,6 +951,10 @@ select {
 
 .gap-2 {
   gap: 0.5rem;
+}
+
+.gap-y-4 {
+  row-gap: 1rem;
 }
 
 .space-y-8 > :not([hidden]) ~ :not([hidden]) {

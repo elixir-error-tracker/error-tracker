@@ -2,6 +2,12 @@ defmodule ErrorTracker.Ignorer do
   @moduledoc """
   Behaviour for ignoring errors.
 
+  > #### Ignoring vs muting errors {: .info}
+  >
+  > Ignoring an error keeps it from being tracked by the ErrorTracker. While this may be useful in
+  > certain cases, in other cases you may prefer to track the error but don't send telemetry events.
+  > Take a look at the `ErrorTracker.mute/1` function to see how to mute errors.
+
   The ErrorTracker tracks every error that happens in your application. In certain cases you may
   want to ignore some errors and don't track them. To do so you can implement this behaviour.
 

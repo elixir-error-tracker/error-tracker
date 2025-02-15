@@ -4,7 +4,7 @@
 #
 Mix.install([
   {:ecto_sqlite3, ">= 0.0.0"},
-  {:error_tracker, path: "."},
+  {:error_tracker, path: ".", force: true},
   {:phoenix_playground, "~> 0.1.7"}
 ])
 
