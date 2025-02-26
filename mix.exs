@@ -86,10 +86,10 @@ defmodule ErrorTracker.MixProject do
     [
       {:ecto_sql, "~> 3.13"},
       {:ecto, "~> 3.13"},
-      {:jason, "~> 1.1"},
       {:phoenix_live_view, "~> 1.0"},
       {:phoenix_ecto, "~> 4.6"},
       {:plug, "~> 1.10"},
+      {:jason, "~> 1.1", optional: true},
       {:postgrex, ">= 0.0.0", optional: true},
       {:myxql, ">= 0.0.0", optional: true},
       {:ecto_sqlite3, ">= 0.0.0", optional: true},
