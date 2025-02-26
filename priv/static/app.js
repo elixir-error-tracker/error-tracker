@@ -1,14 +1,6001 @@
-var G5=Object.create;var{defineProperty:I1,getPrototypeOf:j5,getOwnPropertyNames:K5}=Object;var B5=Object.prototype.hasOwnProperty;var M5=(Q,Z,$)=>{$=Q!=null?G5(j5(Q)):{};const Y=Z||!Q||!Q.__esModule?I1($,"default",{value:Q,enumerable:!0}):$;for(let z of K5(Q))if(!B5.call(Y,z))I1(Y,z,{get:()=>Q[z],enumerable:!0});return Y};var U5=(Q,Z)=>()=>(Z||Q((Z={exports:{}}).exports,Z),Z.exports);var J5=U5((z5,i0)=>{(function(Q,Z){function $(){Y.width=Q.innerWidth,Y.height=5*j.barThickness;var U=Y.getContext("2d");U.shadowBlur=j.shadowBlur,U.shadowColor=j.shadowColor;var V,X=U.createLinearGradient(0,0,Y.width,0);for(V in j.barColors)X.addColorStop(V,j.barColors[V]);U.lineWidth=j.barThickness,U.beginPath(),U.moveTo(0,j.barThickness/2),U.lineTo(Math.ceil(z*Y.width),j.barThickness/2),U.strokeStyle=X,U.stroke()}var Y,z,J,W=null,q=null,G=null,j={autoRun:!0,barThickness:3,barColors:{0:"rgba(26,  188, 156, .9)",".25":"rgba(52,  152, 219, .9)",".50":"rgba(241, 196, 15,  .9)",".75":"rgba(230, 126, 34,  .9)","1.0":"rgba(211, 84,  0,   .9)"},shadowBlur:10,shadowColor:"rgba(0,   0,   0,   .6)",className:null},B={config:function(U){for(var V in U)j.hasOwnProperty(V)&&(j[V]=U[V])},show:function(U){var V,X;J||(U?G=G||setTimeout(()=>B.show(),U):(J=!0,q!==null&&Q.cancelAnimationFrame(q),Y||((X=(Y=Z.createElement("canvas")).style).position="fixed",X.top=X.left=X.right=X.margin=X.padding=0,X.zIndex=100001,X.display="none",j.className&&Y.classList.add(j.className),V="resize",U=$,(X=Q).addEventListener?X.addEventListener(V,U,!1):X.attachEvent?X.attachEvent("on"+V,U):X["on"+V]=U),Y.parentElement||Z.body.appendChild(Y),Y.style.opacity=1,Y.style.display="block",B.progress(0),j.autoRun&&function L(){W=Q.requestAnimationFrame(L),B.progress("+"+0.05*Math.pow(1-Math.sqrt(z),2))}()))},progress:function(U){return U===void 0||(typeof U=="string"&&(U=(0<=U.indexOf("+")||0<=U.indexOf("-")?z:0)+parseFloat(U)),z=1<U?1:U,$()),z},hide:function(){clearTimeout(G),G=null,J&&(J=!1,W!=null&&(Q.cancelAnimationFrame(W),W=null),function U(){return 1<=B.progress("+.1")&&(Y.style.opacity-=0.05,Y.style.opacity<=0.05)?(Y.style.display="none",void(q=null)):void(q=Q.requestAnimationFrame(U))}())}};typeof i0=="object"&&typeof z5=="object"?i0.exports=B:typeof define=="function"&&define.amd?define(function(){return B}):this.topbar=B}).call(z5,window,document)});var X0=(Q)=>{if(typeof Q==="function")return Q;else return function(){return Q}},V5=typeof self!=="undefined"?self:null,V0=typeof window!=="undefined"?window:null,q0=V5||V0||q0,X5="2.0.0",p={connecting:0,open:1,closing:2,closed:3},L5=1e4,F5=1000,_={closed:"closed",errored:"errored",joined:"joined",joining:"joining",leaving:"leaving"},n={close:"phx_close",error:"phx_error",join:"phx_join",reply:"phx_reply",leave:"phx_leave"},l0={longpoll:"longpoll",websocket:"websocket"},D5={complete:4},S0=class{constructor(Q,Z,$,Y){this.channel=Q,this.event=Z,this.payload=$||function(){return{}},this.receivedResp=null,this.timeout=Y,this.timeoutTimer=null,this.recHooks=[],this.sent=!1}resend(Q){this.timeout=Q,this.reset(),this.send()}send(){if(this.hasReceived("timeout"))return;this.startTimeout(),this.sent=!0,this.channel.socket.push({topic:this.channel.topic,event:this.event,payload:this.payload(),ref:this.ref,join_ref:this.channel.joinRef()})}receive(Q,Z){if(this.hasReceived(Q))Z(this.receivedResp.response);return this.recHooks.push({status:Q,callback:Z}),this}reset(){this.cancelRefEvent(),this.ref=null,this.refEvent=null,this.receivedResp=null,this.sent=!1}matchReceive({status:Q,response:Z,_ref:$}){this.recHooks.filter((Y)=>Y.status===Q).forEach((Y)=>Y.callback(Z))}cancelRefEvent(){if(!this.refEvent)return;this.channel.off(this.refEvent)}cancelTimeout(){clearTimeout(this.timeoutTimer),this.timeoutTimer=null}startTimeout(){if(this.timeoutTimer)this.cancelTimeout();this.ref=this.channel.socket.makeRef(),this.refEvent=this.channel.replyEventName(this.ref),this.channel.on(this.refEvent,(Q)=>{this.cancelRefEvent(),this.cancelTimeout(),this.receivedResp=Q,this.matchReceive(Q)}),this.timeoutTimer=setTimeout(()=>{this.trigger("timeout",{})},this.timeout)}hasReceived(Q){return this.receivedResp&&this.receivedResp.status===Q}trigger(Q,Z){this.channel.trigger(this.refEvent,{status:Q,response:Z})}},H1=class{constructor(Q,Z){this.callback=Q,this.timerCalc=Z,this.timer=null,this.tries=0}reset(){this.tries=0,clearTimeout(this.timer)}scheduleTimeout(){clearTimeout(this.timer),this.timer=setTimeout(()=>{this.tries=this.tries+1,this.callback()},this.timerCalc(this.tries+1))}},I5=class{constructor(Q,Z,$){this.state=_.closed,this.topic=Q,this.params=X0(Z||{}),this.socket=$,this.bindings=[],this.bindingRef=0,this.timeout=this.socket.timeout,this.joinedOnce=!1,this.joinPush=new S0(this,n.join,this.params,this.timeout),this.pushBuffer=[],this.stateChangeRefs=[],this.rejoinTimer=new H1(()=>{if(this.socket.isConnected())this.rejoin()},this.socket.rejoinAfterMs),this.stateChangeRefs.push(this.socket.onError(()=>this.rejoinTimer.reset())),this.stateChangeRefs.push(this.socket.onOpen(()=>{if(this.rejoinTimer.reset(),this.isErrored())this.rejoin()})),this.joinPush.receive("ok",()=>{this.state=_.joined,this.rejoinTimer.reset(),this.pushBuffer.forEach((Y)=>Y.send()),this.pushBuffer=[]}),this.joinPush.receive("error",()=>{if(this.state=_.errored,this.socket.isConnected())this.rejoinTimer.scheduleTimeout()}),this.onClose(()=>{if(this.rejoinTimer.reset(),this.socket.hasLogger())this.socket.log("channel",`close ${this.topic} ${this.joinRef()}`);this.state=_.closed,this.socket.remove(this)}),this.onError((Y)=>{if(this.socket.hasLogger())this.socket.log("channel",`error ${this.topic}`,Y);if(this.isJoining())this.joinPush.reset();if(this.state=_.errored,this.socket.isConnected())this.rejoinTimer.scheduleTimeout()}),this.joinPush.receive("timeout",()=>{if(this.socket.hasLogger())this.socket.log("channel",`timeout ${this.topic} (${this.joinRef()})`,this.joinPush.timeout);if(new S0(this,n.leave,X0({}),this.timeout).send(),this.state=_.errored,this.joinPush.reset(),this.socket.isConnected())this.rejoinTimer.scheduleTimeout()}),this.on(n.reply,(Y,z)=>{this.trigger(this.replyEventName(z),Y)})}join(Q=this.timeout){if(this.joinedOnce)throw new Error("tried to join multiple times. 'join' can only be called a single time per channel instance");else return this.timeout=Q,this.joinedOnce=!0,this.rejoin(),this.joinPush}onClose(Q){this.on(n.close,Q)}onError(Q){return this.on(n.error,(Z)=>Q(Z))}on(Q,Z){let $=this.bindingRef++;return this.bindings.push({event:Q,ref:$,callback:Z}),$}off(Q,Z){this.bindings=this.bindings.filter(($)=>{return!($.event===Q&&(typeof Z==="undefined"||Z===$.ref))})}canPush(){return this.socket.isConnected()&&this.isJoined()}push(Q,Z,$=this.timeout){if(Z=Z||{},!this.joinedOnce)throw new Error(`tried to push '${Q}' to '${this.topic}' before joining. Use channel.join() before pushing events`);let Y=new S0(this,Q,function(){return Z},$);if(this.canPush())Y.send();else Y.startTimeout(),this.pushBuffer.push(Y);return Y}leave(Q=this.timeout){this.rejoinTimer.reset(),this.joinPush.cancelTimeout(),this.state=_.leaving;let Z=()=>{if(this.socket.hasLogger())this.socket.log("channel",`leave ${this.topic}`);this.trigger(n.close,"leave")},$=new S0(this,n.leave,X0({}),Q);if($.receive("ok",()=>Z()).receive("timeout",()=>Z()),$.send(),!this.canPush())$.trigger("ok",{});return $}onMessage(Q,Z,$){return Z}isMember(Q,Z,$,Y){if(this.topic!==Q)return!1;if(Y&&Y!==this.joinRef()){if(this.socket.hasLogger())this.socket.log("channel","dropping outdated message",{topic:Q,event:Z,payload:$,joinRef:Y});return!1}else return!0}joinRef(){return this.joinPush.ref}rejoin(Q=this.timeout){if(this.isLeaving())return;this.socket.leaveOpenTopic(this.topic),this.state=_.joining,this.joinPush.resend(Q)}trigger(Q,Z,$,Y){let z=this.onMessage(Q,Z,$,Y);if(Z&&!z)throw new Error("channel onMessage callbacks must return the payload, modified or unmodified");let J=this.bindings.filter((W)=>W.event===Q);for(let W=0;W<J.length;W++)J[W].callback(z,$,Y||this.joinRef())}replyEventName(Q){return`chan_reply_${Q}`}isClosed(){return this.state===_.closed}isErrored(){return this.state===_.errored}isJoined(){return this.state===_.joined}isJoining(){return this.state===_.joining}isLeaving(){return this.state===_.leaving}},T0=class{static request(Q,Z,$,Y,z,J,W){if(q0.XDomainRequest){let q=new q0.XDomainRequest;return this.xdomainRequest(q,Q,Z,Y,z,J,W)}else{let q=new q0.XMLHttpRequest;return this.xhrRequest(q,Q,Z,$,Y,z,J,W)}}static xdomainRequest(Q,Z,$,Y,z,J,W){if(Q.timeout=z,Q.open(Z,$),Q.onload=()=>{let q=this.parseJSON(Q.responseText);W&&W(q)},J)Q.ontimeout=J;return Q.onprogress=()=>{},Q.send(Y),Q}static xhrRequest(Q,Z,$,Y,z,J,W,q){if(Q.open(Z,$,!0),Q.timeout=J,Q.setRequestHeader("Content-Type",Y),Q.onerror=()=>q&&q(null),Q.onreadystatechange=()=>{if(Q.readyState===D5.complete&&q){let G=this.parseJSON(Q.responseText);q(G)}},W)Q.ontimeout=W;return Q.send(z),Q}static parseJSON(Q){if(!Q||Q==="")return null;try{return JSON.parse(Q)}catch(Z){return console&&console.log("failed to parse JSON response",Q),null}}static serialize(Q,Z){let $=[];for(var Y in Q){if(!Object.prototype.hasOwnProperty.call(Q,Y))continue;let z=Z?`${Z}[${Y}]`:Y,J=Q[Y];if(typeof J==="object")$.push(this.serialize(J,z));else $.push(encodeURIComponent(z)+"="+encodeURIComponent(J))}return $.join("&")}static appendParams(Q,Z){if(Object.keys(Z).length===0)return Q;let $=Q.match(/\?/)?"&":"?";return`${Q}${$}${this.serialize(Z)}`}},H5=(Q)=>{let Z="",$=new Uint8Array(Q),Y=$.byteLength;for(let z=0;z<Y;z++)Z+=String.fromCharCode($[z]);return btoa(Z)},z0=class{constructor(Q){this.endPoint=null,this.token=null,this.skipHeartbeat=!0,this.reqs=new Set,this.awaitingBatchAck=!1,this.currentBatch=null,this.currentBatchTimer=null,this.batchBuffer=[],this.onopen=function(){},this.onerror=function(){},this.onmessage=function(){},this.onclose=function(){},this.pollEndpoint=this.normalizeEndpoint(Q),this.readyState=p.connecting,setTimeout(()=>this.poll(),0)}normalizeEndpoint(Q){return Q.replace("ws://","http://").replace("wss://","https://").replace(new RegExp("(.*)/"+l0.websocket),"$1/"+l0.longpoll)}endpointURL(){return T0.appendParams(this.pollEndpoint,{token:this.token})}closeAndRetry(Q,Z,$){this.close(Q,Z,$),this.readyState=p.connecting}ontimeout(){this.onerror("timeout"),this.closeAndRetry(1005,"timeout",!1)}isActive(){return this.readyState===p.open||this.readyState===p.connecting}poll(){this.ajax("GET","application/json",null,()=>this.ontimeout(),(Q)=>{if(Q){var{status:Z,token:$,messages:Y}=Q;this.token=$}else Z=0;switch(Z){case 200:Y.forEach((z)=>{setTimeout(()=>this.onmessage({data:z}),0)}),this.poll();break;case 204:this.poll();break;case 410:this.readyState=p.open,this.onopen({}),this.poll();break;case 403:this.onerror(403),this.close(1008,"forbidden",!1);break;case 0:case 500:this.onerror(500),this.closeAndRetry(1011,"internal server error",500);break;default:throw new Error(`unhandled poll status ${Z}`)}})}send(Q){if(typeof Q!=="string")Q=H5(Q);if(this.currentBatch)this.currentBatch.push(Q);else if(this.awaitingBatchAck)this.batchBuffer.push(Q);else this.currentBatch=[Q],this.currentBatchTimer=setTimeout(()=>{this.batchSend(this.currentBatch),this.currentBatch=null},0)}batchSend(Q){this.awaitingBatchAck=!0,this.ajax("POST","application/x-ndjson",Q.join("\n"),()=>this.onerror("timeout"),(Z)=>{if(this.awaitingBatchAck=!1,!Z||Z.status!==200)this.onerror(Z&&Z.status),this.closeAndRetry(1011,"internal server error",!1);else if(this.batchBuffer.length>0)this.batchSend(this.batchBuffer),this.batchBuffer=[]})}close(Q,Z,$){for(let z of this.reqs)z.abort();this.readyState=p.closed;let Y=Object.assign({code:1000,reason:void 0,wasClean:!0},{code:Q,reason:Z,wasClean:$});if(this.batchBuffer=[],clearTimeout(this.currentBatchTimer),this.currentBatchTimer=null,typeof CloseEvent!=="undefined")this.onclose(new CloseEvent("close",Y));else this.onclose(Y)}ajax(Q,Z,$,Y,z){let J,W=()=>{this.reqs.delete(J),Y()};J=T0.request(Q,this.endpointURL(),Z,$,this.timeout,W,(q)=>{if(this.reqs.delete(J),this.isActive())z(q)}),this.reqs.add(J)}};var y0={HEADER_LENGTH:1,META_LENGTH:4,KINDS:{push:0,reply:1,broadcast:2},encode(Q,Z){if(Q.payload.constructor===ArrayBuffer)return Z(this.binaryEncode(Q));else{let $=[Q.join_ref,Q.ref,Q.topic,Q.event,Q.payload];return Z(JSON.stringify($))}},decode(Q,Z){if(Q.constructor===ArrayBuffer)return Z(this.binaryDecode(Q));else{let[$,Y,z,J,W]=JSON.parse(Q);return Z({join_ref:$,ref:Y,topic:z,event:J,payload:W})}},binaryEncode(Q){let{join_ref:Z,ref:$,event:Y,topic:z,payload:J}=Q,W=this.META_LENGTH+Z.length+$.length+z.length+Y.length,q=new ArrayBuffer(this.HEADER_LENGTH+W),G=new DataView(q),j=0;G.setUint8(j++,this.KINDS.push),G.setUint8(j++,Z.length),G.setUint8(j++,$.length),G.setUint8(j++,z.length),G.setUint8(j++,Y.length),Array.from(Z,(U)=>G.setUint8(j++,U.charCodeAt(0))),Array.from($,(U)=>G.setUint8(j++,U.charCodeAt(0))),Array.from(z,(U)=>G.setUint8(j++,U.charCodeAt(0))),Array.from(Y,(U)=>G.setUint8(j++,U.charCodeAt(0)));var B=new Uint8Array(q.byteLength+J.byteLength);return B.set(new Uint8Array(q),0),B.set(new Uint8Array(J),q.byteLength),B.buffer},binaryDecode(Q){let Z=new DataView(Q),$=Z.getUint8(0),Y=new TextDecoder;switch($){case this.KINDS.push:return this.decodePush(Q,Z,Y);case this.KINDS.reply:return this.decodeReply(Q,Z,Y);case this.KINDS.broadcast:return this.decodeBroadcast(Q,Z,Y)}},decodePush(Q,Z,$){let Y=Z.getUint8(1),z=Z.getUint8(2),J=Z.getUint8(3),W=this.HEADER_LENGTH+this.META_LENGTH-1,q=$.decode(Q.slice(W,W+Y));W=W+Y;let G=$.decode(Q.slice(W,W+z));W=W+z;let j=$.decode(Q.slice(W,W+J));W=W+J;let B=Q.slice(W,Q.byteLength);return{join_ref:q,ref:null,topic:G,event:j,payload:B}},decodeReply(Q,Z,$){let Y=Z.getUint8(1),z=Z.getUint8(2),J=Z.getUint8(3),W=Z.getUint8(4),q=this.HEADER_LENGTH+this.META_LENGTH,G=$.decode(Q.slice(q,q+Y));q=q+Y;let j=$.decode(Q.slice(q,q+z));q=q+z;let B=$.decode(Q.slice(q,q+J));q=q+J;let U=$.decode(Q.slice(q,q+W));q=q+W;let V=Q.slice(q,Q.byteLength),X={status:U,response:V};return{join_ref:G,ref:j,topic:B,event:n.reply,payload:X}},decodeBroadcast(Q,Z,$){let Y=Z.getUint8(1),z=Z.getUint8(2),J=this.HEADER_LENGTH+2,W=$.decode(Q.slice(J,J+Y));J=J+Y;let q=$.decode(Q.slice(J,J+z));J=J+z;let G=Q.slice(J,Q.byteLength);return{join_ref:null,ref:null,topic:W,event:q,payload:G}}},x1=class{constructor(Q,Z={}){if(this.stateChangeCallbacks={open:[],close:[],error:[],message:[]},this.channels=[],this.sendBuffer=[],this.ref=0,this.timeout=Z.timeout||L5,this.transport=Z.transport||q0.WebSocket||z0,this.primaryPassedHealthCheck=!1,this.longPollFallbackMs=Z.longPollFallbackMs,this.fallbackTimer=null,this.sessionStore=Z.sessionStorage||q0.sessionStorage,this.establishedConnections=0,this.defaultEncoder=y0.encode.bind(y0),this.defaultDecoder=y0.decode.bind(y0),this.closeWasClean=!1,this.binaryType=Z.binaryType||"arraybuffer",this.connectClock=1,this.transport!==z0)this.encode=Z.encode||this.defaultEncoder,this.decode=Z.decode||this.defaultDecoder;else this.encode=this.defaultEncoder,this.decode=this.defaultDecoder;let $=null;if(V0&&V0.addEventListener)V0.addEventListener("pagehide",(Y)=>{if(this.conn)this.disconnect(),$=this.connectClock}),V0.addEventListener("pageshow",(Y)=>{if($===this.connectClock)$=null,this.connect()});if(this.heartbeatIntervalMs=Z.heartbeatIntervalMs||30000,this.rejoinAfterMs=(Y)=>{if(Z.rejoinAfterMs)return Z.rejoinAfterMs(Y);else return[1000,2000,5000][Y-1]||1e4},this.reconnectAfterMs=(Y)=>{if(Z.reconnectAfterMs)return Z.reconnectAfterMs(Y);else return[10,50,100,150,200,250,500,1000,2000][Y-1]||5000},this.logger=Z.logger||null,!this.logger&&Z.debug)this.logger=(Y,z,J)=>{console.log(`${Y}: ${z}`,J)};this.longpollerTimeout=Z.longpollerTimeout||20000,this.params=X0(Z.params||{}),this.endPoint=`${Q}/${l0.websocket}`,this.vsn=Z.vsn||X5,this.heartbeatTimeoutTimer=null,this.heartbeatTimer=null,this.pendingHeartbeatRef=null,this.reconnectTimer=new H1(()=>{this.teardown(()=>this.connect())},this.reconnectAfterMs)}getLongPollTransport(){return z0}replaceTransport(Q){if(this.connectClock++,this.closeWasClean=!0,clearTimeout(this.fallbackTimer),this.reconnectTimer.reset(),this.conn)this.conn.close(),this.conn=null;this.transport=Q}protocol(){return location.protocol.match(/^https/)?"wss":"ws"}endPointURL(){let Q=T0.appendParams(T0.appendParams(this.endPoint,this.params()),{vsn:this.vsn});if(Q.charAt(0)!=="/")return Q;if(Q.charAt(1)==="/")return`${this.protocol()}:${Q}`;return`${this.protocol()}://${location.host}${Q}`}disconnect(Q,Z,$){this.connectClock++,this.closeWasClean=!0,clearTimeout(this.fallbackTimer),this.reconnectTimer.reset(),this.teardown(Q,Z,$)}connect(Q){if(Q)console&&console.log("passing params to connect is deprecated. Instead pass :params to the Socket constructor"),this.params=X0(Q);if(this.conn)return;if(this.longPollFallbackMs&&this.transport!==z0)this.connectWithFallback(z0,this.longPollFallbackMs);else this.transportConnect()}log(Q,Z,$){this.logger&&this.logger(Q,Z,$)}hasLogger(){return this.logger!==null}onOpen(Q){let Z=this.makeRef();return this.stateChangeCallbacks.open.push([Z,Q]),Z}onClose(Q){let Z=this.makeRef();return this.stateChangeCallbacks.close.push([Z,Q]),Z}onError(Q){let Z=this.makeRef();return this.stateChangeCallbacks.error.push([Z,Q]),Z}onMessage(Q){let Z=this.makeRef();return this.stateChangeCallbacks.message.push([Z,Q]),Z}ping(Q){if(!this.isConnected())return!1;let Z=this.makeRef(),$=Date.now();this.push({topic:"phoenix",event:"heartbeat",payload:{},ref:Z});let Y=this.onMessage((z)=>{if(z.ref===Z)this.off([Y]),Q(Date.now()-$)});return!0}transportConnect(){this.connectClock++,this.closeWasClean=!1,this.conn=new this.transport(this.endPointURL()),this.conn.binaryType=this.binaryType,this.conn.timeout=this.longpollerTimeout,this.conn.onopen=()=>this.onConnOpen(),this.conn.onerror=(Q)=>this.onConnError(Q),this.conn.onmessage=(Q)=>this.onConnMessage(Q),this.conn.onclose=(Q)=>this.onConnClose(Q)}getSession(Q){return this.sessionStore&&this.sessionStore.getItem(Q)}storeSession(Q,Z){this.sessionStore&&this.sessionStore.setItem(Q,Z)}connectWithFallback(Q,Z=2500){clearTimeout(this.fallbackTimer);let $=!1,Y=!0,z,J,W=(q)=>{this.log("transport",`falling back to ${Q.name}...`,q),this.off([z,J]),Y=!1,this.replaceTransport(Q),this.transportConnect()};if(this.getSession(`phx:fallback:${Q.name}`))return W("memorized");this.fallbackTimer=setTimeout(W,Z),J=this.onError((q)=>{if(this.log("transport","error",q),Y&&!$)clearTimeout(this.fallbackTimer),W(q)}),this.onOpen(()=>{if($=!0,!Y){if(!this.primaryPassedHealthCheck)this.storeSession(`phx:fallback:${Q.name}`,"true");return this.log("transport",`established ${Q.name} fallback`)}clearTimeout(this.fallbackTimer),this.fallbackTimer=setTimeout(W,Z),this.ping((q)=>{this.log("transport","connected to primary after",q),this.primaryPassedHealthCheck=!0,clearTimeout(this.fallbackTimer)})}),this.transportConnect()}clearHeartbeats(){clearTimeout(this.heartbeatTimer),clearTimeout(this.heartbeatTimeoutTimer)}onConnOpen(){if(this.hasLogger())this.log("transport",`${this.transport.name} connected to ${this.endPointURL()}`);this.closeWasClean=!1,this.establishedConnections++,this.flushSendBuffer(),this.reconnectTimer.reset(),this.resetHeartbeat(),this.stateChangeCallbacks.open.forEach(([,Q])=>Q())}heartbeatTimeout(){if(this.pendingHeartbeatRef){if(this.pendingHeartbeatRef=null,this.hasLogger())this.log("transport","heartbeat timeout. Attempting to re-establish connection");this.triggerChanError(),this.closeWasClean=!1,this.teardown(()=>this.reconnectTimer.scheduleTimeout(),F5,"heartbeat timeout")}}resetHeartbeat(){if(this.conn&&this.conn.skipHeartbeat)return;this.pendingHeartbeatRef=null,this.clearHeartbeats(),this.heartbeatTimer=setTimeout(()=>this.sendHeartbeat(),this.heartbeatIntervalMs)}teardown(Q,Z,$){if(!this.conn)return Q&&Q();this.waitForBufferDone(()=>{if(this.conn)if(Z)this.conn.close(Z,$||"");else this.conn.close();this.waitForSocketClosed(()=>{if(this.conn)this.conn.onopen=function(){},this.conn.onerror=function(){},this.conn.onmessage=function(){},this.conn.onclose=function(){},this.conn=null;Q&&Q()})})}waitForBufferDone(Q,Z=1){if(Z===5||!this.conn||!this.conn.bufferedAmount){Q();return}setTimeout(()=>{this.waitForBufferDone(Q,Z+1)},150*Z)}waitForSocketClosed(Q,Z=1){if(Z===5||!this.conn||this.conn.readyState===p.closed){Q();return}setTimeout(()=>{this.waitForSocketClosed(Q,Z+1)},150*Z)}onConnClose(Q){let Z=Q&&Q.code;if(this.hasLogger())this.log("transport","close",Q);if(this.triggerChanError(),this.clearHeartbeats(),!this.closeWasClean&&Z!==1000)this.reconnectTimer.scheduleTimeout();this.stateChangeCallbacks.close.forEach(([,$])=>$(Q))}onConnError(Q){if(this.hasLogger())this.log("transport",Q);let Z=this.transport,$=this.establishedConnections;if(this.stateChangeCallbacks.error.forEach(([,Y])=>{Y(Q,Z,$)}),Z===this.transport||$>0)this.triggerChanError()}triggerChanError(){this.channels.forEach((Q)=>{if(!(Q.isErrored()||Q.isLeaving()||Q.isClosed()))Q.trigger(n.error)})}connectionState(){switch(this.conn&&this.conn.readyState){case p.connecting:return"connecting";case p.open:return"open";case p.closing:return"closing";default:return"closed"}}isConnected(){return this.connectionState()==="open"}remove(Q){this.off(Q.stateChangeRefs),this.channels=this.channels.filter((Z)=>Z!==Q)}off(Q){for(let Z in this.stateChangeCallbacks)this.stateChangeCallbacks[Z]=this.stateChangeCallbacks[Z].filter(([$])=>{return Q.indexOf($)===-1})}channel(Q,Z={}){let $=new I5(Q,Z,this);return this.channels.push($),$}push(Q){if(this.hasLogger()){let{topic:Z,event:$,payload:Y,ref:z,join_ref:J}=Q;this.log("push",`${Z} ${$} (${J}, ${z})`,Y)}if(this.isConnected())this.encode(Q,(Z)=>this.conn.send(Z));else this.sendBuffer.push(()=>this.encode(Q,(Z)=>this.conn.send(Z)))}makeRef(){let Q=this.ref+1;if(Q===this.ref)this.ref=0;else this.ref=Q;return this.ref.toString()}sendHeartbeat(){if(this.pendingHeartbeatRef&&!this.isConnected())return;this.pendingHeartbeatRef=this.makeRef(),this.push({topic:"phoenix",event:"heartbeat",payload:{},ref:this.pendingHeartbeatRef}),this.heartbeatTimeoutTimer=setTimeout(()=>this.heartbeatTimeout(),this.heartbeatIntervalMs)}flushSendBuffer(){if(this.isConnected()&&this.sendBuffer.length>0)this.sendBuffer.forEach((Q)=>Q()),this.sendBuffer=[]}onConnMessage(Q){this.decode(Q.data,(Z)=>{let{topic:$,event:Y,payload:z,ref:J,join_ref:W}=Z;if(J&&J===this.pendingHeartbeatRef)this.clearHeartbeats(),this.pendingHeartbeatRef=null,this.heartbeatTimer=setTimeout(()=>this.sendHeartbeat(),this.heartbeatIntervalMs);if(this.hasLogger())this.log("receive",`${z.status||""} ${$} ${Y} ${J&&"("+J+")"||""}`,z);for(let q=0;q<this.channels.length;q++){const G=this.channels[q];if(!G.isMember($,Y,z,W))continue;G.trigger(Y,z,J,W)}for(let q=0;q<this.stateChangeCallbacks.message.length;q++){let[,G]=this.stateChangeCallbacks.message[q];G(Z)}})}leaveOpenTopic(Q){let Z=this.channels.find(($)=>$.topic===Q&&($.isJoined()||$.isJoining()));if(Z){if(this.hasLogger())this.log("transport",`leaving duplicate topic "${Q}"`);Z.leave()}}};var p5=function(){let Q=new Set,Z=document.querySelectorAll("*[id]");for(let $=0,Y=Z.length;$<Y;$++)if(Q.has(Z[$].id))console.error(`Multiple IDs detected: ${Z[$].id}. Ensure unique element ids.`);else Q.add(Z[$].id)},t5=function(Q,Z){var $=Z.attributes,Y,z,J,W,q;if(Z.nodeType===u1||Q.nodeType===u1)return;for(var G=$.length-1;G>=0;G--)if(Y=$[G],z=Y.name,J=Y.namespaceURI,W=Y.value,J){if(z=Y.localName||z,q=Q.getAttributeNS(J,z),q!==W){if(Y.prefix==="xmlns")z=Y.name;Q.setAttributeNS(J,z,W)}}else if(q=Q.getAttribute(z),q!==W)Q.setAttribute(z,W);var j=Q.attributes;for(var B=j.length-1;B>=0;B--)if(Y=j[B],z=Y.name,J=Y.namespaceURI,J){if(z=Y.localName||z,!Z.hasAttributeNS(J,z))Q.removeAttributeNS(J,z)}else if(!Z.hasAttribute(z))Q.removeAttribute(z)},$9=function(Q){var Z=N.createElement("template");return Z.innerHTML=Q,Z.content.childNodes[0]},Y9=function(Q){if(!v0)v0=N.createRange(),v0.selectNode(N.body);var Z=v0.createContextualFragment(Q);return Z.childNodes[0]},z9=function(Q){var Z=N.createElement("body");return Z.innerHTML=Q,Z.childNodes[0]},J9=function(Q){if(Q=Q.trim(),Q9)return $9(Q);else if(Z9)return Y9(Q);return z9(Q)},h0=function(Q,Z){var $=Q.nodeName,Y=Z.nodeName,z,J;if($===Y)return!0;if(z=$.charCodeAt(0),J=Y.charCodeAt(0),z<=90&&J>=97)return $===Y.toUpperCase();else if(J<=90&&z>=97)return Y===$.toUpperCase();else return!1},W9=function(Q,Z){return!Z||Z===e5?N.createElement(Q):N.createElementNS(Z,Q)},q9=function(Q,Z){var $=Q.firstChild;while($){var Y=$.nextSibling;Z.appendChild($),$=Y}return Z},q1=function(Q,Z,$){if(Q[$]!==Z[$])if(Q[$]=Z[$],Q[$])Q.setAttribute($,"");else Q.removeAttribute($)},e=function(){},G9=function(Q){if(Q)return Q.getAttribute&&Q.getAttribute("id")||Q.id},j9=function(Q){return function Z($,Y,z){if(!z)z={};if(typeof Y==="string")if($.nodeName==="#document"||$.nodeName==="HTML"||$.nodeName==="BODY"){var J=Y;Y=N.createElement("html"),Y.innerHTML=J}else Y=J9(Y);else if(Y.nodeType===p1)Y=Y.firstElementChild;var W=z.getNodeKey||G9,q=z.onBeforeNodeAdded||e,G=z.onNodeAdded||e,j=z.onBeforeElUpdated||e,B=z.onElUpdated||e,U=z.onBeforeNodeDiscarded||e,V=z.onNodeDiscarded||e,X=z.onBeforeElChildrenUpdated||e,L=z.skipFromChildren||e,H=z.addChild||function(I,F){return I.appendChild(F)},P=z.childrenOnly===!0,y=Object.create(null),g=[];function E(I){g.push(I)}function C(I,F){if(I.nodeType===x0){var R=I.firstChild;while(R){var x=void 0;if(F&&(x=W(R)))E(x);else if(V(R),R.firstChild)C(R,F);R=R.nextSibling}}}function Y0(I,F,R){if(U(I)===!1)return;if(F)F.removeChild(I);V(I),C(I,R)}function S(I){if(I.nodeType===x0||I.nodeType===p1){var F=I.firstChild;while(F){var R=W(F);if(R)y[R]=F;S(F),F=F.nextSibling}}}S($);function d(I){G(I);var F=I.firstChild;while(F){var R=F.nextSibling,x=W(F);if(x){var A=y[x];if(A&&h0(F,A))F.parentNode.replaceChild(A,F),D(A,F);else d(F)}else d(F);F=R}}function M(I,F,R){while(F){var x=F.nextSibling;if(R=W(F))E(R);else Y0(F,I,!0);F=x}}function D(I,F,R){var x=W(F);if(x)delete y[x];if(!R){if(j(I,F)===!1)return;if(Q(I,F),B(I),X(I,F)===!1)return}if(I.nodeName!=="TEXTAREA")k(I,F);else f1.TEXTAREA(I,F)}function k(I,F){var R=L(I,F),x=F.firstChild,A=I.firstChild,J0,i,W0,w0,l;Q:while(x){w0=x.nextSibling,J0=W(x);while(!R&&A){if(W0=A.nextSibling,x.isSameNode&&x.isSameNode(A)){x=w0,A=W0;continue Q}i=W(A);var P0=A.nodeType,t=void 0;if(P0===x.nodeType){if(P0===x0){if(J0){if(J0!==i)if(l=y[J0])if(W0===l)t=!1;else{if(I.insertBefore(l,A),i)E(i);else Y0(A,I,!0);A=l,i=W(A)}else t=!1}else if(i)t=!1;if(t=t!==!1&&h0(A,x),t)D(A,x)}else if(P0===m1||P0==c1){if(t=!0,A.nodeValue!==x.nodeValue)A.nodeValue=x.nodeValue}}if(t){x=w0,A=W0;continue Q}if(i)E(i);else Y0(A,I,!0);A=W0}if(J0&&(l=y[J0])&&h0(l,x)){if(!R)H(I,l);D(l,x)}else{var o0=q(x);if(o0!==!1){if(o0)x=o0;if(x.actualize)x=x.actualize(I.ownerDocument||N);H(I,x),d(x)}}x=w0,A=W0}M(I,A,i);var D1=f1[I.nodeName];if(D1)D1(I,F)}var O=$,f=O.nodeType,F1=Y.nodeType;if(!P){if(f===x0)if(F1===x0){if(!h0($,Y))V($),O=q9($,W9(Y.nodeName,Y.namespaceURI))}else O=Y;else if(f===m1||f===c1)if(F1===f){if(O.nodeValue!==Y.nodeValue)O.nodeValue=Y.nodeValue;return O}else O=Y}if(O===Y)V($);else{if(Y.isSameNode&&Y.isSameNode(O))return;if(D(O,Y,P),g)for(var a0=0,q5=g.length;a0<q5;a0++){var r0=y[g[a0]];if(r0)Y0(r0,r0.parentNode,!1)}}if(!P&&O!==$&&$.parentNode){if(O.actualize)O=O.actualize($.ownerDocument||N);$.parentNode.replaceChild(O,$)}return O}},n1="consecutive-reloads",x5=10,O5=5000,A5=1e4,R5=30000,a1=["phx-click-loading","phx-change-loading","phx-submit-loading","phx-keydown-loading","phx-keyup-loading","phx-blur-loading","phx-focus-loading","phx-hook-loading"],r="data-phx-component",t0="data-phx-link",w5="track-static",P5="data-phx-link-state",v="data-phx-ref",Q0="data-phx-ref-src",r1="track-uploads",o="data-phx-upload-ref",U1="data-phx-preflighted-refs",S5="data-phx-done-refs",O1="drop-target",G1="data-phx-active-refs",f0="phx:live-file:updated",o1="data-phx-skip",l1="data-phx-id",A1="data-phx-prune",R1="page-loading",w1="phx-connected",L0="phx-loading",b0="phx-no-feedback",g0="phx-error",P1="phx-client-error",e0="phx-server-error",K0="data-phx-parent-id",V1="data-phx-main",M0="data-phx-root-id",j1="viewport-top",K1="viewport-bottom",y5="trigger-action",m0="feedback-for",c0="feedback-group",B1="phx-has-focused",T5=["text","textarea","number","email","password","search","tel","url","date","time","datetime-local","color","range"],t1=["checkbox","radio"],s0="phx-has-submitted",$0="data-phx-session",U0=`[${$0}]`,S1="data-phx-sticky",A0="data-phx-static",Q1="data-phx-readonly",G0="data-phx-disabled",M1="disable-with",C0="data-phx-disable-with-restore",F0="hook",b5="debounce",g5="throttle",d0="update",Z1="stream",$1="data-phx-stream",C5="key",m="phxPrivate",y1="auto-recover",N0="phx:live-socket:debug",Y1="phx:live-socket:profiling",z1="phx:live-socket:latency-sim",N5="progress",T1="mounted",k5=1,_5=200,v5="phx-",h5=30000,D0="debounce-trigger",I0="throttled",b1="debounce-prev-key",E5={debounce:300,throttle:300},k0="d",c="s",J1="r",b="c",g1="e",C1="r",N1="t",u5="p",k1="stream",f5=class{constructor(Q,Z,$){this.liveSocket=$,this.entry=Q,this.offset=0,this.chunkSize=Z,this.chunkTimer=null,this.errored=!1,this.uploadChannel=$.channel(`lvu:${Q.ref}`,{token:Q.metadata()})}error(Q){if(this.errored)return;this.uploadChannel.leave(),this.errored=!0,clearTimeout(this.chunkTimer),this.entry.error(Q)}upload(){this.uploadChannel.onError((Q)=>this.error(Q)),this.uploadChannel.join().receive("ok",(Q)=>this.readNextChunk()).receive("error",(Q)=>this.error(Q))}isDone(){return this.offset>=this.entry.file.size}readNextChunk(){let Q=new window.FileReader,Z=this.entry.file.slice(this.offset,this.chunkSize+this.offset);Q.onload=($)=>{if($.target.error===null)this.offset+=$.target.result.byteLength,this.pushChunk($.target.result);else return h("Read error: "+$.target.error)},Q.readAsArrayBuffer(Z)}pushChunk(Q){if(!this.uploadChannel.isJoined())return;this.uploadChannel.push("chunk",Q).receive("ok",()=>{if(this.entry.progress(this.offset/this.entry.file.size*100),!this.isDone())this.chunkTimer=setTimeout(()=>this.readNextChunk(),this.liveSocket.getLatencySim()||0)}).receive("error",({reason:Z})=>this.error(Z))}},h=(Q,Z)=>console.error&&console.error(Q,Z),a=(Q)=>{let Z=typeof Q;return Z==="number"||Z==="string"&&/^(0|[1-9]\d*)$/.test(Q)},m5=(Q,Z,$,Y)=>{if(Q.liveSocket.isDebugEnabled())console.log(`${Q.id} ${Z}: ${$} - `,Y)},W1=(Q)=>typeof Q==="function"?Q:function(){return Q},p0=(Q)=>{return JSON.parse(JSON.stringify(Q))},R0=(Q,Z,$)=>{do{if(Q.matches(`[${Z}]`)&&!Q.disabled)return Q;Q=Q.parentElement||Q.parentNode}while(Q!==null&&Q.nodeType===1&&!($&&$.isSameNode(Q)||Q.matches(U0)));return null},j0=(Q)=>{return Q!==null&&typeof Q==="object"&&!(Q instanceof Array)},c5=(Q,Z)=>JSON.stringify(Q)===JSON.stringify(Z),_1=(Q)=>{for(let Z in Q)return!1;return!0},Z0=(Q,Z)=>Q&&Z(Q),s5=function(Q,Z,$,Y){Q.forEach((z)=>{new f5(z,$.config.chunk_size,Y).upload()})},e1={canPushState(){return typeof history.pushState!=="undefined"},dropLocal(Q,Z,$){return Q.removeItem(this.localKey(Z,$))},updateLocal(Q,Z,$,Y,z){let J=this.getLocal(Q,Z,$),W=this.localKey(Z,$),q=J===null?Y:z(J);return Q.setItem(W,JSON.stringify(q)),q},getLocal(Q,Z,$){return JSON.parse(Q.getItem(this.localKey(Z,$)))},updateCurrentState(Q){if(!this.canPushState())return;history.replaceState(Q(history.state||{}),"",window.location.href)},pushState(Q,Z,$){if(this.canPushState()){if($!==window.location.href){if(Z.type=="redirect"&&Z.scroll){let z=history.state||{};z.scroll=Z.scroll,history.replaceState(z,"",window.location.href)}delete Z.scroll,history[Q+"State"](Z,"",$||null);let Y=this.getHashTargetEl(window.location.hash);if(Y)Y.scrollIntoView();else if(Z.type==="redirect")window.scroll(0,0)}}else this.redirect($)},setCookie(Q,Z){document.cookie=`${Q}=${Z}`},getCookie(Q){return document.cookie.replace(new RegExp(`(?:(?:^|.*;s*)${Q}s*=s*([^;]*).*\$)|^.*\$`),"$1")},redirect(Q,Z){if(Z)e1.setCookie("__phoenix_flash__",Z+"; max-age=60000; path=/");window.location=Q},localKey(Q,Z){return`${Q}-${Z}`},getHashTargetEl(Q){let Z=Q.toString().substring(1);if(Z==="")return;return document.getElementById(Z)||document.querySelector(`a[name="${Z}"]`)}},s=e1,d5={focusMain(){let Q=document.querySelector("main h1, main, h1");if(Q){let Z=Q.tabIndex;Q.tabIndex=-1,Q.focus(),Q.tabIndex=Z}},anyOf(Q,Z){return Z.find(($)=>Q instanceof $)},isFocusable(Q,Z){return Q instanceof HTMLAnchorElement&&Q.rel!=="ignore"||Q instanceof HTMLAreaElement&&Q.href!==void 0||!Q.disabled&&this.anyOf(Q,[HTMLInputElement,HTMLSelectElement,HTMLTextAreaElement,HTMLButtonElement])||Q instanceof HTMLIFrameElement||(Q.tabIndex>0||!Z&&Q.getAttribute("tabindex")!==null&&Q.getAttribute("aria-hidden")!=="true")},attemptFocus(Q,Z){if(this.isFocusable(Q,Z))try{Q.focus()}catch($){}return!!document.activeElement&&document.activeElement.isSameNode(Q)},focusFirstInteractive(Q){let Z=Q.firstElementChild;while(Z){if(this.attemptFocus(Z,!0)||this.focusFirstInteractive(Z,!0))return!0;Z=Z.nextElementSibling}},focusFirst(Q){let Z=Q.firstElementChild;while(Z){if(this.attemptFocus(Z)||this.focusFirst(Z))return!0;Z=Z.nextElementSibling}},focusLast(Q){let Z=Q.lastElementChild;while(Z){if(this.attemptFocus(Z)||this.focusLast(Z))return!0;Z=Z.previousElementSibling}}},B0=d5,_0=null,v1=200,i5={exec(Q,Z,$,Y,z){let[J,W]=z||[null,{callback:z&&z.callback}];(Z.charAt(0)==="["?JSON.parse(Z):[[J,W]]).forEach(([G,j])=>{if(G===J&&W.data)j.data=Object.assign(j.data||{},W.data),j.callback=j.callback||W.callback;this.filterToEls(Y,j).forEach((B)=>{this[`exec_${G}`](Q,Z,$,Y,B,j)})})},isVisible(Q){return!!(Q.offsetWidth||Q.offsetHeight||Q.getClientRects().length>0)},isInViewport(Q){const Z=Q.getBoundingClientRect(),$=window.innerHeight||document.documentElement.clientHeight,Y=window.innerWidth||document.documentElement.clientWidth;return Z.right>0&&Z.bottom>0&&Z.left<Y&&Z.top<$},exec_exec(Q,Z,$,Y,z,{attr:J,to:W}){(W?K.all(document,W):[Y]).forEach((G)=>{let j=G.getAttribute(J);if(!j)throw new Error(`expected ${J} to contain JS command on "${W}"`);$.liveSocket.execJS(G,j,Q)})},exec_dispatch(Q,Z,$,Y,z,{to:J,event:W,detail:q,bubbles:G}){q=q||{},q.dispatcher=Y,K.dispatchEvent(z,W,{detail:q,bubbles:G})},exec_push(Q,Z,$,Y,z,J){let{event:W,data:q,target:G,page_loading:j,loading:B,value:U,dispatcher:V,callback:X}=J,L={loading:B,value:U,target:G,page_loading:!!j},H=Q==="change"&&V?V:Y,P=G||H.getAttribute($.binding("target"))||H;$.withinTargets(P,(y,g)=>{if(!y.isConnected())return;if(Q==="change"){let{newCid:E,_target:C}=J;if(C=C||(K.isFormInput(Y)?Y.name:void 0),C)L._target=C;y.pushInput(Y,g,E,W||Z,L,X)}else if(Q==="submit"){let{submitter:E}=J;y.submitForm(Y,g,W||Z,E,L,X)}else y.pushEvent(Q,Y,g,W||Z,q,L,X)})},exec_navigate(Q,Z,$,Y,z,{href:J,replace:W}){$.liveSocket.historyRedirect(J,W?"replace":"push")},exec_patch(Q,Z,$,Y,z,{href:J,replace:W}){$.liveSocket.pushHistoryPatch(J,W?"replace":"push",Y)},exec_focus(Q,Z,$,Y,z){window.requestAnimationFrame(()=>B0.attemptFocus(z))},exec_focus_first(Q,Z,$,Y,z){window.requestAnimationFrame(()=>B0.focusFirstInteractive(z)||B0.focusFirst(z))},exec_push_focus(Q,Z,$,Y,z){window.requestAnimationFrame(()=>_0=z||Y)},exec_pop_focus(Q,Z,$,Y,z){window.requestAnimationFrame(()=>{if(_0)_0.focus();_0=null})},exec_add_class(Q,Z,$,Y,z,{names:J,transition:W,time:q}){this.addOrRemoveClasses(z,J,[],W,q,$)},exec_remove_class(Q,Z,$,Y,z,{names:J,transition:W,time:q}){this.addOrRemoveClasses(z,[],J,W,q,$)},exec_toggle_class(Q,Z,$,Y,z,{to:J,names:W,transition:q,time:G}){this.toggleClasses(z,W,q,$)},exec_toggle_attr(Q,Z,$,Y,z,{attr:[J,W,q]}){if(z.hasAttribute(J))if(q!==void 0)if(z.getAttribute(J)===W)this.setOrRemoveAttrs(z,[[J,q]],[]);else this.setOrRemoveAttrs(z,[[J,W]],[]);else this.setOrRemoveAttrs(z,[],[J]);else this.setOrRemoveAttrs(z,[[J,W]],[])},exec_transition(Q,Z,$,Y,z,{time:J,transition:W}){this.addOrRemoveClasses(z,[],[],W,J,$)},exec_toggle(Q,Z,$,Y,z,{display:J,ins:W,outs:q,time:G}){this.toggle(Q,$,z,J,W,q,G)},exec_show(Q,Z,$,Y,z,{display:J,transition:W,time:q}){this.show(Q,$,z,J,W,q)},exec_hide(Q,Z,$,Y,z,{display:J,transition:W,time:q}){this.hide(Q,$,z,J,W,q)},exec_set_attr(Q,Z,$,Y,z,{attr:[J,W]}){this.setOrRemoveAttrs(z,[[J,W]],[])},exec_remove_attr(Q,Z,$,Y,z,{attr:J}){this.setOrRemoveAttrs(z,[],[J])},show(Q,Z,$,Y,z,J){if(!this.isVisible($))this.toggle(Q,Z,$,Y,z,null,J)},hide(Q,Z,$,Y,z,J){if(this.isVisible($))this.toggle(Q,Z,$,Y,null,z,J)},toggle(Q,Z,$,Y,z,J,W){W=W||v1;let[q,G,j]=z||[[],[],[]],[B,U,V]=J||[[],[],[]];if(q.length>0||B.length>0)if(this.isVisible($)){let X=()=>{this.addOrRemoveClasses($,U,q.concat(G).concat(j)),window.requestAnimationFrame(()=>{this.addOrRemoveClasses($,B,[]),window.requestAnimationFrame(()=>this.addOrRemoveClasses($,V,U))})};$.dispatchEvent(new Event("phx:hide-start")),Z.transition(W,X,()=>{this.addOrRemoveClasses($,[],B.concat(V)),K.putSticky($,"toggle",(L)=>L.style.display="none"),$.dispatchEvent(new Event("phx:hide-end"))})}else{if(Q==="remove")return;let X=()=>{this.addOrRemoveClasses($,G,B.concat(U).concat(V));let L=Y||this.defaultDisplay($);K.putSticky($,"toggle",(H)=>H.style.display=L),window.requestAnimationFrame(()=>{this.addOrRemoveClasses($,q,[]),window.requestAnimationFrame(()=>this.addOrRemoveClasses($,j,G))})};$.dispatchEvent(new Event("phx:show-start")),Z.transition(W,X,()=>{this.addOrRemoveClasses($,[],q.concat(j)),$.dispatchEvent(new Event("phx:show-end"))})}else if(this.isVisible($))window.requestAnimationFrame(()=>{$.dispatchEvent(new Event("phx:hide-start")),K.putSticky($,"toggle",(X)=>X.style.display="none"),$.dispatchEvent(new Event("phx:hide-end"))});else window.requestAnimationFrame(()=>{$.dispatchEvent(new Event("phx:show-start"));let X=Y||this.defaultDisplay($);K.putSticky($,"toggle",(L)=>L.style.display=X),$.dispatchEvent(new Event("phx:show-end"))})},toggleClasses(Q,Z,$,Y,z){window.requestAnimationFrame(()=>{let[J,W]=K.getSticky(Q,"classes",[[],[]]),q=Z.filter((j)=>J.indexOf(j)<0&&!Q.classList.contains(j)),G=Z.filter((j)=>W.indexOf(j)<0&&Q.classList.contains(j));this.addOrRemoveClasses(Q,q,G,$,Y,z)})},addOrRemoveClasses(Q,Z,$,Y,z,J){z=z||v1;let[W,q,G]=Y||[[],[],[]];if(W.length>0){let j=()=>{this.addOrRemoveClasses(Q,q,[].concat(W).concat(G)),window.requestAnimationFrame(()=>{this.addOrRemoveClasses(Q,W,[]),window.requestAnimationFrame(()=>this.addOrRemoveClasses(Q,G,q))})},B=()=>this.addOrRemoveClasses(Q,Z.concat(G),$.concat(W).concat(q));return J.transition(z,j,B)}window.requestAnimationFrame(()=>{let[j,B]=K.getSticky(Q,"classes",[[],[]]),U=Z.filter((H)=>j.indexOf(H)<0&&!Q.classList.contains(H)),V=$.filter((H)=>B.indexOf(H)<0&&Q.classList.contains(H)),X=j.filter((H)=>$.indexOf(H)<0).concat(U),L=B.filter((H)=>Z.indexOf(H)<0).concat(V);K.putSticky(Q,"classes",(H)=>{return H.classList.remove(...L),H.classList.add(...X),[X,L]})})},setOrRemoveAttrs(Q,Z,$){let[Y,z]=K.getSticky(Q,"attrs",[[],[]]),J=Z.map(([G,j])=>G).concat($),W=Y.filter(([G,j])=>!J.includes(G)).concat(Z),q=z.filter((G)=>!J.includes(G)).concat($);K.putSticky(Q,"attrs",(G)=>{return q.forEach((j)=>G.removeAttribute(j)),W.forEach(([j,B])=>G.setAttribute(j,B)),[W,q]})},hasAllClasses(Q,Z){return Z.every(($)=>Q.classList.contains($))},isToggledOut(Q,Z){return!this.isVisible(Q)||this.hasAllClasses(Q,Z)},filterToEls(Q,{to:Z}){return Z?K.all(document,Z):[Q]},defaultDisplay(Q){return{tr:"table-row",td:"table-cell"}[Q.tagName.toLowerCase()]||"block"}},T=i5,u={byId(Q){return document.getElementById(Q)||h(`no id found for ${Q}`)},removeClass(Q,Z){if(Q.classList.remove(Z),Q.classList.length===0)Q.removeAttribute("class")},all(Q,Z,$){if(!Q)return[];let Y=Array.from(Q.querySelectorAll(Z));return $?Y.forEach($):Y},childNodeLength(Q){let Z=document.createElement("template");return Z.innerHTML=Q,Z.content.childElementCount},isUploadInput(Q){return Q.type==="file"&&Q.getAttribute(o)!==null},isAutoUpload(Q){return Q.hasAttribute("data-phx-auto-upload")},findUploadInputs(Q){const Z=Q.id,$=this.all(document,`input[type="file"][${o}][form="${Z}"]`);return this.all(Q,`input[type="file"][${o}]`).concat($)},findComponentNodeList(Q,Z){return this.filterWithinSameLiveView(this.all(Q,`[${r}="${Z}"]`),Q)},isPhxDestroyed(Q){return Q.id&&u.private(Q,"destroyed")?!0:!1},wantsNewTab(Q){let Z=Q.ctrlKey||Q.shiftKey||Q.metaKey||Q.button&&Q.button===1,$=Q.target instanceof HTMLAnchorElement&&Q.target.hasAttribute("download"),Y=Q.target.hasAttribute("target")&&Q.target.getAttribute("target").toLowerCase()==="_blank";return Z||Y||$},isUnloadableFormSubmit(Q){if(Q.target&&Q.target.getAttribute("method")==="dialog"||Q.submitter&&Q.submitter.getAttribute("formmethod")==="dialog")return!1;else return!Q.defaultPrevented&&!this.wantsNewTab(Q)},isNewPageClick(Q,Z){let $=Q.target instanceof HTMLAnchorElement?Q.target.getAttribute("href"):null,Y;if(Q.defaultPrevented||$===null||this.wantsNewTab(Q))return!1;if($.startsWith("mailto:")||$.startsWith("tel:"))return!1;if(Q.target.isContentEditable)return!1;try{Y=new URL($)}catch(z){try{Y=new URL($,Z)}catch(J){return!0}}if(Y.host===Z.host&&Y.protocol===Z.protocol){if(Y.pathname===Z.pathname&&Y.search===Z.search)return Y.hash===""&&!Y.href.endsWith("#")}return Y.protocol.startsWith("http")},markPhxChildDestroyed(Q){if(this.isPhxChild(Q))Q.setAttribute($0,"");this.putPrivate(Q,"destroyed",!0)},findPhxChildrenInFragment(Q,Z){let $=document.createElement("template");return $.innerHTML=Q,this.findPhxChildren($.content,Z)},isIgnored(Q,Z){return(Q.getAttribute(Z)||Q.getAttribute("data-phx-update"))==="ignore"},isPhxUpdate(Q,Z,$){return Q.getAttribute&&$.indexOf(Q.getAttribute(Z))>=0},findPhxSticky(Q){return this.all(Q,`[${S1}]`)},findPhxChildren(Q,Z){return this.all(Q,`${U0}[${K0}="${Z}"]`)},findExistingParentCIDs(Q,Z){let $=new Set,Y=new Set;return Z.forEach((z)=>{this.filterWithinSameLiveView(this.all(Q,`[${r}="${z}"]`),Q).forEach((J)=>{$.add(z),this.all(J,`[${r}]`).map((W)=>parseInt(W.getAttribute(r))).forEach((W)=>Y.add(W))})}),Y.forEach((z)=>$.delete(z)),$},filterWithinSameLiveView(Q,Z){if(Z.querySelector(U0))return Q.filter(($)=>this.withinSameLiveView($,Z));else return Q},withinSameLiveView(Q,Z){while(Q=Q.parentNode){if(Q.isSameNode(Z))return!0;if(Q.getAttribute($0)!==null)return!1}},private(Q,Z){return Q[m]&&Q[m][Z]},deletePrivate(Q,Z){Q[m]&&delete Q[m][Z]},putPrivate(Q,Z,$){if(!Q[m])Q[m]={};Q[m][Z]=$},updatePrivate(Q,Z,$,Y){let z=this.private(Q,Z);if(z===void 0)this.putPrivate(Q,Z,Y($));else this.putPrivate(Q,Z,Y(z))},copyPrivates(Q,Z){if(Z[m])Q[m]=Z[m]},putTitle(Q){let Z=document.querySelector("title");if(Z){let{prefix:$,suffix:Y}=Z.dataset;document.title=`${$||""}${Q}${Y||""}`}else document.title=Q},debounce(Q,Z,$,Y,z,J,W,q){let G=Q.getAttribute($),j=Q.getAttribute(z);if(G==="")G=Y;if(j==="")j=J;let B=G||j;switch(B){case null:return q();case"blur":if(this.once(Q,"debounce-blur"))Q.addEventListener("blur",()=>q());return;default:let U=parseInt(B),V=()=>j?this.deletePrivate(Q,I0):q(),X=this.incCycle(Q,D0,V);if(isNaN(U))return h(`invalid throttle/debounce value: ${B}`);if(j){let H=!1;if(Z.type==="keydown"){let P=this.private(Q,b1);this.putPrivate(Q,b1,Z.key),H=P!==Z.key}if(!H&&this.private(Q,I0))return!1;else{q();const P=setTimeout(()=>{if(W())this.triggerCycle(Q,D0)},U);this.putPrivate(Q,I0,P)}}else setTimeout(()=>{if(W())this.triggerCycle(Q,D0,X)},U);let L=Q.form;if(L&&this.once(L,"bind-debounce"))L.addEventListener("submit",()=>{Array.from(new FormData(L).entries(),([H])=>{let P=L.querySelector(`[name="${H}"]`);this.incCycle(P,D0),this.deletePrivate(P,I0)})});if(this.once(Q,"bind-debounce"))Q.addEventListener("blur",()=>{clearTimeout(this.private(Q,I0)),this.triggerCycle(Q,D0)})}},triggerCycle(Q,Z,$){let[Y,z]=this.private(Q,Z);if(!$)$=Y;if($===Y)this.incCycle(Q,Z),z()},once(Q,Z){if(this.private(Q,Z)===!0)return!1;return this.putPrivate(Q,Z,!0),!0},incCycle(Q,Z,$=function(){}){let[Y]=this.private(Q,Z)||[0,$];return Y++,this.putPrivate(Q,Z,[Y,$]),Y},maybeAddPrivateHooks(Q,Z,$){if(Q.hasAttribute&&(Q.hasAttribute(Z)||Q.hasAttribute($)))Q.setAttribute("data-phx-hook","Phoenix.InfiniteScroll")},isFeedbackContainer(Q,Z){return Q.hasAttribute&&Q.hasAttribute(Z)},maybeHideFeedback(Q,Z,$,Y){const z={};Z.forEach((J)=>{if(!Q.contains(J))return;const W=J.getAttribute($);if(!W){T.addOrRemoveClasses(J,[],[b0]);return}if(z[W]===!0){this.hideFeedback(J);return}if(z[W]=this.shouldHideFeedback(Q,W,Y),z[W]===!0)this.hideFeedback(J)})},hideFeedback(Q){T.addOrRemoveClasses(Q,[b0],[])},shouldHideFeedback(Q,Z,$){const Y=`[name="${Z}"],
-                   [name="${Z}[]"],
-                   [${$}="${Z}"]`;let z=!1;return u.all(Q,Y,(J)=>{if(this.private(J,B1)||this.private(J,s0))z=!0}),!z},feedbackSelector(Q,Z,$){let Y=`[${Z}="${Q.name}"],
-                 [${Z}="${Q.name.replace(/\[\]$/,"")}"]`;if(Q.getAttribute($))Y+=`,[${Z}="${Q.getAttribute($)}"]`;return Y},resetForm(Q,Z,$){Array.from(Q.elements).forEach((Y)=>{let z=this.feedbackSelector(Y,Z,$);this.deletePrivate(Y,B1),this.deletePrivate(Y,s0),this.all(document,z,(J)=>{T.addOrRemoveClasses(J,[b0],[])})})},showError(Q,Z,$){if(Q.name){let Y=this.feedbackSelector(Q,Z,$);this.all(document,Y,(z)=>{T.addOrRemoveClasses(z,[],[b0])})}},isPhxChild(Q){return Q.getAttribute&&Q.getAttribute(K0)},isPhxSticky(Q){return Q.getAttribute&&Q.getAttribute(S1)!==null},isChildOfAny(Q,Z){return!!Z.find(($)=>$.contains(Q))},firstPhxChild(Q){return this.isPhxChild(Q)?Q:this.all(Q,`[${K0}]`)[0]},dispatchEvent(Q,Z,$={}){let Y=!0;if(Q.nodeName==="INPUT"&&Q.type==="file"&&Z==="click")Y=!1;let W={bubbles:$.bubbles===void 0?Y:!!$.bubbles,cancelable:!0,detail:$.detail||{}},q=Z==="click"?new MouseEvent("click",W):new CustomEvent(Z,W);Q.dispatchEvent(q)},cloneNode(Q,Z){if(typeof Z==="undefined")return Q.cloneNode(!0);else{let $=Q.cloneNode(!1);return $.innerHTML=Z,$}},mergeAttrs(Q,Z,$={}){let Y=new Set($.exclude||[]),z=$.isIgnored,J=Z.attributes;for(let q=J.length-1;q>=0;q--){let G=J[q].name;if(!Y.has(G)){const j=Z.getAttribute(G);if(Q.getAttribute(G)!==j&&(!z||z&&G.startsWith("data-")))Q.setAttribute(G,j)}else if(G==="value"&&Q.value===Z.value)Q.setAttribute("value",Z.getAttribute(G))}let W=Q.attributes;for(let q=W.length-1;q>=0;q--){let G=W[q].name;if(z){if(G.startsWith("data-")&&!Z.hasAttribute(G)&&![v,Q0].includes(G))Q.removeAttribute(G)}else if(!Z.hasAttribute(G))Q.removeAttribute(G)}},mergeFocusedInput(Q,Z){if(!(Q instanceof HTMLSelectElement))u.mergeAttrs(Q,Z,{exclude:["value"]});if(Z.readOnly)Q.setAttribute("readonly",!0);else Q.removeAttribute("readonly")},hasSelectionRange(Q){return Q.setSelectionRange&&(Q.type==="text"||Q.type==="textarea")},restoreFocus(Q,Z,$){if(Q instanceof HTMLSelectElement)Q.focus();if(!u.isTextualInput(Q))return;let Y=Q.matches(":focus");if(Q.readOnly)Q.blur();if(!Y)Q.focus();if(this.hasSelectionRange(Q))Q.setSelectionRange(Z,$)},isFormInput(Q){return/^(?:input|select|textarea)$/i.test(Q.tagName)&&Q.type!=="button"},syncAttrsToProps(Q){if(Q instanceof HTMLInputElement&&t1.indexOf(Q.type.toLocaleLowerCase())>=0)Q.checked=Q.getAttribute("checked")!==null},isTextualInput(Q){return T5.indexOf(Q.type)>=0},isNowTriggerFormExternal(Q,Z){return Q.getAttribute&&Q.getAttribute(Z)!==null},syncPendingRef(Q,Z,$){let Y=Q.getAttribute(v);if(Y===null)return!0;let z=Q.getAttribute(Q0);if(u.isFormInput(Q)||Q.getAttribute($)!==null){if(u.isUploadInput(Q))u.mergeAttrs(Q,Z,{isIgnored:!0});return u.putPrivate(Q,v,Z),!1}else return a1.forEach((J)=>{Q.classList.contains(J)&&Z.classList.add(J)}),Z.setAttribute(v,Y),Z.setAttribute(Q0,z),!0},cleanChildNodes(Q,Z){if(u.isPhxUpdate(Q,Z,["append","prepend"])){let $=[];Q.childNodes.forEach((Y)=>{if(!Y.id){if(!(Y.nodeType===Node.TEXT_NODE&&Y.nodeValue.trim()===""))h(`only HTML element tags with an id are allowed inside containers with phx-update.
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getProtoOf = Object.getPrototypeOf;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __toESM = (mod, isNodeMode, target) => {
+  target = mod != null ? __create(__getProtoOf(mod)) : {};
+  const to = isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target;
+  for (let key of __getOwnPropNames(mod))
+    if (!__hasOwnProp.call(to, key))
+      __defProp(to, key, {
+        get: () => mod[key],
+        enumerable: true
+      });
+  return to;
+};
+var __commonJS = (cb, mod) => () => (mod || cb((mod = { exports: {} }).exports, mod), mod.exports);
 
-removing illegal node: "${(Y.outerHTML||Y.nodeValue).trim()}"
+// ../node_modules/topbar/topbar.min.js
+var require_topbar_min = __commonJS((exports, module) => {
+  (function(window2, document2) {
+    function repaint() {
+      canvas.width = window2.innerWidth, canvas.height = 5 * options.barThickness;
+      var ctx = canvas.getContext("2d");
+      ctx.shadowBlur = options.shadowBlur, ctx.shadowColor = options.shadowColor;
+      var stop, lineGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      for (stop in options.barColors)
+        lineGradient.addColorStop(stop, options.barColors[stop]);
+      ctx.lineWidth = options.barThickness, ctx.beginPath(), ctx.moveTo(0, options.barThickness / 2), ctx.lineTo(Math.ceil(currentProgress * canvas.width), options.barThickness / 2), ctx.strokeStyle = lineGradient, ctx.stroke();
+    }
+    var canvas, currentProgress, showing, progressTimerId = null, fadeTimerId = null, delayTimerId = null, options = { autoRun: true, barThickness: 3, barColors: { 0: "rgba(26,  188, 156, .9)", ".25": "rgba(52,  152, 219, .9)", ".50": "rgba(241, 196, 15,  .9)", ".75": "rgba(230, 126, 34,  .9)", "1.0": "rgba(211, 84,  0,   .9)" }, shadowBlur: 10, shadowColor: "rgba(0,   0,   0,   .6)", className: null }, topbar = { config: function(opts) {
+      for (var key in opts)
+        options.hasOwnProperty(key) && (options[key] = opts[key]);
+    }, show: function(handler) {
+      var type, elem;
+      showing || (handler ? delayTimerId = delayTimerId || setTimeout(() => topbar.show(), handler) : (showing = true, fadeTimerId !== null && window2.cancelAnimationFrame(fadeTimerId), canvas || ((elem = (canvas = document2.createElement("canvas")).style).position = "fixed", elem.top = elem.left = elem.right = elem.margin = elem.padding = 0, elem.zIndex = 100001, elem.display = "none", options.className && canvas.classList.add(options.className), type = "resize", handler = repaint, (elem = window2).addEventListener ? elem.addEventListener(type, handler, false) : elem.attachEvent ? elem.attachEvent("on" + type, handler) : elem["on" + type] = handler), canvas.parentElement || document2.body.appendChild(canvas), canvas.style.opacity = 1, canvas.style.display = "block", topbar.progress(0), options.autoRun && function loop() {
+        progressTimerId = window2.requestAnimationFrame(loop), topbar.progress("+" + 0.05 * Math.pow(1 - Math.sqrt(currentProgress), 2));
+      }()));
+    }, progress: function(to) {
+      return to === undefined || (typeof to == "string" && (to = (0 <= to.indexOf("+") || 0 <= to.indexOf("-") ? currentProgress : 0) + parseFloat(to)), currentProgress = 1 < to ? 1 : to, repaint()), currentProgress;
+    }, hide: function() {
+      clearTimeout(delayTimerId), delayTimerId = null, showing && (showing = false, progressTimerId != null && (window2.cancelAnimationFrame(progressTimerId), progressTimerId = null), function loop() {
+        return 1 <= topbar.progress("+.1") && (canvas.style.opacity -= 0.05, canvas.style.opacity <= 0.05) ? (canvas.style.display = "none", void (fadeTimerId = null)) : void (fadeTimerId = window2.requestAnimationFrame(loop));
+      }());
+    } };
+    typeof module == "object" && typeof exports == "object" ? module.exports = topbar : typeof define == "function" && define.amd ? define(function() {
+      return topbar;
+    }) : this.topbar = topbar;
+  }).call(exports, window, document);
+});
 
-`);$.push(Y)}}),$.forEach((Y)=>Y.remove())}},replaceRootContainer(Q,Z,$){let Y=new Set(["id",$0,A0,V1,M0]);if(Q.tagName.toLowerCase()===Z.toLowerCase())return Array.from(Q.attributes).filter((z)=>!Y.has(z.name.toLowerCase())).forEach((z)=>Q.removeAttribute(z.name)),Object.keys($).filter((z)=>!Y.has(z.toLowerCase())).forEach((z)=>Q.setAttribute(z,$[z])),Q;else{let z=document.createElement(Z);return Object.keys($).forEach((J)=>z.setAttribute(J,$[J])),Y.forEach((J)=>z.setAttribute(J,Q.getAttribute(J))),z.innerHTML=Q.innerHTML,Q.replaceWith(z),z}},getSticky(Q,Z,$){let Y=(u.private(Q,"sticky")||[]).find(([z])=>Z===z);if(Y){let[z,J,W]=Y;return W}else return typeof $==="function"?$():$},deleteSticky(Q,Z){this.updatePrivate(Q,"sticky",[],($)=>{return $.filter(([Y,z])=>Y!==Z)})},putSticky(Q,Z,$){let Y=$(Q);this.updatePrivate(Q,"sticky",[],(z)=>{let J=z.findIndex(([W])=>Z===W);if(J>=0)z[J]=[Z,$,Y];else z.push([Z,$,Y]);return z})},applyStickyOperations(Q){let Z=u.private(Q,"sticky");if(!Z)return;Z.forEach(([$,Y,z])=>this.putSticky(Q,$,Y))}},K=u,H0=class{static isActive(Q,Z){let $=Z._phxRef===void 0,z=Q.getAttribute(G1).split(",").indexOf(w.genFileRef(Z))>=0;return Z.size>0&&($||z)}static isPreflighted(Q,Z){return Q.getAttribute(U1).split(",").indexOf(w.genFileRef(Z))>=0&&this.isActive(Q,Z)}static isPreflightInProgress(Q){return Q._preflightInProgress===!0}static markPreflightInProgress(Q){Q._preflightInProgress=!0}constructor(Q,Z,$,Y){this.ref=w.genFileRef(Z),this.fileEl=Q,this.file=Z,this.view=$,this.meta=null,this._isCancelled=!1,this._isDone=!1,this._progress=0,this._lastProgressSent=-1,this._onDone=function(){},this._onElUpdated=this.onElUpdated.bind(this),this.fileEl.addEventListener(f0,this._onElUpdated),this.autoUpload=Y}metadata(){return this.meta}progress(Q){if(this._progress=Math.floor(Q),this._progress>this._lastProgressSent)if(this._progress>=100)this._progress=100,this._lastProgressSent=100,this._isDone=!0,this.view.pushFileProgress(this.fileEl,this.ref,100,()=>{w.untrackFile(this.fileEl,this.file),this._onDone()});else this._lastProgressSent=this._progress,this.view.pushFileProgress(this.fileEl,this.ref,this._progress)}isCancelled(){return this._isCancelled}cancel(){this.file._preflightInProgress=!1,this._isCancelled=!0,this._isDone=!0,this._onDone()}isDone(){return this._isDone}error(Q="failed"){if(this.fileEl.removeEventListener(f0,this._onElUpdated),this.view.pushFileProgress(this.fileEl,this.ref,{error:Q}),!this.isAutoUpload())w.clearFiles(this.fileEl)}isAutoUpload(){return this.autoUpload}onDone(Q){this._onDone=()=>{this.fileEl.removeEventListener(f0,this._onElUpdated),Q()}}onElUpdated(){if(this.fileEl.getAttribute(G1).split(",").indexOf(this.ref)===-1)w.untrackFile(this.fileEl,this.file),this.cancel()}toPreflightPayload(){return{last_modified:this.file.lastModified,name:this.file.name,relative_path:this.file.webkitRelativePath,size:this.file.size,type:this.file.type,ref:this.ref,meta:typeof this.file.meta==="function"?this.file.meta():void 0}}uploader(Q){if(this.meta.uploader){let Z=Q[this.meta.uploader]||h(`no uploader configured for ${this.meta.uploader}`);return{name:this.meta.uploader,callback:Z}}else return{name:"channel",callback:s5}}zipPostFlight(Q){if(this.meta=Q.entries[this.ref],!this.meta)h(`no preflight upload response returned with ref ${this.ref}`,{input:this.fileEl,response:Q})}},n5=0,w=class{static genFileRef(Q){let Z=Q._phxRef;if(Z!==void 0)return Z;else return Q._phxRef=(n5++).toString(),Q._phxRef}static getEntryDataURL(Q,Z,$){let Y=this.activeFiles(Q).find((z)=>this.genFileRef(z)===Z);$(URL.createObjectURL(Y))}static hasUploadsInProgress(Q){let Z=0;return K.findUploadInputs(Q).forEach(($)=>{if($.getAttribute(U1)!==$.getAttribute(S5))Z++}),Z>0}static serializeUploads(Q){let Z=this.activeFiles(Q),$={};return Z.forEach((Y)=>{let z={path:Q.name},J=Q.getAttribute(o);if($[J]=$[J]||[],z.ref=this.genFileRef(Y),z.last_modified=Y.lastModified,z.name=Y.name||z.ref,z.relative_path=Y.webkitRelativePath,z.type=Y.type,z.size=Y.size,typeof Y.meta==="function")z.meta=Y.meta();$[J].push(z)}),$}static clearFiles(Q){Q.value=null,Q.removeAttribute(o),K.putPrivate(Q,"files",[])}static untrackFile(Q,Z){K.putPrivate(Q,"files",K.private(Q,"files").filter(($)=>!Object.is($,Z)))}static trackFiles(Q,Z,$){if(Q.getAttribute("multiple")!==null){let Y=Z.filter((z)=>!this.activeFiles(Q).find((J)=>Object.is(J,z)));K.updatePrivate(Q,"files",[],(z)=>z.concat(Y)),Q.value=null}else{if($&&$.files.length>0)Q.files=$.files;K.putPrivate(Q,"files",Z)}}static activeFileInputs(Q){let Z=K.findUploadInputs(Q);return Array.from(Z).filter(($)=>$.files&&this.activeFiles($).length>0)}static activeFiles(Q){return(K.private(Q,"files")||[]).filter((Z)=>H0.isActive(Q,Z))}static inputsAwaitingPreflight(Q){let Z=K.findUploadInputs(Q);return Array.from(Z).filter(($)=>this.filesAwaitingPreflight($).length>0)}static filesAwaitingPreflight(Q){return this.activeFiles(Q).filter((Z)=>!H0.isPreflighted(Q,Z)&&!H0.isPreflightInProgress(Z))}static markPreflightInProgress(Q){Q.forEach((Z)=>H0.markPreflightInProgress(Z.file))}constructor(Q,Z,$){this.autoUpload=K.isAutoUpload(Q),this.view=Z,this.onComplete=$,this._entries=Array.from(w.filesAwaitingPreflight(Q)||[]).map((Y)=>new H0(Q,Y,Z,this.autoUpload)),w.markPreflightInProgress(this._entries),this.numEntriesInProgress=this._entries.length}isAutoUpload(){return this.autoUpload}entries(){return this._entries}initAdapterUpload(Q,Z,$){this._entries=this._entries.map((z)=>{if(z.isCancelled()){if(this.numEntriesInProgress--,this.numEntriesInProgress===0)this.onComplete()}else z.zipPostFlight(Q),z.onDone(()=>{if(this.numEntriesInProgress--,this.numEntriesInProgress===0)this.onComplete()});return z});let Y=this._entries.reduce((z,J)=>{if(!J.meta)return z;let{name:W,callback:q}=J.uploader($.uploaders);return z[W]=z[W]||{callback:q,entries:[]},z[W].entries.push(J),z},{});for(let z in Y){let{callback:J,entries:W}=Y[z];J(W,Z,Q,$)}}},Q5={LiveFileUpload:{activeRefs(){return this.el.getAttribute(G1)},preflightedRefs(){return this.el.getAttribute(U1)},mounted(){this.preflightedWas=this.preflightedRefs()},updated(){let Q=this.preflightedRefs();if(this.preflightedWas!==Q){if(this.preflightedWas=Q,Q==="")this.__view.cancelSubmit(this.el.form)}if(this.activeRefs()==="")this.el.value=null;this.el.dispatchEvent(new CustomEvent(f0))}},LiveImgPreview:{mounted(){this.ref=this.el.getAttribute("data-phx-entry-ref"),this.inputEl=document.getElementById(this.el.getAttribute(o)),w.getEntryDataURL(this.inputEl,this.ref,(Q)=>{this.url=Q,this.el.src=Q})},destroyed(){URL.revokeObjectURL(this.url)}},FocusWrap:{mounted(){if(this.focusStart=this.el.firstElementChild,this.focusEnd=this.el.lastElementChild,this.focusStart.addEventListener("focus",()=>B0.focusLast(this.el)),this.focusEnd.addEventListener("focus",()=>B0.focusFirst(this.el)),this.el.addEventListener("phx:show-end",()=>this.el.focus()),window.getComputedStyle(this.el).display!=="none")B0.focusFirst(this.el)}}},Z5=(Q)=>{if(["scroll","auto"].indexOf(getComputedStyle(Q).overflowY)>=0)return Q;if(document.documentElement===Q)return null;return Z5(Q.parentElement)},h1=(Q)=>{if(Q)return Q.scrollTop;else return document.documentElement.scrollTop||document.body.scrollTop},X1=(Q)=>{if(Q)return Q.getBoundingClientRect().bottom;else return window.innerHeight||document.documentElement.clientHeight},L1=(Q)=>{if(Q)return Q.getBoundingClientRect().top;else return 0},a5=(Q,Z)=>{let $=Q.getBoundingClientRect();return $.top>=L1(Z)&&$.left>=0&&$.top<=X1(Z)},r5=(Q,Z)=>{let $=Q.getBoundingClientRect();return $.right>=L1(Z)&&$.left>=0&&$.bottom<=X1(Z)},E1=(Q,Z)=>{let $=Q.getBoundingClientRect();return $.top>=L1(Z)&&$.left>=0&&$.top<=X1(Z)};Q5.InfiniteScroll={mounted(){this.scrollContainer=Z5(this.el);let Q=h1(this.scrollContainer),Z=!1,$=500,Y=null,z=this.throttle($,(q,G)=>{Y=()=>!0,this.liveSocket.execJSHookPush(this.el,q,{id:G.id,_overran:!0},()=>{Y=null})}),J=this.throttle($,(q,G)=>{Y=()=>G.scrollIntoView({block:"start"}),this.liveSocket.execJSHookPush(this.el,q,{id:G.id},()=>{Y=null,window.requestAnimationFrame(()=>{if(!E1(G,this.scrollContainer))G.scrollIntoView({block:"start"})})})}),W=this.throttle($,(q,G)=>{Y=()=>G.scrollIntoView({block:"end"}),this.liveSocket.execJSHookPush(this.el,q,{id:G.id},()=>{Y=null,window.requestAnimationFrame(()=>{if(!E1(G,this.scrollContainer))G.scrollIntoView({block:"end"})})})});if(this.onScroll=(q)=>{let G=h1(this.scrollContainer);if(Y)return Q=G,Y();let j=this.el.getBoundingClientRect(),B=this.el.getAttribute(this.liveSocket.binding("viewport-top")),U=this.el.getAttribute(this.liveSocket.binding("viewport-bottom")),V=this.el.lastElementChild,X=this.el.firstElementChild,L=G<Q,H=G>Q;if(L&&B&&!Z&&j.top>=0)Z=!0,z(B,X);else if(H&&Z&&j.top<=0)Z=!1;if(B&&L&&a5(X,this.scrollContainer))J(B,X);else if(U&&H&&r5(V,this.scrollContainer))W(U,V);Q=G},this.scrollContainer)this.scrollContainer.addEventListener("scroll",this.onScroll);else window.addEventListener("scroll",this.onScroll)},destroyed(){if(this.scrollContainer)this.scrollContainer.removeEventListener("scroll",this.onScroll);else window.removeEventListener("scroll",this.onScroll)},throttle(Q,Z){let $=0,Y;return(...z)=>{let J=Date.now(),W=Q-(J-$);if(W<=0||W>Q){if(Y)clearTimeout(Y),Y=null;$=J,Z(...z)}else if(!Y)Y=setTimeout(()=>{$=Date.now(),Y=null,Z(...z)},W)}}};var o5=Q5,l5=class{constructor(Q,Z,$){let Y=new Set,z=new Set([...Z.children].map((W)=>W.id)),J=[];Array.from(Q.children).forEach((W)=>{if(W.id){if(Y.add(W.id),z.has(W.id)){let q=W.previousElementSibling&&W.previousElementSibling.id;J.push({elementId:W.id,previousElementId:q})}}}),this.containerId=Z.id,this.updateType=$,this.elementsToModify=J,this.elementIdsToAdd=[...z].filter((W)=>!Y.has(W))}perform(){let Q=K.byId(this.containerId);if(this.elementsToModify.forEach((Z)=>{if(Z.previousElementId)Z0(document.getElementById(Z.previousElementId),($)=>{Z0(document.getElementById(Z.elementId),(Y)=>{if(!(Y.previousElementSibling&&Y.previousElementSibling.id==$.id))$.insertAdjacentElement("afterend",Y)})});else Z0(document.getElementById(Z.elementId),($)=>{if($.previousElementSibling!=null)Q.insertAdjacentElement("afterbegin",$)})}),this.updateType=="prepend")this.elementIdsToAdd.reverse().forEach((Z)=>{Z0(document.getElementById(Z),($)=>Q.insertAdjacentElement("afterbegin",$))})}},u1=11,v0,e5="http://www.w3.org/1999/xhtml",N=typeof document==="undefined"?void 0:document,Q9=!!N&&"content"in N.createElement("template"),Z9=!!N&&N.createRange&&"createContextualFragment"in N.createRange(),f1={OPTION:function(Q,Z){var $=Q.parentNode;if($){var Y=$.nodeName.toUpperCase();if(Y==="OPTGROUP")$=$.parentNode,Y=$&&$.nodeName.toUpperCase();if(Y==="SELECT"&&!$.hasAttribute("multiple")){if(Q.hasAttribute("selected")&&!Z.selected)Q.setAttribute("selected","selected"),Q.removeAttribute("selected");$.selectedIndex=-1}}q1(Q,Z,"selected")},INPUT:function(Q,Z){if(q1(Q,Z,"checked"),q1(Q,Z,"disabled"),Q.value!==Z.value)Q.value=Z.value;if(!Z.hasAttribute("value"))Q.removeAttribute("value")},TEXTAREA:function(Q,Z){var $=Z.value;if(Q.value!==$)Q.value=$;var Y=Q.firstChild;if(Y){var z=Y.nodeValue;if(z==$||!$&&z==Q.placeholder)return;Y.nodeValue=$}},SELECT:function(Q,Z){if(!Z.hasAttribute("multiple")){var $=-1,Y=0,z=Q.firstChild,J,W;while(z)if(W=z.nodeName&&z.nodeName.toUpperCase(),W==="OPTGROUP")J=z,z=J.firstChild;else{if(W==="OPTION"){if(z.hasAttribute("selected")){$=Y;break}Y++}if(z=z.nextSibling,!z&&J)z=J.nextSibling,J=null}Q.selectedIndex=$}}},x0=1,p1=11,m1=3,c1=8,K9=j9(t5),s1=K9,E0=class{static patchEl(Q,Z,$){s1(Q,Z,{childrenOnly:!1,onBeforeElUpdated:(Y,z)=>{if($&&$.isSameNode(Y)&&K.isFormInput(Y))return K.mergeFocusedInput(Y,z),!1}})}constructor(Q,Z,$,Y,z,J){this.view=Q,this.liveSocket=Q.liveSocket,this.container=Z,this.id=$,this.rootID=Q.root.id,this.html=Y,this.streams=z,this.streamInserts={},this.streamComponentRestore={},this.targetCID=J,this.cidPatch=a(this.targetCID),this.pendingRemoves=[],this.phxRemove=this.liveSocket.binding("remove"),this.callbacks={beforeadded:[],beforeupdated:[],beforephxChildAdded:[],afteradded:[],afterupdated:[],afterdiscarded:[],afterphxChildAdded:[],aftertransitionsDiscarded:[]}}before(Q,Z){this.callbacks[`before${Q}`].push(Z)}after(Q,Z){this.callbacks[`after${Q}`].push(Z)}trackBefore(Q,...Z){this.callbacks[`before${Q}`].forEach(($)=>$(...Z))}trackAfter(Q,...Z){this.callbacks[`after${Q}`].forEach(($)=>$(...Z))}markPrunableContentForRemoval(){let Q=this.liveSocket.binding(d0);K.all(this.container,`[${Q}=append] > *, [${Q}=prepend] > *`,(Z)=>{Z.setAttribute(A1,"")})}perform(Q){let{view:Z,liveSocket:$,container:Y,html:z}=this,J=this.isCIDPatch()?this.targetCIDContainer(z):Y;if(this.isCIDPatch()&&!J)return;let W=$.getActiveElement(),{selectionStart:q,selectionEnd:G}=W&&K.hasSelectionRange(W)?W:{},j=$.binding(d0),B=$.binding(m0),U=$.binding(c0),V=$.binding(M1),X=$.binding(j1),L=$.binding(K1),H=$.binding(y5),P=[],y=[],g=[],E=[],C=null;function Y0(S,d){s1(S,d,{childrenOnly:S.getAttribute(r)===null,getNodeKey:(M)=>{if(K.isPhxDestroyed(M))return null;if(Q)return M.id;return M.id||M.getAttribute&&M.getAttribute(l1)},skipFromChildren:(M)=>{return M.getAttribute(j)===Z1},addChild:(M,D)=>{let{ref:k,streamAt:O}=this.getStreamInsert(D);if(k===void 0)return M.appendChild(D);if(this.setStreamRef(D,k),O===0)M.insertAdjacentElement("afterbegin",D);else if(O===-1)M.appendChild(D);else if(O>0){let f=Array.from(M.children)[O];M.insertBefore(D,f)}},onBeforeNodeAdded:(M)=>{K.maybeAddPrivateHooks(M,X,L),this.trackBefore("added",M);let D=M;if(!Q&&this.streamComponentRestore[M.id])D=this.streamComponentRestore[M.id],delete this.streamComponentRestore[M.id],Y0.bind(this)(D,M);return D},onNodeAdded:(M)=>{if(M.getAttribute)this.maybeReOrderStream(M,!0);if(K.isFeedbackContainer(M,B))y.push(M);if(M instanceof HTMLImageElement&&M.srcset)M.srcset=M.srcset;else if(M instanceof HTMLVideoElement&&M.autoplay)M.play();if(K.isNowTriggerFormExternal(M,H))C=M;if(K.isPhxChild(M)&&Z.ownsElement(M)||K.isPhxSticky(M)&&Z.ownsElement(M.parentNode))this.trackAfter("phxChildAdded",M);P.push(M)},onNodeDiscarded:(M)=>this.onNodeDiscarded(M),onBeforeNodeDiscarded:(M)=>{if(M.getAttribute&&M.getAttribute(A1)!==null)return!0;if(M.parentElement!==null&&M.id&&K.isPhxUpdate(M.parentElement,j,[Z1,"append","prepend"]))return!1;if(this.maybePendingRemove(M))return!1;if(this.skipCIDSibling(M))return!1;return!0},onElUpdated:(M)=>{if(K.isNowTriggerFormExternal(M,H))C=M;g.push(M),this.maybeReOrderStream(M,!1)},onBeforeElUpdated:(M,D)=>{if(K.maybeAddPrivateHooks(D,X,L),K.isFeedbackContainer(M,B)||K.isFeedbackContainer(D,B))y.push(M),y.push(D);if(K.cleanChildNodes(D,j),this.skipCIDSibling(D))return this.maybeReOrderStream(M),!1;if(K.isPhxSticky(M))return!1;if(K.isIgnored(M,j)||M.form&&M.form.isSameNode(C))return this.trackBefore("updated",M,D),K.mergeAttrs(M,D,{isIgnored:!0}),g.push(M),K.applyStickyOperations(M),!1;if(M.type==="number"&&(M.validity&&M.validity.badInput))return!1;if(!K.syncPendingRef(M,D,V)){if(K.isUploadInput(M))this.trackBefore("updated",M,D),g.push(M);return K.applyStickyOperations(M),!1}if(K.isPhxChild(D)){let f=M.getAttribute($0);if(K.mergeAttrs(M,D,{exclude:[A0]}),f!=="")M.setAttribute($0,f);return M.setAttribute(M0,this.rootID),K.applyStickyOperations(M),!1}K.copyPrivates(D,M);let k=W&&M.isSameNode(W)&&K.isFormInput(M),O=k&&this.isChangedSelect(M,D);if(k&&M.type!=="hidden"&&!O)return this.trackBefore("updated",M,D),K.mergeFocusedInput(M,D),K.syncAttrsToProps(M),g.push(M),K.applyStickyOperations(M),!1;else{if(O)M.blur();if(K.isPhxUpdate(D,j,["append","prepend"]))E.push(new l5(M,D,D.getAttribute(j)));return K.syncAttrsToProps(D),K.applyStickyOperations(D),this.trackBefore("updated",M,D),!0}}})}if(this.trackBefore("added",Y),this.trackBefore("updated",Y,Y),$.time("morphdom",()=>{if(this.streams.forEach(([S,d,M,D])=>{if(d.forEach(([k,O,f])=>{this.streamInserts[k]={ref:S,streamAt:O,limit:f,reset:D}}),D!==void 0)K.all(Y,`[${$1}="${S}"]`,(k)=>{this.removeStreamChildElement(k)});M.forEach((k)=>{let O=Y.querySelector(`[id="${k}"]`);if(O)this.removeStreamChildElement(O)})}),Q)K.all(this.container,`[${j}=${Z1}]`,(S)=>{this.liveSocket.owner(S,(d)=>{if(d===this.view)Array.from(S.children).forEach((M)=>{this.removeStreamChildElement(M)})})});Y0.bind(this)(J,z)}),$.isDebugEnabled())p5();if(E.length>0)$.time("post-morph append/prepend restoration",()=>{E.forEach((S)=>S.perform())});if(K.maybeHideFeedback(J,y,B,U),$.silenceEvents(()=>K.restoreFocus(W,q,G)),K.dispatchEvent(document,"phx:update"),P.forEach((S)=>this.trackAfter("added",S)),g.forEach((S)=>this.trackAfter("updated",S)),this.transitionPendingRemoves(),C)$.unload(),Object.getPrototypeOf(C).submit.call(C);return!0}onNodeDiscarded(Q){if(K.isPhxChild(Q)||K.isPhxSticky(Q))this.liveSocket.destroyViewByEl(Q);this.trackAfter("discarded",Q)}maybePendingRemove(Q){if(Q.getAttribute&&Q.getAttribute(this.phxRemove)!==null)return this.pendingRemoves.push(Q),!0;else return!1}removeStreamChildElement(Q){if(this.streamInserts[Q.id])this.streamComponentRestore[Q.id]=Q,Q.remove();else if(!this.maybePendingRemove(Q))Q.remove(),this.onNodeDiscarded(Q)}getStreamInsert(Q){return(Q.id?this.streamInserts[Q.id]:{})||{}}setStreamRef(Q,Z){K.putSticky(Q,$1,($)=>$.setAttribute($1,Z))}maybeReOrderStream(Q,Z){let{ref:$,streamAt:Y,reset:z}=this.getStreamInsert(Q);if(Y===void 0)return;if(this.setStreamRef(Q,$),!z&&!Z)return;if(!Q.parentElement)return;if(Y===0)Q.parentElement.insertBefore(Q,Q.parentElement.firstElementChild);else if(Y>0){let J=Array.from(Q.parentElement.children),W=J.indexOf(Q);if(Y>=J.length-1)Q.parentElement.appendChild(Q);else{let q=J[Y];if(W>Y)Q.parentElement.insertBefore(Q,q);else Q.parentElement.insertBefore(Q,q.nextElementSibling)}}this.maybeLimitStream(Q)}maybeLimitStream(Q){let{limit:Z}=this.getStreamInsert(Q),$=Z!==null&&Array.from(Q.parentElement.children);if(Z&&Z<0&&$.length>Z*-1)$.slice(0,$.length+Z).forEach((Y)=>this.removeStreamChildElement(Y));else if(Z&&Z>=0&&$.length>Z)$.slice(Z).forEach((Y)=>this.removeStreamChildElement(Y))}transitionPendingRemoves(){let{pendingRemoves:Q,liveSocket:Z}=this;if(Q.length>0)Z.transitionRemoves(Q),Z.requestDOMUpdate(()=>{Q.forEach(($)=>{let Y=K.firstPhxChild($);if(Y)Z.destroyViewByEl(Y);$.remove()}),this.trackAfter("transitionsDiscarded",Q)})}isChangedSelect(Q,Z){if(!(Q instanceof HTMLSelectElement)||Q.multiple)return!1;if(Q.options.length!==Z.options.length)return!0;let $=Q.selectedOptions[0],Y=Z.selectedOptions[0];if($&&$.hasAttribute("selected"))Y.setAttribute("selected",$.getAttribute("selected"));return!Q.isEqualNode(Z)}isCIDPatch(){return this.cidPatch}skipCIDSibling(Q){return Q.nodeType===Node.ELEMENT_NODE&&Q.hasAttribute(o1)}targetCIDContainer(Q){if(!this.isCIDPatch())return;let[Z,...$]=K.findComponentNodeList(this.container,this.targetCID);if($.length===0&&K.childNodeLength(Q)===1)return Z;else return Z&&Z.parentNode}indexOf(Q,Z){return Array.from(Q.children).indexOf(Z)}},B9=new Set(["area","base","br","col","command","embed","hr","img","input","keygen","link","meta","param","source","track","wbr"]),M9=new Set(["'",'"']),d1=(Q,Z,$)=>{let Y=0,z=!1,J,W,q,G,j,B,U=Q.match(/^(\s*(?:<!--.*?-->\s*)*)<([^\s\/>]+)/);if(U===null)throw new Error(`malformed html ${Q}`);Y=U[0].length,J=U[1],q=U[2],G=Y;for(Y;Y<Q.length;Y++){if(Q.charAt(Y)===">")break;if(Q.charAt(Y)==="="){let L=Q.slice(Y-3,Y)===" id";Y++;let H=Q.charAt(Y);if(M9.has(H)){let P=Y;Y++;for(Y;Y<Q.length;Y++)if(Q.charAt(Y)===H)break;if(L){j=Q.slice(P+1,Y);break}}}}let V=Q.length-1;z=!1;while(V>=J.length+q.length){let L=Q.charAt(V);if(z)if(L==="-"&&Q.slice(V-3,V)==="<!-")z=!1,V-=4;else V-=1;else if(L===">"&&Q.slice(V-2,V)==="--")z=!0,V-=3;else if(L===">")break;else V-=1}W=Q.slice(V+1,Q.length);let X=Object.keys(Z).map((L)=>Z[L]===!0?L:`${L}="${Z[L]}"`).join(" ");if($){let L=j?` id="${j}"`:"";if(B9.has(q))B=`<${q}${L}${X===""?"":" "}${X}/>`;else B=`<${q}${L}${X===""?"":" "}${X}></${q}>`}else{let L=Q.slice(G,V+1);B=`<${q}${X===""?"":" "}${X}${L}`}return[B,J,W]},i1=class{static extract(Q){let{[C1]:Z,[g1]:$,[N1]:Y}=Q;return delete Q[C1],delete Q[g1],delete Q[N1],{diff:Q,title:Y,reply:Z||null,events:$||[]}}constructor(Q,Z){this.viewId=Q,this.rendered={},this.magicId=0,this.mergeDiff(Z)}parentViewId(){return this.viewId}toString(Q){let[Z,$]=this.recursiveToString(this.rendered,this.rendered[b],Q,!0,{});return[Z,$]}recursiveToString(Q,Z=Q[b],$,Y,z){$=$?new Set($):null;let J={buffer:"",components:Z,onlyCids:$,streams:new Set};return this.toOutputBuffer(Q,null,J,Y,z),[J.buffer,J.streams]}componentCIDs(Q){return Object.keys(Q[b]||{}).map((Z)=>parseInt(Z))}isComponentOnlyDiff(Q){if(!Q[b])return!1;return Object.keys(Q).length===1}getComponent(Q,Z){return Q[b][Z]}resetRender(Q){if(this.rendered[b][Q])this.rendered[b][Q].reset=!0}mergeDiff(Q){let Z=Q[b],$={};if(delete Q[b],this.rendered=this.mutableMerge(this.rendered,Q),this.rendered[b]=this.rendered[b]||{},Z){let Y=this.rendered[b];for(let z in Z)Z[z]=this.cachedFindComponent(z,Z[z],Y,Z,$);for(let z in Z)Y[z]=Z[z];Q[b]=Z}}cachedFindComponent(Q,Z,$,Y,z){if(z[Q])return z[Q];else{let J,W,q=Z[c];if(a(q)){let G;if(q>0)G=this.cachedFindComponent(q,Y[q],$,Y,z);else G=$[-q];W=G[c],J=this.cloneMerge(G,Z,!0),J[c]=W}else J=Z[c]!==void 0||$[Q]===void 0?Z:this.cloneMerge($[Q],Z,!1);return z[Q]=J,J}}mutableMerge(Q,Z){if(Z[c]!==void 0)return Z;else return this.doMutableMerge(Q,Z),Q}doMutableMerge(Q,Z){for(let $ in Z){let Y=Z[$],z=Q[$];if(j0(Y)&&Y[c]===void 0&&j0(z))this.doMutableMerge(z,Y);else Q[$]=Y}if(Q[J1])Q.newRender=!0}cloneMerge(Q,Z,$){let Y={...Q,...Z};for(let z in Y){let J=Z[z],W=Q[z];if(j0(J)&&J[c]===void 0&&j0(W))Y[z]=this.cloneMerge(W,J,$);else if(J===void 0&&j0(W))Y[z]=this.cloneMerge(W,{},$)}if($)delete Y.magicId,delete Y.newRender;else if(Q[J1])Y.newRender=!0;return Y}componentToString(Q){let[Z,$]=this.recursiveCIDToString(this.rendered[b],Q,null),[Y,z,J]=d1(Z,{});return[Y,$]}pruneCIDs(Q){Q.forEach((Z)=>delete this.rendered[b][Z])}get(){return this.rendered}isNewFingerprint(Q={}){return!!Q[c]}templateStatic(Q,Z){if(typeof Q==="number")return Z[Q];else return Q}nextMagicID(){return this.magicId++,`m${this.magicId}-${this.parentViewId()}`}toOutputBuffer(Q,Z,$,Y,z={}){if(Q[k0])return this.comprehensionToBuffer(Q,Z,$);let{[c]:J}=Q;J=this.templateStatic(J,Z);let W=Q[J1],q=$.buffer;if(W)$.buffer="";if(Y&&W&&!Q.magicId)Q.newRender=!0,Q.magicId=this.nextMagicID();$.buffer+=J[0];for(let G=1;G<J.length;G++)this.dynamicToBuffer(Q[G-1],Z,$,Y),$.buffer+=J[G];if(W){let G=!1,j;if(Y||Q.magicId)G=Y&&!Q.newRender,j={[l1]:Q.magicId,...z};else j=z;if(G)j[o1]=!0;let[B,U,V]=d1($.buffer,j,G);Q.newRender=!1,$.buffer=q+U+B+V}}comprehensionToBuffer(Q,Z,$){let{[k0]:Y,[c]:z,[k1]:J}=Q,[W,q,G,j]=J||[null,{},[],null];z=this.templateStatic(z,Z);let B=Z||Q[u5];for(let U=0;U<Y.length;U++){let V=Y[U];$.buffer+=z[0];for(let X=1;X<z.length;X++){let L=!1;this.dynamicToBuffer(V[X-1],B,$,L),$.buffer+=z[X]}}if(J!==void 0&&(Q[k0].length>0||G.length>0||j))delete Q[k1],Q[k0]=[],$.streams.add(J)}dynamicToBuffer(Q,Z,$,Y){if(typeof Q==="number"){let[z,J]=this.recursiveCIDToString($.components,Q,$.onlyCids);$.buffer+=z,$.streams=new Set([...$.streams,...J])}else if(j0(Q))this.toOutputBuffer(Q,Z,$,Y,{});else $.buffer+=Q}recursiveCIDToString(Q,Z,$){let Y=Q[Z]||h(`no component for CID ${Z}`,Q),z={[r]:Z},J=$&&!$.has(Z);Y.newRender=!J,Y.magicId=`c${Z}-${this.parentViewId()}`;let W=!Y.reset,[q,G]=this.recursiveToString(Y,Q,$,W,z);return delete Y.reset,[q,G]}},U9=1,O0=class{static makeID(){return U9++}static elementID(Q){return Q.phxHookId}constructor(Q,Z,$){this.__view=Q,this.liveSocket=Q.liveSocket,this.__callbacks=$,this.__listeners=new Set,this.__isDisconnected=!1,this.el=Z,this.el.phxHookId=this.constructor.makeID();for(let Y in this.__callbacks)this[Y]=this.__callbacks[Y]}__mounted(){this.mounted&&this.mounted()}__updated(){this.updated&&this.updated()}__beforeUpdate(){this.beforeUpdate&&this.beforeUpdate()}__destroyed(){this.destroyed&&this.destroyed()}__reconnected(){if(this.__isDisconnected)this.__isDisconnected=!1,this.reconnected&&this.reconnected()}__disconnected(){this.__isDisconnected=!0,this.disconnected&&this.disconnected()}pushEvent(Q,Z={},$=function(){}){return this.__view.pushHookEvent(this.el,null,Q,Z,$)}pushEventTo(Q,Z,$={},Y=function(){}){return this.__view.withinTargets(Q,(z,J)=>{return z.pushHookEvent(this.el,J,Z,$,Y)})}handleEvent(Q,Z){let $=(Y,z)=>z?Q:Z(Y.detail);return window.addEventListener(`phx:${Q}`,$),this.__listeners.add($),$}removeHandleEvent(Q){let Z=Q(null,!0);window.removeEventListener(`phx:${Z}`,Q),this.__listeners.delete(Q)}upload(Q,Z){return this.__view.dispatchUploads(null,Q,Z)}uploadTo(Q,Z,$){return this.__view.withinTargets(Q,(Y,z)=>{Y.dispatchUploads(z,Z,$)})}__cleanup__(){this.__listeners.forEach((Q)=>this.removeHandleEvent(Q))}},u0=(Q,Z,$=[])=>{const{submitter:Y,...z}=Z;let J;if(Y&&Y.name){const j=document.createElement("input");j.type="hidden";const B=Y.getAttribute("form");if(B)j.setAttribute("form",B);j.name=Y.name,j.value=Y.value,Y.parentElement.insertBefore(j,Y),J=j}const W=new FormData(Q),q=[];W.forEach((j,B,U)=>{if(j instanceof File)q.push(B)}),q.forEach((j)=>W.delete(j));const G=new URLSearchParams;for(let[j,B]of W.entries())if($.length===0||$.indexOf(j)>=0)G.append(j,B);if(Y&&J)Y.parentElement.removeChild(J);for(let j in z)G.append(j,z[j]);return G.toString()},$5=class{constructor(Q,Z,$,Y,z){this.isDead=!1,this.liveSocket=Z,this.flash=Y,this.parent=$,this.root=$?$.root:this,this.el=Q,this.id=this.el.id,this.ref=0,this.childJoins=0,this.loaderTimer=null,this.pendingDiffs=[],this.pendingForms=new Set,this.redirect=!1,this.href=null,this.joinCount=this.parent?this.parent.joinCount-1:0,this.joinPending=!0,this.destroyed=!1,this.joinCallback=function(J){J&&J()},this.stopCallback=function(){},this.pendingJoinOps=this.parent?null:[],this.viewHooks={},this.formSubmits=[],this.children=this.parent?null:{},this.root.children[this.id]={},this.channel=this.liveSocket.channel(`lv:${this.id}`,()=>{let J=this.href&&this.expandURL(this.href);return{redirect:this.redirect?J:void 0,url:this.redirect?void 0:J||void 0,params:this.connectParams(z),session:this.getSession(),static:this.getStatic(),flash:this.flash}})}setHref(Q){this.href=Q}setRedirect(Q){this.redirect=!0,this.href=Q}isMain(){return this.el.hasAttribute(V1)}connectParams(Q){let Z=this.liveSocket.params(this.el),$=K.all(document,`[${this.binding(w5)}]`).map((Y)=>Y.src||Y.href).filter((Y)=>typeof Y==="string");if($.length>0)Z._track_static=$;return Z._mounts=this.joinCount,Z._live_referer=Q,Z}isConnected(){return this.channel.canPush()}getSession(){return this.el.getAttribute($0)}getStatic(){let Q=this.el.getAttribute(A0);return Q===""?null:Q}destroy(Q=function(){}){if(this.destroyAllChildren(),this.destroyed=!0,delete this.root.children[this.id],this.parent)delete this.root.children[this.parent.id][this.id];clearTimeout(this.loaderTimer);let Z=()=>{Q();for(let $ in this.viewHooks)this.destroyHook(this.viewHooks[$])};K.markPhxChildDestroyed(this.el),this.log("destroyed",()=>["the child has been removed from the parent"]),this.channel.leave().receive("ok",Z).receive("error",Z).receive("timeout",Z)}setContainerClasses(...Q){this.el.classList.remove(w1,L0,g0,P1,e0),this.el.classList.add(...Q)}showLoader(Q){if(clearTimeout(this.loaderTimer),Q)this.loaderTimer=setTimeout(()=>this.showLoader(),Q);else{for(let Z in this.viewHooks)this.viewHooks[Z].__disconnected();this.setContainerClasses(L0)}}execAll(Q){K.all(this.el,`[${Q}]`,(Z)=>this.liveSocket.execJS(Z,Z.getAttribute(Q)))}hideLoader(){clearTimeout(this.loaderTimer),this.setContainerClasses(w1),this.execAll(this.binding("connected"))}triggerReconnected(){for(let Q in this.viewHooks)this.viewHooks[Q].__reconnected()}log(Q,Z){this.liveSocket.log(this,Q,Z)}transition(Q,Z,$=function(){}){this.liveSocket.transition(Q,Z,$)}withinTargets(Q,Z){if(Q instanceof HTMLElement||Q instanceof SVGElement)return this.liveSocket.owner(Q,($)=>Z($,Q));if(a(Q))if(K.findComponentNodeList(this.el,Q).length===0)h(`no component found matching phx-target of ${Q}`);else Z(this,parseInt(Q));else{let $=Array.from(document.querySelectorAll(Q));if($.length===0)h(`nothing found matching the phx-target selector "${Q}"`);$.forEach((Y)=>this.liveSocket.owner(Y,(z)=>Z(z,Y)))}}applyDiff(Q,Z,$){this.log(Q,()=>["",p0(Z)]);let{diff:Y,reply:z,events:J,title:W}=i1.extract(Z);if($({diff:Y,reply:z,events:J}),W)window.requestAnimationFrame(()=>K.putTitle(W))}onJoin(Q){let{rendered:Z,container:$}=Q;if($){let[Y,z]=$;this.el=K.replaceRootContainer(this.el,Y,z)}this.childJoins=0,this.joinPending=!0,this.flash=null,s.dropLocal(this.liveSocket.localStorage,window.location.pathname,n1),this.applyDiff("mount",Z,({diff:Y,events:z})=>{this.rendered=new i1(this.id,Y);let[J,W]=this.renderContainer(null,"join");this.dropPendingRefs();let q=this.formsForRecovery(J).filter(([G,j,B])=>{return!this.pendingForms.has(G.id)});if(this.joinCount++,q.length>0)q.forEach(([G,j,B],U)=>{this.pendingForms.add(G.id),this.pushFormRecovery(G,B,(V)=>{if(this.pendingForms.delete(G.id),U===q.length-1)this.onJoinComplete(V,J,W,z)})});else this.onJoinComplete(Q,J,W,z)})}dropPendingRefs(){K.all(document,`[${Q0}="${this.id}"][${v}]`,(Q)=>{Q.removeAttribute(v),Q.removeAttribute(Q0)})}onJoinComplete({live_patch:Q},Z,$,Y){if(this.pendingForms.clear(),this.joinCount>1||this.parent&&!this.parent.isJoinPending())return this.applyJoinPatch(Q,Z,$,Y);if(K.findPhxChildrenInFragment(Z,this.id).filter((J)=>{let W=J.id&&this.el.querySelector(`[id="${J.id}"]`),q=W&&W.getAttribute(A0);if(q)J.setAttribute(A0,q);if(W)W.setAttribute(M0,this.root.id);return this.joinChild(J)}).length===0)if(this.parent)this.root.pendingJoinOps.push([this,()=>this.applyJoinPatch(Q,Z,$,Y)]),this.parent.ackJoin(this);else this.onAllChildJoinsComplete(),this.applyJoinPatch(Q,Z,$,Y);else this.root.pendingJoinOps.push([this,()=>this.applyJoinPatch(Q,Z,$,Y)])}attachTrueDocEl(){this.el=K.byId(this.id),this.el.setAttribute(M0,this.root.id)}execNewMounted(){let Q=this.binding(j1),Z=this.binding(K1);K.all(this.el,`[${Q}], [${Z}]`,($)=>{K.maybeAddPrivateHooks($,Q,Z),this.maybeAddNewHook($)}),K.all(this.el,`[${this.binding(F0)}], [data-phx-${F0}]`,($)=>{this.maybeAddNewHook($)}),K.all(this.el,`[${this.binding(T1)}]`,($)=>this.maybeMounted($))}applyJoinPatch(Q,Z,$,Y){this.attachTrueDocEl();let z=new E0(this,this.el,this.id,Z,$,null);if(z.markPrunableContentForRemoval(),this.performPatch(z,!1,!0),this.joinNewChildren(),this.execNewMounted(),this.joinPending=!1,this.liveSocket.dispatchEvents(Y),this.applyPendingUpdates(),Q){let{kind:J,to:W}=Q;this.liveSocket.historyPatch(W,J)}if(this.hideLoader(),this.joinCount>1)this.triggerReconnected();this.stopCallback()}triggerBeforeUpdateHook(Q,Z){this.liveSocket.triggerDOM("onBeforeElUpdated",[Q,Z]);let $=this.getHook(Q),Y=$&&K.isIgnored(Q,this.binding(d0));if($&&!Q.isEqualNode(Z)&&!(Y&&c5(Q.dataset,Z.dataset)))return $.__beforeUpdate(),$}maybeMounted(Q){let Z=Q.getAttribute(this.binding(T1)),$=Z&&K.private(Q,"mounted");if(Z&&!$)this.liveSocket.execJS(Q,Z),K.putPrivate(Q,"mounted",!0)}maybeAddNewHook(Q,Z){let $=this.addHook(Q);if($)$.__mounted()}performPatch(Q,Z,$=!1){let Y=[],z=!1,J=new Set;return Q.after("added",(W)=>{this.liveSocket.triggerDOM("onNodeAdded",[W]);let q=this.binding(j1),G=this.binding(K1);if(K.maybeAddPrivateHooks(W,q,G),this.maybeAddNewHook(W),W.getAttribute)this.maybeMounted(W)}),Q.after("phxChildAdded",(W)=>{if(K.isPhxSticky(W))this.liveSocket.joinRootViews();else z=!0}),Q.before("updated",(W,q)=>{if(this.triggerBeforeUpdateHook(W,q))J.add(W.id)}),Q.after("updated",(W)=>{if(J.has(W.id))this.getHook(W).__updated()}),Q.after("discarded",(W)=>{if(W.nodeType===Node.ELEMENT_NODE)Y.push(W)}),Q.after("transitionsDiscarded",(W)=>this.afterElementsRemoved(W,Z)),Q.perform($),this.afterElementsRemoved(Y,Z),z}afterElementsRemoved(Q,Z){let $=[];if(Q.forEach((Y)=>{let z=K.all(Y,`[${r}]`),J=K.all(Y,`[${this.binding(F0)}]`);z.concat(Y).forEach((W)=>{let q=this.componentID(W);if(a(q)&&$.indexOf(q)===-1)$.push(q)}),J.concat(Y).forEach((W)=>{let q=this.getHook(W);q&&this.destroyHook(q)})}),Z)this.maybePushComponentsDestroyed($)}joinNewChildren(){K.findPhxChildren(this.el,this.id).forEach((Q)=>this.joinChild(Q))}getChildById(Q){return this.root.children[this.id][Q]}getDescendentByEl(Q){if(Q.id===this.id)return this;else return this.children[Q.getAttribute(K0)][Q.id]}destroyDescendent(Q){for(let Z in this.root.children)for(let $ in this.root.children[Z])if($===Q)return this.root.children[Z][$].destroy()}joinChild(Q){if(!this.getChildById(Q.id)){let $=new $5(Q,this.liveSocket,this);return this.root.children[this.id][$.id]=$,$.join(),this.childJoins++,!0}}isJoinPending(){return this.joinPending}ackJoin(Q){if(this.childJoins--,this.childJoins===0)if(this.parent)this.parent.ackJoin(this);else this.onAllChildJoinsComplete()}onAllChildJoinsComplete(){this.joinCallback(()=>{this.pendingJoinOps.forEach(([Q,Z])=>{if(!Q.isDestroyed())Z()}),this.pendingJoinOps=[]})}update(Q,Z){if(this.isJoinPending()||this.liveSocket.hasPendingLink()&&this.root.isMain())return this.pendingDiffs.push({diff:Q,events:Z});this.rendered.mergeDiff(Q);let $=!1;if(this.rendered.isComponentOnlyDiff(Q))this.liveSocket.time("component patch complete",()=>{K.findExistingParentCIDs(this.el,this.rendered.componentCIDs(Q)).forEach((z)=>{if(this.componentPatch(this.rendered.getComponent(Q,z),z))$=!0})});else if(!_1(Q))this.liveSocket.time("full patch complete",()=>{let[Y,z]=this.renderContainer(Q,"update"),J=new E0(this,this.el,this.id,Y,z,null);$=this.performPatch(J,!0)});if(this.liveSocket.dispatchEvents(Z),$)this.joinNewChildren()}renderContainer(Q,Z){return this.liveSocket.time(`toString diff (${Z})`,()=>{let $=this.el.tagName,Y=Q?this.rendered.componentCIDs(Q):null,[z,J]=this.rendered.toString(Y);return[`<${$}>${z}</${$}>`,J]})}componentPatch(Q,Z){if(_1(Q))return!1;let[$,Y]=this.rendered.componentToString(Z),z=new E0(this,this.el,this.id,$,Y,Z);return this.performPatch(z,!0)}getHook(Q){return this.viewHooks[O0.elementID(Q)]}addHook(Q){if(O0.elementID(Q)||!Q.getAttribute)return;let Z=Q.getAttribute(`data-phx-${F0}`)||Q.getAttribute(this.binding(F0));if(Z&&!this.ownsElement(Q))return;let $=this.liveSocket.getHookCallbacks(Z);if($){if(!Q.id)h(`no DOM ID for hook "${Z}". Hooks require a unique ID on each element.`,Q);let Y=new O0(this,Q,$);return this.viewHooks[O0.elementID(Y.el)]=Y,Y}else if(Z!==null)h(`unknown hook found for "${Z}"`,Q)}destroyHook(Q){Q.__destroyed(),Q.__cleanup__(),delete this.viewHooks[O0.elementID(Q.el)]}applyPendingUpdates(){this.pendingDiffs.forEach(({diff:Q,events:Z})=>this.update(Q,Z)),this.pendingDiffs=[],this.eachChild((Q)=>Q.applyPendingUpdates())}eachChild(Q){let Z=this.root.children[this.id]||{};for(let $ in Z)Q(this.getChildById($))}onChannel(Q,Z){this.liveSocket.onChannel(this.channel,Q,($)=>{if(this.isJoinPending())this.root.pendingJoinOps.push([this,()=>Z($)]);else this.liveSocket.requestDOMUpdate(()=>Z($))})}bindChannel(){this.liveSocket.onChannel(this.channel,"diff",(Q)=>{this.liveSocket.requestDOMUpdate(()=>{this.applyDiff("update",Q,({diff:Z,events:$})=>this.update(Z,$))})}),this.onChannel("redirect",({to:Q,flash:Z})=>this.onRedirect({to:Q,flash:Z})),this.onChannel("live_patch",(Q)=>this.onLivePatch(Q)),this.onChannel("live_redirect",(Q)=>this.onLiveRedirect(Q)),this.channel.onError((Q)=>this.onError(Q)),this.channel.onClose((Q)=>this.onClose(Q))}destroyAllChildren(){this.eachChild((Q)=>Q.destroy())}onLiveRedirect(Q){let{to:Z,kind:$,flash:Y}=Q,z=this.expandURL(Z);this.liveSocket.historyRedirect(z,$,Y)}onLivePatch(Q){let{to:Z,kind:$}=Q;this.href=this.expandURL(Z),this.liveSocket.historyPatch(Z,$)}expandURL(Q){return Q.startsWith("/")?`${window.location.protocol}//${window.location.host}${Q}`:Q}onRedirect({to:Q,flash:Z}){this.liveSocket.redirect(Q,Z)}isDestroyed(){return this.destroyed}joinDead(){this.isDead=!0}join(Q){if(this.showLoader(this.liveSocket.loaderTimeout),this.bindChannel(),this.isMain())this.stopCallback=this.liveSocket.withPageLoading({to:this.href,kind:"initial"});this.joinCallback=(Z)=>{Z=Z||function(){},Q?Q(this.joinCount,Z):Z()},this.liveSocket.wrapPush(this,{timeout:!1},()=>{return this.channel.join().receive("ok",(Z)=>{if(!this.isDestroyed())this.liveSocket.requestDOMUpdate(()=>this.onJoin(Z))}).receive("error",(Z)=>!this.isDestroyed()&&this.onJoinError(Z)).receive("timeout",()=>!this.isDestroyed()&&this.onJoinError({reason:"timeout"}))})}onJoinError(Q){if(Q.reason==="reload"){if(this.log("error",()=>[`failed mount with ${Q.status}. Falling back to page request`,Q]),this.isMain())this.onRedirect({to:this.href});return}else if(Q.reason==="unauthorized"||Q.reason==="stale"){if(this.log("error",()=>["unauthorized live_redirect. Falling back to page request",Q]),this.isMain())this.onRedirect({to:this.href});return}if(Q.redirect||Q.live_redirect)this.joinPending=!1,this.channel.leave();if(Q.redirect)return this.onRedirect(Q.redirect);if(Q.live_redirect)return this.onLiveRedirect(Q.live_redirect);if(this.displayError([L0,g0,e0]),this.log("error",()=>["unable to join",Q]),this.liveSocket.isConnected())this.liveSocket.reloadWithJitter(this)}onClose(Q){if(this.isDestroyed())return;if(this.liveSocket.hasPendingLink()&&Q!=="leave")return this.liveSocket.reloadWithJitter(this);if(this.destroyAllChildren(),this.liveSocket.dropActiveElement(this),document.activeElement)document.activeElement.blur();if(this.liveSocket.isUnloaded())this.showLoader(_5)}onError(Q){if(this.onClose(Q),this.liveSocket.isConnected())this.log("error",()=>["view crashed",Q]);if(!this.liveSocket.isUnloaded())if(this.liveSocket.isConnected())this.displayError([L0,g0,e0]);else this.displayError([L0,g0,P1])}displayError(Q){if(this.isMain())K.dispatchEvent(window,"phx:page-loading-start",{detail:{to:this.href,kind:"error"}});this.showLoader(),this.setContainerClasses(...Q),this.execAll(this.binding("disconnected"))}pushWithReply(Q,Z,$,Y=function(){}){if(!this.isConnected())return;let[z,[J],W]=Q?Q():[null,[],{}],q=function(){};if(W.page_loading||J&&J.getAttribute(this.binding(R1))!==null)q=this.liveSocket.withPageLoading({kind:"element",target:J});if(typeof $.cid!=="number")delete $.cid;return this.liveSocket.wrapPush(this,{timeout:!0},()=>{return this.channel.push(Z,$,h5).receive("ok",(G)=>{let j=(B)=>{if(G.redirect)this.onRedirect(G.redirect);if(G.live_patch)this.onLivePatch(G.live_patch);if(G.live_redirect)this.onLiveRedirect(G.live_redirect);q(),Y(G,B)};if(G.diff)this.liveSocket.requestDOMUpdate(()=>{this.applyDiff("update",G.diff,({diff:B,reply:U,events:V})=>{if(z!==null)this.undoRefs(z);this.update(B,V),j(U)})});else{if(z!==null)this.undoRefs(z);j(null)}})})}undoRefs(Q){if(!this.isConnected())return;K.all(document,`[${Q0}="${this.id}"][${v}="${Q}"]`,(Z)=>{let $=Z.getAttribute(G0),Y=Z.getAttribute(Q1);if(Z.removeAttribute(v),Z.removeAttribute(Q0),Y!==null)Z.readOnly=Y==="true"?!0:!1,Z.removeAttribute(Q1);if($!==null)Z.disabled=$==="true"?!0:!1,Z.removeAttribute(G0);a1.forEach((W)=>K.removeClass(Z,W));let z=Z.getAttribute(C0);if(z!==null)Z.innerText=z,Z.removeAttribute(C0);let J=K.private(Z,v);if(J){let W=this.triggerBeforeUpdateHook(Z,J);if(E0.patchEl(Z,J,this.liveSocket.getActiveElement()),W)W.__updated();K.deletePrivate(Z,v)}})}putRef(Q,Z,$={}){let Y=this.ref++,z=this.binding(M1);if($.loading)Q=Q.concat(K.all(document,$.loading));return Q.forEach((J)=>{J.classList.add(`phx-${Z}-loading`),J.setAttribute(v,Y),J.setAttribute(Q0,this.el.id);let W=J.getAttribute(z);if(W!==null){if(!J.getAttribute(C0))J.setAttribute(C0,J.innerText);if(W!=="")J.innerText=W;J.setAttribute(G0,J.getAttribute(G0)||J.disabled),J.setAttribute("disabled","")}}),[Y,Q,$]}componentID(Q){let Z=Q.getAttribute&&Q.getAttribute(r);return Z?parseInt(Z):null}targetComponentID(Q,Z,$={}){if(a(Z))return Z;let Y=$.target||Q.getAttribute(this.binding("target"));if(a(Y))return parseInt(Y);else if(Z&&(Y!==null||$.target))return this.closestComponentID(Z);else return null}closestComponentID(Q){if(a(Q))return Q;else if(Q)return Z0(Q.closest(`[${r}]`),(Z)=>this.ownsElement(Z)&&this.componentID(Z));else return null}pushHookEvent(Q,Z,$,Y,z){if(!this.isConnected())return this.log("hook",()=>["unable to push hook event. LiveView not connected",$,Y]),!1;let[J,W,q]=this.putRef([Q],"hook");return this.pushWithReply(()=>[J,W,q],"event",{type:"hook",event:$,value:Y,cid:this.closestComponentID(Z)},(G,j)=>z(j,J)),J}extractMeta(Q,Z,$){let Y=this.binding("value-");for(let z=0;z<Q.attributes.length;z++){if(!Z)Z={};let J=Q.attributes[z].name;if(J.startsWith(Y))Z[J.replace(Y,"")]=Q.getAttribute(J)}if(Q.value!==void 0&&!(Q instanceof HTMLFormElement)){if(!Z)Z={};if(Z.value=Q.value,Q.tagName==="INPUT"&&t1.indexOf(Q.type)>=0&&!Q.checked)delete Z.value}if($){if(!Z)Z={};for(let z in $)Z[z]=$[z]}return Z}pushEvent(Q,Z,$,Y,z,J={},W){this.pushWithReply(()=>this.putRef([Z],Q,J),"event",{type:Q,event:Y,value:this.extractMeta(Z,z,J.value),cid:this.targetComponentID(Z,$,J)},(q,G)=>W&&W(G))}pushFileProgress(Q,Z,$,Y=function(){}){this.liveSocket.withinOwners(Q.form,(z,J)=>{z.pushWithReply(null,"progress",{event:Q.getAttribute(z.binding(N5)),ref:Q.getAttribute(o),entry_ref:Z,progress:$,cid:z.targetComponentID(Q.form,J)},Y)})}pushInput(Q,Z,$,Y,z,J){let W,q=a($)?$:this.targetComponentID(Q.form,Z,z),G=()=>this.putRef([Q,Q.form],"change",z),j,B=this.extractMeta(Q.form);if(Q instanceof HTMLButtonElement)B.submitter=Q;if(Q.getAttribute(this.binding("change")))j=u0(Q.form,{_target:z._target,...B},[Q.name]);else j=u0(Q.form,{_target:z._target,...B});if(K.isUploadInput(Q)&&Q.files&&Q.files.length>0)w.trackFiles(Q,Array.from(Q.files));W=w.serializeUploads(Q);let U={type:"form",event:Y,value:j,uploads:W,cid:q};this.pushWithReply(G,"event",U,(V)=>{if(K.showError(Q,this.liveSocket.binding(m0),this.liveSocket.binding(c0)),K.isUploadInput(Q)&&K.isAutoUpload(Q)){if(w.filesAwaitingPreflight(Q).length>0){let[X,L]=G();this.uploadFiles(Q.form,Z,X,q,(H)=>{J&&J(V),this.triggerAwaitingSubmit(Q.form),this.undoRefs(X)})}}else J&&J(V)})}triggerAwaitingSubmit(Q){let Z=this.getScheduledSubmit(Q);if(Z){let[$,Y,z,J]=Z;this.cancelSubmit(Q),J()}}getScheduledSubmit(Q){return this.formSubmits.find(([Z,$,Y,z])=>Z.isSameNode(Q))}scheduleSubmit(Q,Z,$,Y){if(this.getScheduledSubmit(Q))return!0;this.formSubmits.push([Q,Z,$,Y])}cancelSubmit(Q){this.formSubmits=this.formSubmits.filter(([Z,$,Y])=>{if(Z.isSameNode(Q))return this.undoRefs($),!1;else return!0})}disableForm(Q,Z={}){let $=(B)=>{return!(R0(B,`${this.binding(d0)}=ignore`,B.form)||R0(B,"data-phx-update=ignore",B.form))},Y=(B)=>{return B.hasAttribute(this.binding(M1))},z=(B)=>B.tagName=="BUTTON",J=(B)=>["INPUT","TEXTAREA","SELECT"].includes(B.tagName),W=Array.from(Q.elements),q=W.filter(Y),G=W.filter(z).filter($),j=W.filter(J).filter($);return G.forEach((B)=>{B.setAttribute(G0,B.disabled),B.disabled=!0}),j.forEach((B)=>{if(B.setAttribute(Q1,B.readOnly),B.readOnly=!0,B.files)B.setAttribute(G0,B.disabled),B.disabled=!0}),Q.setAttribute(this.binding(R1),""),this.putRef([Q].concat(q).concat(G).concat(j),"submit",Z)}pushFormSubmit(Q,Z,$,Y,z,J){let W=()=>this.disableForm(Q,z),q=this.targetComponentID(Q,Z);if(w.hasUploadsInProgress(Q)){let[G,j]=W(),B=()=>this.pushFormSubmit(Q,Z,$,Y,z,J);return this.scheduleSubmit(Q,G,z,B)}else if(w.inputsAwaitingPreflight(Q).length>0){let[G,j]=W(),B=()=>[G,j,z];this.uploadFiles(Q,Z,G,q,(U)=>{if(w.inputsAwaitingPreflight(Q).length>0)return this.undoRefs(G);let V=this.extractMeta(Q),X=u0(Q,{submitter:Y,...V});this.pushWithReply(B,"event",{type:"form",event:$,value:X,cid:q},J)})}else if(!(Q.hasAttribute(v)&&Q.classList.contains("phx-submit-loading"))){let G=this.extractMeta(Q),j=u0(Q,{submitter:Y,...G});this.pushWithReply(W,"event",{type:"form",event:$,value:j,cid:q},J)}}uploadFiles(Q,Z,$,Y,z){let J=this.joinCount,W=w.activeFileInputs(Q),q=W.length;W.forEach((G)=>{let j=new w(G,this,()=>{if(q--,q===0)z()}),B=j.entries().map((V)=>V.toPreflightPayload());if(B.length===0){q--;return}let U={ref:G.getAttribute(o),entries:B,cid:this.targetComponentID(G.form,Z)};this.log("upload",()=>["sending preflight request",U]),this.pushWithReply(null,"allow_upload",U,(V)=>{if(this.log("upload",()=>["got preflight response",V]),j.entries().forEach((X)=>{if(V.entries&&!V.entries[X.ref])this.handleFailedEntryPreflight(X.ref,"failed preflight",j)}),V.error||Object.keys(V.entries).length===0)this.undoRefs($),(V.error||[]).map(([L,H])=>{this.handleFailedEntryPreflight(L,H,j)});else{let X=(L)=>{this.channel.onError(()=>{if(this.joinCount===J)L()})};j.initAdapterUpload(V,X,this.liveSocket)}})})}handleFailedEntryPreflight(Q,Z,$){if($.isAutoUpload()){let Y=$.entries().find((z)=>z.ref===Q.toString());if(Y)Y.cancel()}else $.entries().map((Y)=>Y.cancel());this.log("upload",()=>[`error for entry ${Q}`,Z])}dispatchUploads(Q,Z,$){let Y=this.targetCtxElement(Q)||this.el,z=K.findUploadInputs(Y).filter((J)=>J.name===Z);if(z.length===0)h(`no live file inputs found matching the name "${Z}"`);else if(z.length>1)h(`duplicate live file inputs found matching the name "${Z}"`);else K.dispatchEvent(z[0],r1,{detail:{files:$}})}targetCtxElement(Q){if(a(Q)){let[Z]=K.findComponentNodeList(this.el,Q);return Z}else if(Q)return Q;else return null}pushFormRecovery(Q,Z,$){this.liveSocket.withinOwners(Q,(Y,z)=>{let J=this.binding("change"),W=Array.from(Q.elements).filter((j)=>K.isFormInput(j)&&j.name&&!j.hasAttribute(J));if(W.length===0)return;W.forEach((j)=>j.hasAttribute(o)&&w.clearFiles(j));let q=W.find((j)=>j.type!=="hidden")||W[0],G=Q.getAttribute(this.binding(y1))||Q.getAttribute(this.binding("change"));T.exec("change",G,Y,q,["push",{_target:q.name,newCid:Z,callback:$}])})}pushLinkPatch(Q,Z,$){let Y=this.liveSocket.setPendingLink(Q),z=Z?()=>this.putRef([Z],"click"):null,J=()=>this.liveSocket.redirect(window.location.href),W=Q.startsWith("/")?`${location.protocol}//${location.host}${Q}`:Q,q=this.pushWithReply(z,"live_patch",{url:W},(G)=>{this.liveSocket.requestDOMUpdate(()=>{if(G.link_redirect)this.liveSocket.replaceMain(Q,null,$,Y);else{if(this.liveSocket.commitPendingLink(Y))this.href=Q;this.applyPendingUpdates(),$&&$(Y)}})});if(q)q.receive("timeout",J);else J()}formsForRecovery(Q){if(this.joinCount===0)return[];let Z=this.binding("change"),$=document.createElement("template");return $.innerHTML=Q,K.all(this.el,`form[${Z}]`).filter((Y)=>Y.id&&this.ownsElement(Y)).filter((Y)=>Y.elements.length>0).filter((Y)=>Y.getAttribute(this.binding(y1))!=="ignore").map((Y)=>{const z=CSS.escape(Y.getAttribute(Z));let J=$.content.querySelector(`form[id="${Y.id}"][${Z}="${z}"]`);if(J)return[Y,J,this.targetComponentID(J)];else return[Y,Y,this.targetComponentID(Y)]}).filter(([Y,z,J])=>z)}maybePushComponentsDestroyed(Q){let Z=Q.filter(($)=>{return K.findComponentNodeList(this.el,$).length===0});if(Z.length>0)Z.forEach(($)=>this.rendered.resetRender($)),this.pushWithReply(null,"cids_will_destroy",{cids:Z},()=>{let $=Z.filter((Y)=>{return K.findComponentNodeList(this.el,Y).length===0});if($.length>0)this.pushWithReply(null,"cids_destroyed",{cids:$},(Y)=>{this.rendered.pruneCIDs(Y.cids)})})}ownsElement(Q){let Z=Q.closest(U0);return Q.getAttribute(K0)===this.id||Z&&Z.id===this.id||!Z&&this.isDead}submitForm(Q,Z,$,Y,z={}){K.putPrivate(Q,s0,!0);const J=this.liveSocket.binding(m0),W=this.liveSocket.binding(c0),q=Array.from(Q.elements);q.forEach((G)=>K.putPrivate(G,s0,!0)),this.liveSocket.blurActiveElement(this),this.pushFormSubmit(Q,Z,$,Y,z,()=>{q.forEach((G)=>K.showError(G,J,W)),this.liveSocket.restorePreviouslyActiveFocus()})}binding(Q){return this.liveSocket.binding(Q)}},Y5=class{constructor(Q,Z,$={}){if(this.unloaded=!1,!Z||Z.constructor.name==="Object")throw new Error(`
+// /Users/crbelaus/Developer/error-tracker/assets/node_modules/phoenix/priv/static/phoenix.mjs
+var closure = (value) => {
+  if (typeof value === "function") {
+    return value;
+  } else {
+    let closure2 = function() {
+      return value;
+    };
+    return closure2;
+  }
+};
+var globalSelf = typeof self !== "undefined" ? self : null;
+var phxWindow = typeof window !== "undefined" ? window : null;
+var global = globalSelf || phxWindow || global;
+var DEFAULT_VSN = "2.0.0";
+var SOCKET_STATES = { connecting: 0, open: 1, closing: 2, closed: 3 };
+var DEFAULT_TIMEOUT = 1e4;
+var WS_CLOSE_NORMAL = 1000;
+var CHANNEL_STATES = {
+  closed: "closed",
+  errored: "errored",
+  joined: "joined",
+  joining: "joining",
+  leaving: "leaving"
+};
+var CHANNEL_EVENTS = {
+  close: "phx_close",
+  error: "phx_error",
+  join: "phx_join",
+  reply: "phx_reply",
+  leave: "phx_leave"
+};
+var TRANSPORTS = {
+  longpoll: "longpoll",
+  websocket: "websocket"
+};
+var XHR_STATES = {
+  complete: 4
+};
+var Push = class {
+  constructor(channel, event, payload, timeout) {
+    this.channel = channel;
+    this.event = event;
+    this.payload = payload || function() {
+      return {};
+    };
+    this.receivedResp = null;
+    this.timeout = timeout;
+    this.timeoutTimer = null;
+    this.recHooks = [];
+    this.sent = false;
+  }
+  resend(timeout) {
+    this.timeout = timeout;
+    this.reset();
+    this.send();
+  }
+  send() {
+    if (this.hasReceived("timeout")) {
+      return;
+    }
+    this.startTimeout();
+    this.sent = true;
+    this.channel.socket.push({
+      topic: this.channel.topic,
+      event: this.event,
+      payload: this.payload(),
+      ref: this.ref,
+      join_ref: this.channel.joinRef()
+    });
+  }
+  receive(status, callback) {
+    if (this.hasReceived(status)) {
+      callback(this.receivedResp.response);
+    }
+    this.recHooks.push({ status, callback });
+    return this;
+  }
+  reset() {
+    this.cancelRefEvent();
+    this.ref = null;
+    this.refEvent = null;
+    this.receivedResp = null;
+    this.sent = false;
+  }
+  matchReceive({ status, response, _ref }) {
+    this.recHooks.filter((h) => h.status === status).forEach((h) => h.callback(response));
+  }
+  cancelRefEvent() {
+    if (!this.refEvent) {
+      return;
+    }
+    this.channel.off(this.refEvent);
+  }
+  cancelTimeout() {
+    clearTimeout(this.timeoutTimer);
+    this.timeoutTimer = null;
+  }
+  startTimeout() {
+    if (this.timeoutTimer) {
+      this.cancelTimeout();
+    }
+    this.ref = this.channel.socket.makeRef();
+    this.refEvent = this.channel.replyEventName(this.ref);
+    this.channel.on(this.refEvent, (payload) => {
+      this.cancelRefEvent();
+      this.cancelTimeout();
+      this.receivedResp = payload;
+      this.matchReceive(payload);
+    });
+    this.timeoutTimer = setTimeout(() => {
+      this.trigger("timeout", {});
+    }, this.timeout);
+  }
+  hasReceived(status) {
+    return this.receivedResp && this.receivedResp.status === status;
+  }
+  trigger(status, response) {
+    this.channel.trigger(this.refEvent, { status, response });
+  }
+};
+var Timer = class {
+  constructor(callback, timerCalc) {
+    this.callback = callback;
+    this.timerCalc = timerCalc;
+    this.timer = null;
+    this.tries = 0;
+  }
+  reset() {
+    this.tries = 0;
+    clearTimeout(this.timer);
+  }
+  scheduleTimeout() {
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => {
+      this.tries = this.tries + 1;
+      this.callback();
+    }, this.timerCalc(this.tries + 1));
+  }
+};
+var Channel = class {
+  constructor(topic, params, socket) {
+    this.state = CHANNEL_STATES.closed;
+    this.topic = topic;
+    this.params = closure(params || {});
+    this.socket = socket;
+    this.bindings = [];
+    this.bindingRef = 0;
+    this.timeout = this.socket.timeout;
+    this.joinedOnce = false;
+    this.joinPush = new Push(this, CHANNEL_EVENTS.join, this.params, this.timeout);
+    this.pushBuffer = [];
+    this.stateChangeRefs = [];
+    this.rejoinTimer = new Timer(() => {
+      if (this.socket.isConnected()) {
+        this.rejoin();
+      }
+    }, this.socket.rejoinAfterMs);
+    this.stateChangeRefs.push(this.socket.onError(() => this.rejoinTimer.reset()));
+    this.stateChangeRefs.push(this.socket.onOpen(() => {
+      this.rejoinTimer.reset();
+      if (this.isErrored()) {
+        this.rejoin();
+      }
+    }));
+    this.joinPush.receive("ok", () => {
+      this.state = CHANNEL_STATES.joined;
+      this.rejoinTimer.reset();
+      this.pushBuffer.forEach((pushEvent) => pushEvent.send());
+      this.pushBuffer = [];
+    });
+    this.joinPush.receive("error", () => {
+      this.state = CHANNEL_STATES.errored;
+      if (this.socket.isConnected()) {
+        this.rejoinTimer.scheduleTimeout();
+      }
+    });
+    this.onClose(() => {
+      this.rejoinTimer.reset();
+      if (this.socket.hasLogger())
+        this.socket.log("channel", `close ${this.topic} ${this.joinRef()}`);
+      this.state = CHANNEL_STATES.closed;
+      this.socket.remove(this);
+    });
+    this.onError((reason) => {
+      if (this.socket.hasLogger())
+        this.socket.log("channel", `error ${this.topic}`, reason);
+      if (this.isJoining()) {
+        this.joinPush.reset();
+      }
+      this.state = CHANNEL_STATES.errored;
+      if (this.socket.isConnected()) {
+        this.rejoinTimer.scheduleTimeout();
+      }
+    });
+    this.joinPush.receive("timeout", () => {
+      if (this.socket.hasLogger())
+        this.socket.log("channel", `timeout ${this.topic} (${this.joinRef()})`, this.joinPush.timeout);
+      let leavePush = new Push(this, CHANNEL_EVENTS.leave, closure({}), this.timeout);
+      leavePush.send();
+      this.state = CHANNEL_STATES.errored;
+      this.joinPush.reset();
+      if (this.socket.isConnected()) {
+        this.rejoinTimer.scheduleTimeout();
+      }
+    });
+    this.on(CHANNEL_EVENTS.reply, (payload, ref) => {
+      this.trigger(this.replyEventName(ref), payload);
+    });
+  }
+  join(timeout = this.timeout) {
+    if (this.joinedOnce) {
+      throw new Error("tried to join multiple times. 'join' can only be called a single time per channel instance");
+    } else {
+      this.timeout = timeout;
+      this.joinedOnce = true;
+      this.rejoin();
+      return this.joinPush;
+    }
+  }
+  onClose(callback) {
+    this.on(CHANNEL_EVENTS.close, callback);
+  }
+  onError(callback) {
+    return this.on(CHANNEL_EVENTS.error, (reason) => callback(reason));
+  }
+  on(event, callback) {
+    let ref = this.bindingRef++;
+    this.bindings.push({ event, ref, callback });
+    return ref;
+  }
+  off(event, ref) {
+    this.bindings = this.bindings.filter((bind) => {
+      return !(bind.event === event && (typeof ref === "undefined" || ref === bind.ref));
+    });
+  }
+  canPush() {
+    return this.socket.isConnected() && this.isJoined();
+  }
+  push(event, payload, timeout = this.timeout) {
+    payload = payload || {};
+    if (!this.joinedOnce) {
+      throw new Error(`tried to push '${event}' to '${this.topic}' before joining. Use channel.join() before pushing events`);
+    }
+    let pushEvent = new Push(this, event, function() {
+      return payload;
+    }, timeout);
+    if (this.canPush()) {
+      pushEvent.send();
+    } else {
+      pushEvent.startTimeout();
+      this.pushBuffer.push(pushEvent);
+    }
+    return pushEvent;
+  }
+  leave(timeout = this.timeout) {
+    this.rejoinTimer.reset();
+    this.joinPush.cancelTimeout();
+    this.state = CHANNEL_STATES.leaving;
+    let onClose = () => {
+      if (this.socket.hasLogger())
+        this.socket.log("channel", `leave ${this.topic}`);
+      this.trigger(CHANNEL_EVENTS.close, "leave");
+    };
+    let leavePush = new Push(this, CHANNEL_EVENTS.leave, closure({}), timeout);
+    leavePush.receive("ok", () => onClose()).receive("timeout", () => onClose());
+    leavePush.send();
+    if (!this.canPush()) {
+      leavePush.trigger("ok", {});
+    }
+    return leavePush;
+  }
+  onMessage(_event, payload, _ref) {
+    return payload;
+  }
+  isMember(topic, event, payload, joinRef) {
+    if (this.topic !== topic) {
+      return false;
+    }
+    if (joinRef && joinRef !== this.joinRef()) {
+      if (this.socket.hasLogger())
+        this.socket.log("channel", "dropping outdated message", { topic, event, payload, joinRef });
+      return false;
+    } else {
+      return true;
+    }
+  }
+  joinRef() {
+    return this.joinPush.ref;
+  }
+  rejoin(timeout = this.timeout) {
+    if (this.isLeaving()) {
+      return;
+    }
+    this.socket.leaveOpenTopic(this.topic);
+    this.state = CHANNEL_STATES.joining;
+    this.joinPush.resend(timeout);
+  }
+  trigger(event, payload, ref, joinRef) {
+    let handledPayload = this.onMessage(event, payload, ref, joinRef);
+    if (payload && !handledPayload) {
+      throw new Error("channel onMessage callbacks must return the payload, modified or unmodified");
+    }
+    let eventBindings = this.bindings.filter((bind) => bind.event === event);
+    for (let i = 0;i < eventBindings.length; i++) {
+      let bind = eventBindings[i];
+      bind.callback(handledPayload, ref, joinRef || this.joinRef());
+    }
+  }
+  replyEventName(ref) {
+    return `chan_reply_${ref}`;
+  }
+  isClosed() {
+    return this.state === CHANNEL_STATES.closed;
+  }
+  isErrored() {
+    return this.state === CHANNEL_STATES.errored;
+  }
+  isJoined() {
+    return this.state === CHANNEL_STATES.joined;
+  }
+  isJoining() {
+    return this.state === CHANNEL_STATES.joining;
+  }
+  isLeaving() {
+    return this.state === CHANNEL_STATES.leaving;
+  }
+};
+var Ajax = class {
+  static request(method, endPoint, accept, body, timeout, ontimeout, callback) {
+    if (global.XDomainRequest) {
+      let req = new global.XDomainRequest;
+      return this.xdomainRequest(req, method, endPoint, body, timeout, ontimeout, callback);
+    } else {
+      let req = new global.XMLHttpRequest;
+      return this.xhrRequest(req, method, endPoint, accept, body, timeout, ontimeout, callback);
+    }
+  }
+  static xdomainRequest(req, method, endPoint, body, timeout, ontimeout, callback) {
+    req.timeout = timeout;
+    req.open(method, endPoint);
+    req.onload = () => {
+      let response = this.parseJSON(req.responseText);
+      callback && callback(response);
+    };
+    if (ontimeout) {
+      req.ontimeout = ontimeout;
+    }
+    req.onprogress = () => {
+    };
+    req.send(body);
+    return req;
+  }
+  static xhrRequest(req, method, endPoint, accept, body, timeout, ontimeout, callback) {
+    req.open(method, endPoint, true);
+    req.timeout = timeout;
+    req.setRequestHeader("Content-Type", accept);
+    req.onerror = () => callback && callback(null);
+    req.onreadystatechange = () => {
+      if (req.readyState === XHR_STATES.complete && callback) {
+        let response = this.parseJSON(req.responseText);
+        callback(response);
+      }
+    };
+    if (ontimeout) {
+      req.ontimeout = ontimeout;
+    }
+    req.send(body);
+    return req;
+  }
+  static parseJSON(resp) {
+    if (!resp || resp === "") {
+      return null;
+    }
+    try {
+      return JSON.parse(resp);
+    } catch (e) {
+      console && console.log("failed to parse JSON response", resp);
+      return null;
+    }
+  }
+  static serialize(obj, parentKey) {
+    let queryStr = [];
+    for (var key in obj) {
+      if (!Object.prototype.hasOwnProperty.call(obj, key)) {
+        continue;
+      }
+      let paramKey = parentKey ? `${parentKey}[${key}]` : key;
+      let paramVal = obj[key];
+      if (typeof paramVal === "object") {
+        queryStr.push(this.serialize(paramVal, paramKey));
+      } else {
+        queryStr.push(encodeURIComponent(paramKey) + "=" + encodeURIComponent(paramVal));
+      }
+    }
+    return queryStr.join("&");
+  }
+  static appendParams(url, params) {
+    if (Object.keys(params).length === 0) {
+      return url;
+    }
+    let prefix = url.match(/\?/) ? "&" : "?";
+    return `${url}${prefix}${this.serialize(params)}`;
+  }
+};
+var arrayBufferToBase64 = (buffer) => {
+  let binary = "";
+  let bytes = new Uint8Array(buffer);
+  let len = bytes.byteLength;
+  for (let i = 0;i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+};
+var LongPoll = class {
+  constructor(endPoint) {
+    this.endPoint = null;
+    this.token = null;
+    this.skipHeartbeat = true;
+    this.reqs = new Set;
+    this.awaitingBatchAck = false;
+    this.currentBatch = null;
+    this.currentBatchTimer = null;
+    this.batchBuffer = [];
+    this.onopen = function() {
+    };
+    this.onerror = function() {
+    };
+    this.onmessage = function() {
+    };
+    this.onclose = function() {
+    };
+    this.pollEndpoint = this.normalizeEndpoint(endPoint);
+    this.readyState = SOCKET_STATES.connecting;
+    setTimeout(() => this.poll(), 0);
+  }
+  normalizeEndpoint(endPoint) {
+    return endPoint.replace("ws://", "http://").replace("wss://", "https://").replace(new RegExp("(.*)/" + TRANSPORTS.websocket), "$1/" + TRANSPORTS.longpoll);
+  }
+  endpointURL() {
+    return Ajax.appendParams(this.pollEndpoint, { token: this.token });
+  }
+  closeAndRetry(code, reason, wasClean) {
+    this.close(code, reason, wasClean);
+    this.readyState = SOCKET_STATES.connecting;
+  }
+  ontimeout() {
+    this.onerror("timeout");
+    this.closeAndRetry(1005, "timeout", false);
+  }
+  isActive() {
+    return this.readyState === SOCKET_STATES.open || this.readyState === SOCKET_STATES.connecting;
+  }
+  poll() {
+    this.ajax("GET", "application/json", null, () => this.ontimeout(), (resp) => {
+      if (resp) {
+        var { status, token, messages } = resp;
+        this.token = token;
+      } else {
+        status = 0;
+      }
+      switch (status) {
+        case 200:
+          messages.forEach((msg) => {
+            setTimeout(() => this.onmessage({ data: msg }), 0);
+          });
+          this.poll();
+          break;
+        case 204:
+          this.poll();
+          break;
+        case 410:
+          this.readyState = SOCKET_STATES.open;
+          this.onopen({});
+          this.poll();
+          break;
+        case 403:
+          this.onerror(403);
+          this.close(1008, "forbidden", false);
+          break;
+        case 0:
+        case 500:
+          this.onerror(500);
+          this.closeAndRetry(1011, "internal server error", 500);
+          break;
+        default:
+          throw new Error(`unhandled poll status ${status}`);
+      }
+    });
+  }
+  send(body) {
+    if (typeof body !== "string") {
+      body = arrayBufferToBase64(body);
+    }
+    if (this.currentBatch) {
+      this.currentBatch.push(body);
+    } else if (this.awaitingBatchAck) {
+      this.batchBuffer.push(body);
+    } else {
+      this.currentBatch = [body];
+      this.currentBatchTimer = setTimeout(() => {
+        this.batchSend(this.currentBatch);
+        this.currentBatch = null;
+      }, 0);
+    }
+  }
+  batchSend(messages) {
+    this.awaitingBatchAck = true;
+    this.ajax("POST", "application/x-ndjson", messages.join("\n"), () => this.onerror("timeout"), (resp) => {
+      this.awaitingBatchAck = false;
+      if (!resp || resp.status !== 200) {
+        this.onerror(resp && resp.status);
+        this.closeAndRetry(1011, "internal server error", false);
+      } else if (this.batchBuffer.length > 0) {
+        this.batchSend(this.batchBuffer);
+        this.batchBuffer = [];
+      }
+    });
+  }
+  close(code, reason, wasClean) {
+    for (let req of this.reqs) {
+      req.abort();
+    }
+    this.readyState = SOCKET_STATES.closed;
+    let opts = Object.assign({ code: 1000, reason: undefined, wasClean: true }, { code, reason, wasClean });
+    this.batchBuffer = [];
+    clearTimeout(this.currentBatchTimer);
+    this.currentBatchTimer = null;
+    if (typeof CloseEvent !== "undefined") {
+      this.onclose(new CloseEvent("close", opts));
+    } else {
+      this.onclose(opts);
+    }
+  }
+  ajax(method, contentType, body, onCallerTimeout, callback) {
+    let req;
+    let ontimeout = () => {
+      this.reqs.delete(req);
+      onCallerTimeout();
+    };
+    req = Ajax.request(method, this.endpointURL(), contentType, body, this.timeout, ontimeout, (resp) => {
+      this.reqs.delete(req);
+      if (this.isActive()) {
+        callback(resp);
+      }
+    });
+    this.reqs.add(req);
+  }
+};
+var serializer_default = {
+  HEADER_LENGTH: 1,
+  META_LENGTH: 4,
+  KINDS: { push: 0, reply: 1, broadcast: 2 },
+  encode(msg, callback) {
+    if (msg.payload.constructor === ArrayBuffer) {
+      return callback(this.binaryEncode(msg));
+    } else {
+      let payload = [msg.join_ref, msg.ref, msg.topic, msg.event, msg.payload];
+      return callback(JSON.stringify(payload));
+    }
+  },
+  decode(rawPayload, callback) {
+    if (rawPayload.constructor === ArrayBuffer) {
+      return callback(this.binaryDecode(rawPayload));
+    } else {
+      let [join_ref, ref, topic, event, payload] = JSON.parse(rawPayload);
+      return callback({ join_ref, ref, topic, event, payload });
+    }
+  },
+  binaryEncode(message) {
+    let { join_ref, ref, event, topic, payload } = message;
+    let metaLength = this.META_LENGTH + join_ref.length + ref.length + topic.length + event.length;
+    let header = new ArrayBuffer(this.HEADER_LENGTH + metaLength);
+    let view = new DataView(header);
+    let offset = 0;
+    view.setUint8(offset++, this.KINDS.push);
+    view.setUint8(offset++, join_ref.length);
+    view.setUint8(offset++, ref.length);
+    view.setUint8(offset++, topic.length);
+    view.setUint8(offset++, event.length);
+    Array.from(join_ref, (char) => view.setUint8(offset++, char.charCodeAt(0)));
+    Array.from(ref, (char) => view.setUint8(offset++, char.charCodeAt(0)));
+    Array.from(topic, (char) => view.setUint8(offset++, char.charCodeAt(0)));
+    Array.from(event, (char) => view.setUint8(offset++, char.charCodeAt(0)));
+    var combined = new Uint8Array(header.byteLength + payload.byteLength);
+    combined.set(new Uint8Array(header), 0);
+    combined.set(new Uint8Array(payload), header.byteLength);
+    return combined.buffer;
+  },
+  binaryDecode(buffer) {
+    let view = new DataView(buffer);
+    let kind = view.getUint8(0);
+    let decoder = new TextDecoder;
+    switch (kind) {
+      case this.KINDS.push:
+        return this.decodePush(buffer, view, decoder);
+      case this.KINDS.reply:
+        return this.decodeReply(buffer, view, decoder);
+      case this.KINDS.broadcast:
+        return this.decodeBroadcast(buffer, view, decoder);
+    }
+  },
+  decodePush(buffer, view, decoder) {
+    let joinRefSize = view.getUint8(1);
+    let topicSize = view.getUint8(2);
+    let eventSize = view.getUint8(3);
+    let offset = this.HEADER_LENGTH + this.META_LENGTH - 1;
+    let joinRef = decoder.decode(buffer.slice(offset, offset + joinRefSize));
+    offset = offset + joinRefSize;
+    let topic = decoder.decode(buffer.slice(offset, offset + topicSize));
+    offset = offset + topicSize;
+    let event = decoder.decode(buffer.slice(offset, offset + eventSize));
+    offset = offset + eventSize;
+    let data = buffer.slice(offset, buffer.byteLength);
+    return { join_ref: joinRef, ref: null, topic, event, payload: data };
+  },
+  decodeReply(buffer, view, decoder) {
+    let joinRefSize = view.getUint8(1);
+    let refSize = view.getUint8(2);
+    let topicSize = view.getUint8(3);
+    let eventSize = view.getUint8(4);
+    let offset = this.HEADER_LENGTH + this.META_LENGTH;
+    let joinRef = decoder.decode(buffer.slice(offset, offset + joinRefSize));
+    offset = offset + joinRefSize;
+    let ref = decoder.decode(buffer.slice(offset, offset + refSize));
+    offset = offset + refSize;
+    let topic = decoder.decode(buffer.slice(offset, offset + topicSize));
+    offset = offset + topicSize;
+    let event = decoder.decode(buffer.slice(offset, offset + eventSize));
+    offset = offset + eventSize;
+    let data = buffer.slice(offset, buffer.byteLength);
+    let payload = { status: event, response: data };
+    return { join_ref: joinRef, ref, topic, event: CHANNEL_EVENTS.reply, payload };
+  },
+  decodeBroadcast(buffer, view, decoder) {
+    let topicSize = view.getUint8(1);
+    let eventSize = view.getUint8(2);
+    let offset = this.HEADER_LENGTH + 2;
+    let topic = decoder.decode(buffer.slice(offset, offset + topicSize));
+    offset = offset + topicSize;
+    let event = decoder.decode(buffer.slice(offset, offset + eventSize));
+    offset = offset + eventSize;
+    let data = buffer.slice(offset, buffer.byteLength);
+    return { join_ref: null, ref: null, topic, event, payload: data };
+  }
+};
+var Socket = class {
+  constructor(endPoint, opts = {}) {
+    this.stateChangeCallbacks = { open: [], close: [], error: [], message: [] };
+    this.channels = [];
+    this.sendBuffer = [];
+    this.ref = 0;
+    this.timeout = opts.timeout || DEFAULT_TIMEOUT;
+    this.transport = opts.transport || global.WebSocket || LongPoll;
+    this.primaryPassedHealthCheck = false;
+    this.longPollFallbackMs = opts.longPollFallbackMs;
+    this.fallbackTimer = null;
+    this.sessionStore = opts.sessionStorage || global.sessionStorage;
+    this.establishedConnections = 0;
+    this.defaultEncoder = serializer_default.encode.bind(serializer_default);
+    this.defaultDecoder = serializer_default.decode.bind(serializer_default);
+    this.closeWasClean = false;
+    this.binaryType = opts.binaryType || "arraybuffer";
+    this.connectClock = 1;
+    if (this.transport !== LongPoll) {
+      this.encode = opts.encode || this.defaultEncoder;
+      this.decode = opts.decode || this.defaultDecoder;
+    } else {
+      this.encode = this.defaultEncoder;
+      this.decode = this.defaultDecoder;
+    }
+    let awaitingConnectionOnPageShow = null;
+    if (phxWindow && phxWindow.addEventListener) {
+      phxWindow.addEventListener("pagehide", (_e) => {
+        if (this.conn) {
+          this.disconnect();
+          awaitingConnectionOnPageShow = this.connectClock;
+        }
+      });
+      phxWindow.addEventListener("pageshow", (_e) => {
+        if (awaitingConnectionOnPageShow === this.connectClock) {
+          awaitingConnectionOnPageShow = null;
+          this.connect();
+        }
+      });
+    }
+    this.heartbeatIntervalMs = opts.heartbeatIntervalMs || 30000;
+    this.rejoinAfterMs = (tries) => {
+      if (opts.rejoinAfterMs) {
+        return opts.rejoinAfterMs(tries);
+      } else {
+        return [1000, 2000, 5000][tries - 1] || 1e4;
+      }
+    };
+    this.reconnectAfterMs = (tries) => {
+      if (opts.reconnectAfterMs) {
+        return opts.reconnectAfterMs(tries);
+      } else {
+        return [10, 50, 100, 150, 200, 250, 500, 1000, 2000][tries - 1] || 5000;
+      }
+    };
+    this.logger = opts.logger || null;
+    if (!this.logger && opts.debug) {
+      this.logger = (kind, msg, data) => {
+        console.log(`${kind}: ${msg}`, data);
+      };
+    }
+    this.longpollerTimeout = opts.longpollerTimeout || 20000;
+    this.params = closure(opts.params || {});
+    this.endPoint = `${endPoint}/${TRANSPORTS.websocket}`;
+    this.vsn = opts.vsn || DEFAULT_VSN;
+    this.heartbeatTimeoutTimer = null;
+    this.heartbeatTimer = null;
+    this.pendingHeartbeatRef = null;
+    this.reconnectTimer = new Timer(() => {
+      this.teardown(() => this.connect());
+    }, this.reconnectAfterMs);
+  }
+  getLongPollTransport() {
+    return LongPoll;
+  }
+  replaceTransport(newTransport) {
+    this.connectClock++;
+    this.closeWasClean = true;
+    clearTimeout(this.fallbackTimer);
+    this.reconnectTimer.reset();
+    if (this.conn) {
+      this.conn.close();
+      this.conn = null;
+    }
+    this.transport = newTransport;
+  }
+  protocol() {
+    return location.protocol.match(/^https/) ? "wss" : "ws";
+  }
+  endPointURL() {
+    let uri = Ajax.appendParams(Ajax.appendParams(this.endPoint, this.params()), { vsn: this.vsn });
+    if (uri.charAt(0) !== "/") {
+      return uri;
+    }
+    if (uri.charAt(1) === "/") {
+      return `${this.protocol()}:${uri}`;
+    }
+    return `${this.protocol()}://${location.host}${uri}`;
+  }
+  disconnect(callback, code, reason) {
+    this.connectClock++;
+    this.closeWasClean = true;
+    clearTimeout(this.fallbackTimer);
+    this.reconnectTimer.reset();
+    this.teardown(callback, code, reason);
+  }
+  connect(params) {
+    if (params) {
+      console && console.log("passing params to connect is deprecated. Instead pass :params to the Socket constructor");
+      this.params = closure(params);
+    }
+    if (this.conn) {
+      return;
+    }
+    if (this.longPollFallbackMs && this.transport !== LongPoll) {
+      this.connectWithFallback(LongPoll, this.longPollFallbackMs);
+    } else {
+      this.transportConnect();
+    }
+  }
+  log(kind, msg, data) {
+    this.logger && this.logger(kind, msg, data);
+  }
+  hasLogger() {
+    return this.logger !== null;
+  }
+  onOpen(callback) {
+    let ref = this.makeRef();
+    this.stateChangeCallbacks.open.push([ref, callback]);
+    return ref;
+  }
+  onClose(callback) {
+    let ref = this.makeRef();
+    this.stateChangeCallbacks.close.push([ref, callback]);
+    return ref;
+  }
+  onError(callback) {
+    let ref = this.makeRef();
+    this.stateChangeCallbacks.error.push([ref, callback]);
+    return ref;
+  }
+  onMessage(callback) {
+    let ref = this.makeRef();
+    this.stateChangeCallbacks.message.push([ref, callback]);
+    return ref;
+  }
+  ping(callback) {
+    if (!this.isConnected()) {
+      return false;
+    }
+    let ref = this.makeRef();
+    let startTime = Date.now();
+    this.push({ topic: "phoenix", event: "heartbeat", payload: {}, ref });
+    let onMsgRef = this.onMessage((msg) => {
+      if (msg.ref === ref) {
+        this.off([onMsgRef]);
+        callback(Date.now() - startTime);
+      }
+    });
+    return true;
+  }
+  transportConnect() {
+    this.connectClock++;
+    this.closeWasClean = false;
+    this.conn = new this.transport(this.endPointURL());
+    this.conn.binaryType = this.binaryType;
+    this.conn.timeout = this.longpollerTimeout;
+    this.conn.onopen = () => this.onConnOpen();
+    this.conn.onerror = (error) => this.onConnError(error);
+    this.conn.onmessage = (event) => this.onConnMessage(event);
+    this.conn.onclose = (event) => this.onConnClose(event);
+  }
+  getSession(key) {
+    return this.sessionStore && this.sessionStore.getItem(key);
+  }
+  storeSession(key, val) {
+    this.sessionStore && this.sessionStore.setItem(key, val);
+  }
+  connectWithFallback(fallbackTransport, fallbackThreshold = 2500) {
+    clearTimeout(this.fallbackTimer);
+    let established = false;
+    let primaryTransport = true;
+    let openRef, errorRef;
+    let fallback = (reason) => {
+      this.log("transport", `falling back to ${fallbackTransport.name}...`, reason);
+      this.off([openRef, errorRef]);
+      primaryTransport = false;
+      this.replaceTransport(fallbackTransport);
+      this.transportConnect();
+    };
+    if (this.getSession(`phx:fallback:${fallbackTransport.name}`)) {
+      return fallback("memorized");
+    }
+    this.fallbackTimer = setTimeout(fallback, fallbackThreshold);
+    errorRef = this.onError((reason) => {
+      this.log("transport", "error", reason);
+      if (primaryTransport && !established) {
+        clearTimeout(this.fallbackTimer);
+        fallback(reason);
+      }
+    });
+    this.onOpen(() => {
+      established = true;
+      if (!primaryTransport) {
+        if (!this.primaryPassedHealthCheck) {
+          this.storeSession(`phx:fallback:${fallbackTransport.name}`, "true");
+        }
+        return this.log("transport", `established ${fallbackTransport.name} fallback`);
+      }
+      clearTimeout(this.fallbackTimer);
+      this.fallbackTimer = setTimeout(fallback, fallbackThreshold);
+      this.ping((rtt) => {
+        this.log("transport", "connected to primary after", rtt);
+        this.primaryPassedHealthCheck = true;
+        clearTimeout(this.fallbackTimer);
+      });
+    });
+    this.transportConnect();
+  }
+  clearHeartbeats() {
+    clearTimeout(this.heartbeatTimer);
+    clearTimeout(this.heartbeatTimeoutTimer);
+  }
+  onConnOpen() {
+    if (this.hasLogger())
+      this.log("transport", `${this.transport.name} connected to ${this.endPointURL()}`);
+    this.closeWasClean = false;
+    this.establishedConnections++;
+    this.flushSendBuffer();
+    this.reconnectTimer.reset();
+    this.resetHeartbeat();
+    this.stateChangeCallbacks.open.forEach(([, callback]) => callback());
+  }
+  heartbeatTimeout() {
+    if (this.pendingHeartbeatRef) {
+      this.pendingHeartbeatRef = null;
+      if (this.hasLogger()) {
+        this.log("transport", "heartbeat timeout. Attempting to re-establish connection");
+      }
+      this.triggerChanError();
+      this.closeWasClean = false;
+      this.teardown(() => this.reconnectTimer.scheduleTimeout(), WS_CLOSE_NORMAL, "heartbeat timeout");
+    }
+  }
+  resetHeartbeat() {
+    if (this.conn && this.conn.skipHeartbeat) {
+      return;
+    }
+    this.pendingHeartbeatRef = null;
+    this.clearHeartbeats();
+    this.heartbeatTimer = setTimeout(() => this.sendHeartbeat(), this.heartbeatIntervalMs);
+  }
+  teardown(callback, code, reason) {
+    if (!this.conn) {
+      return callback && callback();
+    }
+    this.waitForBufferDone(() => {
+      if (this.conn) {
+        if (code) {
+          this.conn.close(code, reason || "");
+        } else {
+          this.conn.close();
+        }
+      }
+      this.waitForSocketClosed(() => {
+        if (this.conn) {
+          this.conn.onopen = function() {
+          };
+          this.conn.onerror = function() {
+          };
+          this.conn.onmessage = function() {
+          };
+          this.conn.onclose = function() {
+          };
+          this.conn = null;
+        }
+        callback && callback();
+      });
+    });
+  }
+  waitForBufferDone(callback, tries = 1) {
+    if (tries === 5 || !this.conn || !this.conn.bufferedAmount) {
+      callback();
+      return;
+    }
+    setTimeout(() => {
+      this.waitForBufferDone(callback, tries + 1);
+    }, 150 * tries);
+  }
+  waitForSocketClosed(callback, tries = 1) {
+    if (tries === 5 || !this.conn || this.conn.readyState === SOCKET_STATES.closed) {
+      callback();
+      return;
+    }
+    setTimeout(() => {
+      this.waitForSocketClosed(callback, tries + 1);
+    }, 150 * tries);
+  }
+  onConnClose(event) {
+    let closeCode = event && event.code;
+    if (this.hasLogger())
+      this.log("transport", "close", event);
+    this.triggerChanError();
+    this.clearHeartbeats();
+    if (!this.closeWasClean && closeCode !== 1000) {
+      this.reconnectTimer.scheduleTimeout();
+    }
+    this.stateChangeCallbacks.close.forEach(([, callback]) => callback(event));
+  }
+  onConnError(error) {
+    if (this.hasLogger())
+      this.log("transport", error);
+    let transportBefore = this.transport;
+    let establishedBefore = this.establishedConnections;
+    this.stateChangeCallbacks.error.forEach(([, callback]) => {
+      callback(error, transportBefore, establishedBefore);
+    });
+    if (transportBefore === this.transport || establishedBefore > 0) {
+      this.triggerChanError();
+    }
+  }
+  triggerChanError() {
+    this.channels.forEach((channel) => {
+      if (!(channel.isErrored() || channel.isLeaving() || channel.isClosed())) {
+        channel.trigger(CHANNEL_EVENTS.error);
+      }
+    });
+  }
+  connectionState() {
+    switch (this.conn && this.conn.readyState) {
+      case SOCKET_STATES.connecting:
+        return "connecting";
+      case SOCKET_STATES.open:
+        return "open";
+      case SOCKET_STATES.closing:
+        return "closing";
+      default:
+        return "closed";
+    }
+  }
+  isConnected() {
+    return this.connectionState() === "open";
+  }
+  remove(channel) {
+    this.off(channel.stateChangeRefs);
+    this.channels = this.channels.filter((c) => c !== channel);
+  }
+  off(refs) {
+    for (let key in this.stateChangeCallbacks) {
+      this.stateChangeCallbacks[key] = this.stateChangeCallbacks[key].filter(([ref]) => {
+        return refs.indexOf(ref) === -1;
+      });
+    }
+  }
+  channel(topic, chanParams = {}) {
+    let chan = new Channel(topic, chanParams, this);
+    this.channels.push(chan);
+    return chan;
+  }
+  push(data) {
+    if (this.hasLogger()) {
+      let { topic, event, payload, ref, join_ref } = data;
+      this.log("push", `${topic} ${event} (${join_ref}, ${ref})`, payload);
+    }
+    if (this.isConnected()) {
+      this.encode(data, (result) => this.conn.send(result));
+    } else {
+      this.sendBuffer.push(() => this.encode(data, (result) => this.conn.send(result)));
+    }
+  }
+  makeRef() {
+    let newRef = this.ref + 1;
+    if (newRef === this.ref) {
+      this.ref = 0;
+    } else {
+      this.ref = newRef;
+    }
+    return this.ref.toString();
+  }
+  sendHeartbeat() {
+    if (this.pendingHeartbeatRef && !this.isConnected()) {
+      return;
+    }
+    this.pendingHeartbeatRef = this.makeRef();
+    this.push({ topic: "phoenix", event: "heartbeat", payload: {}, ref: this.pendingHeartbeatRef });
+    this.heartbeatTimeoutTimer = setTimeout(() => this.heartbeatTimeout(), this.heartbeatIntervalMs);
+  }
+  flushSendBuffer() {
+    if (this.isConnected() && this.sendBuffer.length > 0) {
+      this.sendBuffer.forEach((callback) => callback());
+      this.sendBuffer = [];
+    }
+  }
+  onConnMessage(rawMessage) {
+    this.decode(rawMessage.data, (msg) => {
+      let { topic, event, payload, ref, join_ref } = msg;
+      if (ref && ref === this.pendingHeartbeatRef) {
+        this.clearHeartbeats();
+        this.pendingHeartbeatRef = null;
+        this.heartbeatTimer = setTimeout(() => this.sendHeartbeat(), this.heartbeatIntervalMs);
+      }
+      if (this.hasLogger())
+        this.log("receive", `${payload.status || ""} ${topic} ${event} ${ref && "(" + ref + ")" || ""}`, payload);
+      for (let i = 0;i < this.channels.length; i++) {
+        const channel = this.channels[i];
+        if (!channel.isMember(topic, event, payload, join_ref)) {
+          continue;
+        }
+        channel.trigger(event, payload, ref, join_ref);
+      }
+      for (let i = 0;i < this.stateChangeCallbacks.message.length; i++) {
+        let [, callback] = this.stateChangeCallbacks.message[i];
+        callback(msg);
+      }
+    });
+  }
+  leaveOpenTopic(topic) {
+    let dupChannel = this.channels.find((c) => c.topic === topic && (c.isJoined() || c.isJoining()));
+    if (dupChannel) {
+      if (this.hasLogger())
+        this.log("transport", `leaving duplicate topic "${topic}"`);
+      dupChannel.leave();
+    }
+  }
+};
+
+// /Users/crbelaus/Developer/error-tracker/assets/node_modules/phoenix_live_view/priv/static/phoenix_live_view.esm.js
+var detectDuplicateIds = function() {
+  let ids = new Set;
+  let elems = document.querySelectorAll("*[id]");
+  for (let i = 0, len = elems.length;i < len; i++) {
+    if (ids.has(elems[i].id)) {
+      console.error(`Multiple IDs detected: ${elems[i].id}. Ensure unique element ids.`);
+    } else {
+      ids.add(elems[i].id);
+    }
+  }
+};
+var morphAttrs = function(fromNode, toNode) {
+  var toNodeAttrs = toNode.attributes;
+  var attr;
+  var attrName;
+  var attrNamespaceURI;
+  var attrValue;
+  var fromValue;
+  if (toNode.nodeType === DOCUMENT_FRAGMENT_NODE || fromNode.nodeType === DOCUMENT_FRAGMENT_NODE) {
+    return;
+  }
+  for (var i = toNodeAttrs.length - 1;i >= 0; i--) {
+    attr = toNodeAttrs[i];
+    attrName = attr.name;
+    attrNamespaceURI = attr.namespaceURI;
+    attrValue = attr.value;
+    if (attrNamespaceURI) {
+      attrName = attr.localName || attrName;
+      fromValue = fromNode.getAttributeNS(attrNamespaceURI, attrName);
+      if (fromValue !== attrValue) {
+        if (attr.prefix === "xmlns") {
+          attrName = attr.name;
+        }
+        fromNode.setAttributeNS(attrNamespaceURI, attrName, attrValue);
+      }
+    } else {
+      fromValue = fromNode.getAttribute(attrName);
+      if (fromValue !== attrValue) {
+        fromNode.setAttribute(attrName, attrValue);
+      }
+    }
+  }
+  var fromNodeAttrs = fromNode.attributes;
+  for (var d = fromNodeAttrs.length - 1;d >= 0; d--) {
+    attr = fromNodeAttrs[d];
+    attrName = attr.name;
+    attrNamespaceURI = attr.namespaceURI;
+    if (attrNamespaceURI) {
+      attrName = attr.localName || attrName;
+      if (!toNode.hasAttributeNS(attrNamespaceURI, attrName)) {
+        fromNode.removeAttributeNS(attrNamespaceURI, attrName);
+      }
+    } else {
+      if (!toNode.hasAttribute(attrName)) {
+        fromNode.removeAttribute(attrName);
+      }
+    }
+  }
+};
+var createFragmentFromTemplate = function(str) {
+  var template = doc.createElement("template");
+  template.innerHTML = str;
+  return template.content.childNodes[0];
+};
+var createFragmentFromRange = function(str) {
+  if (!range) {
+    range = doc.createRange();
+    range.selectNode(doc.body);
+  }
+  var fragment = range.createContextualFragment(str);
+  return fragment.childNodes[0];
+};
+var createFragmentFromWrap = function(str) {
+  var fragment = doc.createElement("body");
+  fragment.innerHTML = str;
+  return fragment.childNodes[0];
+};
+var toElement = function(str) {
+  str = str.trim();
+  if (HAS_TEMPLATE_SUPPORT) {
+    return createFragmentFromTemplate(str);
+  } else if (HAS_RANGE_SUPPORT) {
+    return createFragmentFromRange(str);
+  }
+  return createFragmentFromWrap(str);
+};
+var compareNodeNames = function(fromEl, toEl) {
+  var fromNodeName = fromEl.nodeName;
+  var toNodeName = toEl.nodeName;
+  var fromCodeStart, toCodeStart;
+  if (fromNodeName === toNodeName) {
+    return true;
+  }
+  fromCodeStart = fromNodeName.charCodeAt(0);
+  toCodeStart = toNodeName.charCodeAt(0);
+  if (fromCodeStart <= 90 && toCodeStart >= 97) {
+    return fromNodeName === toNodeName.toUpperCase();
+  } else if (toCodeStart <= 90 && fromCodeStart >= 97) {
+    return toNodeName === fromNodeName.toUpperCase();
+  } else {
+    return false;
+  }
+};
+var createElementNS = function(name, namespaceURI) {
+  return !namespaceURI || namespaceURI === NS_XHTML ? doc.createElement(name) : doc.createElementNS(namespaceURI, name);
+};
+var moveChildren = function(fromEl, toEl) {
+  var curChild = fromEl.firstChild;
+  while (curChild) {
+    var nextChild = curChild.nextSibling;
+    toEl.appendChild(curChild);
+    curChild = nextChild;
+  }
+  return toEl;
+};
+var syncBooleanAttrProp = function(fromEl, toEl, name) {
+  if (fromEl[name] !== toEl[name]) {
+    fromEl[name] = toEl[name];
+    if (fromEl[name]) {
+      fromEl.setAttribute(name, "");
+    } else {
+      fromEl.removeAttribute(name);
+    }
+  }
+};
+var noop = function() {
+};
+var defaultGetNodeKey = function(node) {
+  if (node) {
+    return node.getAttribute && node.getAttribute("id") || node.id;
+  }
+};
+var morphdomFactory = function(morphAttrs2) {
+  return function morphdom2(fromNode, toNode, options) {
+    if (!options) {
+      options = {};
+    }
+    if (typeof toNode === "string") {
+      if (fromNode.nodeName === "#document" || fromNode.nodeName === "HTML" || fromNode.nodeName === "BODY") {
+        var toNodeHtml = toNode;
+        toNode = doc.createElement("html");
+        toNode.innerHTML = toNodeHtml;
+      } else {
+        toNode = toElement(toNode);
+      }
+    } else if (toNode.nodeType === DOCUMENT_FRAGMENT_NODE$1) {
+      toNode = toNode.firstElementChild;
+    }
+    var getNodeKey = options.getNodeKey || defaultGetNodeKey;
+    var onBeforeNodeAdded = options.onBeforeNodeAdded || noop;
+    var onNodeAdded = options.onNodeAdded || noop;
+    var onBeforeElUpdated = options.onBeforeElUpdated || noop;
+    var onElUpdated = options.onElUpdated || noop;
+    var onBeforeNodeDiscarded = options.onBeforeNodeDiscarded || noop;
+    var onNodeDiscarded = options.onNodeDiscarded || noop;
+    var onBeforeElChildrenUpdated = options.onBeforeElChildrenUpdated || noop;
+    var skipFromChildren = options.skipFromChildren || noop;
+    var addChild = options.addChild || function(parent, child) {
+      return parent.appendChild(child);
+    };
+    var childrenOnly = options.childrenOnly === true;
+    var fromNodesLookup = Object.create(null);
+    var keyedRemovalList = [];
+    function addKeyedRemoval(key) {
+      keyedRemovalList.push(key);
+    }
+    function walkDiscardedChildNodes(node, skipKeyedNodes) {
+      if (node.nodeType === ELEMENT_NODE) {
+        var curChild = node.firstChild;
+        while (curChild) {
+          var key = undefined;
+          if (skipKeyedNodes && (key = getNodeKey(curChild))) {
+            addKeyedRemoval(key);
+          } else {
+            onNodeDiscarded(curChild);
+            if (curChild.firstChild) {
+              walkDiscardedChildNodes(curChild, skipKeyedNodes);
+            }
+          }
+          curChild = curChild.nextSibling;
+        }
+      }
+    }
+    function removeNode(node, parentNode, skipKeyedNodes) {
+      if (onBeforeNodeDiscarded(node) === false) {
+        return;
+      }
+      if (parentNode) {
+        parentNode.removeChild(node);
+      }
+      onNodeDiscarded(node);
+      walkDiscardedChildNodes(node, skipKeyedNodes);
+    }
+    function indexTree(node) {
+      if (node.nodeType === ELEMENT_NODE || node.nodeType === DOCUMENT_FRAGMENT_NODE$1) {
+        var curChild = node.firstChild;
+        while (curChild) {
+          var key = getNodeKey(curChild);
+          if (key) {
+            fromNodesLookup[key] = curChild;
+          }
+          indexTree(curChild);
+          curChild = curChild.nextSibling;
+        }
+      }
+    }
+    indexTree(fromNode);
+    function handleNodeAdded(el) {
+      onNodeAdded(el);
+      var curChild = el.firstChild;
+      while (curChild) {
+        var nextSibling = curChild.nextSibling;
+        var key = getNodeKey(curChild);
+        if (key) {
+          var unmatchedFromEl = fromNodesLookup[key];
+          if (unmatchedFromEl && compareNodeNames(curChild, unmatchedFromEl)) {
+            curChild.parentNode.replaceChild(unmatchedFromEl, curChild);
+            morphEl(unmatchedFromEl, curChild);
+          } else {
+            handleNodeAdded(curChild);
+          }
+        } else {
+          handleNodeAdded(curChild);
+        }
+        curChild = nextSibling;
+      }
+    }
+    function cleanupFromEl(fromEl, curFromNodeChild, curFromNodeKey) {
+      while (curFromNodeChild) {
+        var fromNextSibling = curFromNodeChild.nextSibling;
+        if (curFromNodeKey = getNodeKey(curFromNodeChild)) {
+          addKeyedRemoval(curFromNodeKey);
+        } else {
+          removeNode(curFromNodeChild, fromEl, true);
+        }
+        curFromNodeChild = fromNextSibling;
+      }
+    }
+    function morphEl(fromEl, toEl, childrenOnly2) {
+      var toElKey = getNodeKey(toEl);
+      if (toElKey) {
+        delete fromNodesLookup[toElKey];
+      }
+      if (!childrenOnly2) {
+        if (onBeforeElUpdated(fromEl, toEl) === false) {
+          return;
+        }
+        morphAttrs2(fromEl, toEl);
+        onElUpdated(fromEl);
+        if (onBeforeElChildrenUpdated(fromEl, toEl) === false) {
+          return;
+        }
+      }
+      if (fromEl.nodeName !== "TEXTAREA") {
+        morphChildren(fromEl, toEl);
+      } else {
+        specialElHandlers.TEXTAREA(fromEl, toEl);
+      }
+    }
+    function morphChildren(fromEl, toEl) {
+      var skipFrom = skipFromChildren(fromEl, toEl);
+      var curToNodeChild = toEl.firstChild;
+      var curFromNodeChild = fromEl.firstChild;
+      var curToNodeKey;
+      var curFromNodeKey;
+      var fromNextSibling;
+      var toNextSibling;
+      var matchingFromEl;
+      outer:
+        while (curToNodeChild) {
+          toNextSibling = curToNodeChild.nextSibling;
+          curToNodeKey = getNodeKey(curToNodeChild);
+          while (!skipFrom && curFromNodeChild) {
+            fromNextSibling = curFromNodeChild.nextSibling;
+            if (curToNodeChild.isSameNode && curToNodeChild.isSameNode(curFromNodeChild)) {
+              curToNodeChild = toNextSibling;
+              curFromNodeChild = fromNextSibling;
+              continue outer;
+            }
+            curFromNodeKey = getNodeKey(curFromNodeChild);
+            var curFromNodeType = curFromNodeChild.nodeType;
+            var isCompatible = undefined;
+            if (curFromNodeType === curToNodeChild.nodeType) {
+              if (curFromNodeType === ELEMENT_NODE) {
+                if (curToNodeKey) {
+                  if (curToNodeKey !== curFromNodeKey) {
+                    if (matchingFromEl = fromNodesLookup[curToNodeKey]) {
+                      if (fromNextSibling === matchingFromEl) {
+                        isCompatible = false;
+                      } else {
+                        fromEl.insertBefore(matchingFromEl, curFromNodeChild);
+                        if (curFromNodeKey) {
+                          addKeyedRemoval(curFromNodeKey);
+                        } else {
+                          removeNode(curFromNodeChild, fromEl, true);
+                        }
+                        curFromNodeChild = matchingFromEl;
+                        curFromNodeKey = getNodeKey(curFromNodeChild);
+                      }
+                    } else {
+                      isCompatible = false;
+                    }
+                  }
+                } else if (curFromNodeKey) {
+                  isCompatible = false;
+                }
+                isCompatible = isCompatible !== false && compareNodeNames(curFromNodeChild, curToNodeChild);
+                if (isCompatible) {
+                  morphEl(curFromNodeChild, curToNodeChild);
+                }
+              } else if (curFromNodeType === TEXT_NODE || curFromNodeType == COMMENT_NODE) {
+                isCompatible = true;
+                if (curFromNodeChild.nodeValue !== curToNodeChild.nodeValue) {
+                  curFromNodeChild.nodeValue = curToNodeChild.nodeValue;
+                }
+              }
+            }
+            if (isCompatible) {
+              curToNodeChild = toNextSibling;
+              curFromNodeChild = fromNextSibling;
+              continue outer;
+            }
+            if (curFromNodeKey) {
+              addKeyedRemoval(curFromNodeKey);
+            } else {
+              removeNode(curFromNodeChild, fromEl, true);
+            }
+            curFromNodeChild = fromNextSibling;
+          }
+          if (curToNodeKey && (matchingFromEl = fromNodesLookup[curToNodeKey]) && compareNodeNames(matchingFromEl, curToNodeChild)) {
+            if (!skipFrom) {
+              addChild(fromEl, matchingFromEl);
+            }
+            morphEl(matchingFromEl, curToNodeChild);
+          } else {
+            var onBeforeNodeAddedResult = onBeforeNodeAdded(curToNodeChild);
+            if (onBeforeNodeAddedResult !== false) {
+              if (onBeforeNodeAddedResult) {
+                curToNodeChild = onBeforeNodeAddedResult;
+              }
+              if (curToNodeChild.actualize) {
+                curToNodeChild = curToNodeChild.actualize(fromEl.ownerDocument || doc);
+              }
+              addChild(fromEl, curToNodeChild);
+              handleNodeAdded(curToNodeChild);
+            }
+          }
+          curToNodeChild = toNextSibling;
+          curFromNodeChild = fromNextSibling;
+        }
+      cleanupFromEl(fromEl, curFromNodeChild, curFromNodeKey);
+      var specialElHandler = specialElHandlers[fromEl.nodeName];
+      if (specialElHandler) {
+        specialElHandler(fromEl, toEl);
+      }
+    }
+    var morphedNode = fromNode;
+    var morphedNodeType = morphedNode.nodeType;
+    var toNodeType = toNode.nodeType;
+    if (!childrenOnly) {
+      if (morphedNodeType === ELEMENT_NODE) {
+        if (toNodeType === ELEMENT_NODE) {
+          if (!compareNodeNames(fromNode, toNode)) {
+            onNodeDiscarded(fromNode);
+            morphedNode = moveChildren(fromNode, createElementNS(toNode.nodeName, toNode.namespaceURI));
+          }
+        } else {
+          morphedNode = toNode;
+        }
+      } else if (morphedNodeType === TEXT_NODE || morphedNodeType === COMMENT_NODE) {
+        if (toNodeType === morphedNodeType) {
+          if (morphedNode.nodeValue !== toNode.nodeValue) {
+            morphedNode.nodeValue = toNode.nodeValue;
+          }
+          return morphedNode;
+        } else {
+          morphedNode = toNode;
+        }
+      }
+    }
+    if (morphedNode === toNode) {
+      onNodeDiscarded(fromNode);
+    } else {
+      if (toNode.isSameNode && toNode.isSameNode(morphedNode)) {
+        return;
+      }
+      morphEl(morphedNode, toNode, childrenOnly);
+      if (keyedRemovalList) {
+        for (var i = 0, len = keyedRemovalList.length;i < len; i++) {
+          var elToRemove = fromNodesLookup[keyedRemovalList[i]];
+          if (elToRemove) {
+            removeNode(elToRemove, elToRemove.parentNode, false);
+          }
+        }
+      }
+    }
+    if (!childrenOnly && morphedNode !== fromNode && fromNode.parentNode) {
+      if (morphedNode.actualize) {
+        morphedNode = morphedNode.actualize(fromNode.ownerDocument || doc);
+      }
+      fromNode.parentNode.replaceChild(morphedNode, fromNode);
+    }
+    return morphedNode;
+  };
+};
+var CONSECUTIVE_RELOADS = "consecutive-reloads";
+var MAX_RELOADS = 10;
+var RELOAD_JITTER_MIN = 5000;
+var RELOAD_JITTER_MAX = 1e4;
+var FAILSAFE_JITTER = 30000;
+var PHX_EVENT_CLASSES = [
+  "phx-click-loading",
+  "phx-change-loading",
+  "phx-submit-loading",
+  "phx-keydown-loading",
+  "phx-keyup-loading",
+  "phx-blur-loading",
+  "phx-focus-loading",
+  "phx-hook-loading"
+];
+var PHX_COMPONENT = "data-phx-component";
+var PHX_LIVE_LINK = "data-phx-link";
+var PHX_TRACK_STATIC = "track-static";
+var PHX_LINK_STATE = "data-phx-link-state";
+var PHX_REF = "data-phx-ref";
+var PHX_REF_SRC = "data-phx-ref-src";
+var PHX_TRACK_UPLOADS = "track-uploads";
+var PHX_UPLOAD_REF = "data-phx-upload-ref";
+var PHX_PREFLIGHTED_REFS = "data-phx-preflighted-refs";
+var PHX_DONE_REFS = "data-phx-done-refs";
+var PHX_DROP_TARGET = "drop-target";
+var PHX_ACTIVE_ENTRY_REFS = "data-phx-active-refs";
+var PHX_LIVE_FILE_UPDATED = "phx:live-file:updated";
+var PHX_SKIP = "data-phx-skip";
+var PHX_MAGIC_ID = "data-phx-id";
+var PHX_PRUNE = "data-phx-prune";
+var PHX_PAGE_LOADING = "page-loading";
+var PHX_CONNECTED_CLASS = "phx-connected";
+var PHX_LOADING_CLASS = "phx-loading";
+var PHX_NO_FEEDBACK_CLASS = "phx-no-feedback";
+var PHX_ERROR_CLASS = "phx-error";
+var PHX_CLIENT_ERROR_CLASS = "phx-client-error";
+var PHX_SERVER_ERROR_CLASS = "phx-server-error";
+var PHX_PARENT_ID = "data-phx-parent-id";
+var PHX_MAIN = "data-phx-main";
+var PHX_ROOT_ID = "data-phx-root-id";
+var PHX_VIEWPORT_TOP = "viewport-top";
+var PHX_VIEWPORT_BOTTOM = "viewport-bottom";
+var PHX_TRIGGER_ACTION = "trigger-action";
+var PHX_FEEDBACK_FOR = "feedback-for";
+var PHX_FEEDBACK_GROUP = "feedback-group";
+var PHX_HAS_FOCUSED = "phx-has-focused";
+var FOCUSABLE_INPUTS = ["text", "textarea", "number", "email", "password", "search", "tel", "url", "date", "time", "datetime-local", "color", "range"];
+var CHECKABLE_INPUTS = ["checkbox", "radio"];
+var PHX_HAS_SUBMITTED = "phx-has-submitted";
+var PHX_SESSION = "data-phx-session";
+var PHX_VIEW_SELECTOR = `[${PHX_SESSION}]`;
+var PHX_STICKY = "data-phx-sticky";
+var PHX_STATIC = "data-phx-static";
+var PHX_READONLY = "data-phx-readonly";
+var PHX_DISABLED = "data-phx-disabled";
+var PHX_DISABLE_WITH = "disable-with";
+var PHX_DISABLE_WITH_RESTORE = "data-phx-disable-with-restore";
+var PHX_HOOK = "hook";
+var PHX_DEBOUNCE = "debounce";
+var PHX_THROTTLE = "throttle";
+var PHX_UPDATE = "update";
+var PHX_STREAM = "stream";
+var PHX_STREAM_REF = "data-phx-stream";
+var PHX_KEY = "key";
+var PHX_PRIVATE = "phxPrivate";
+var PHX_AUTO_RECOVER = "auto-recover";
+var PHX_LV_DEBUG = "phx:live-socket:debug";
+var PHX_LV_PROFILE = "phx:live-socket:profiling";
+var PHX_LV_LATENCY_SIM = "phx:live-socket:latency-sim";
+var PHX_PROGRESS = "progress";
+var PHX_MOUNTED = "mounted";
+var LOADER_TIMEOUT = 1;
+var BEFORE_UNLOAD_LOADER_TIMEOUT = 200;
+var BINDING_PREFIX = "phx-";
+var PUSH_TIMEOUT = 30000;
+var DEBOUNCE_TRIGGER = "debounce-trigger";
+var THROTTLED = "throttled";
+var DEBOUNCE_PREV_KEY = "debounce-prev-key";
+var DEFAULTS = {
+  debounce: 300,
+  throttle: 300
+};
+var DYNAMICS = "d";
+var STATIC = "s";
+var ROOT = "r";
+var COMPONENTS = "c";
+var EVENTS = "e";
+var REPLY = "r";
+var TITLE = "t";
+var TEMPLATES = "p";
+var STREAM = "stream";
+var EntryUploader = class {
+  constructor(entry, chunkSize, liveSocket) {
+    this.liveSocket = liveSocket;
+    this.entry = entry;
+    this.offset = 0;
+    this.chunkSize = chunkSize;
+    this.chunkTimer = null;
+    this.errored = false;
+    this.uploadChannel = liveSocket.channel(`lvu:${entry.ref}`, { token: entry.metadata() });
+  }
+  error(reason) {
+    if (this.errored) {
+      return;
+    }
+    this.uploadChannel.leave();
+    this.errored = true;
+    clearTimeout(this.chunkTimer);
+    this.entry.error(reason);
+  }
+  upload() {
+    this.uploadChannel.onError((reason) => this.error(reason));
+    this.uploadChannel.join().receive("ok", (_data) => this.readNextChunk()).receive("error", (reason) => this.error(reason));
+  }
+  isDone() {
+    return this.offset >= this.entry.file.size;
+  }
+  readNextChunk() {
+    let reader = new window.FileReader;
+    let blob = this.entry.file.slice(this.offset, this.chunkSize + this.offset);
+    reader.onload = (e) => {
+      if (e.target.error === null) {
+        this.offset += e.target.result.byteLength;
+        this.pushChunk(e.target.result);
+      } else {
+        return logError("Read error: " + e.target.error);
+      }
+    };
+    reader.readAsArrayBuffer(blob);
+  }
+  pushChunk(chunk) {
+    if (!this.uploadChannel.isJoined()) {
+      return;
+    }
+    this.uploadChannel.push("chunk", chunk).receive("ok", () => {
+      this.entry.progress(this.offset / this.entry.file.size * 100);
+      if (!this.isDone()) {
+        this.chunkTimer = setTimeout(() => this.readNextChunk(), this.liveSocket.getLatencySim() || 0);
+      }
+    }).receive("error", ({ reason }) => this.error(reason));
+  }
+};
+var logError = (msg, obj) => console.error && console.error(msg, obj);
+var isCid = (cid) => {
+  let type = typeof cid;
+  return type === "number" || type === "string" && /^(0|[1-9]\d*)$/.test(cid);
+};
+var debug = (view, kind, msg, obj) => {
+  if (view.liveSocket.isDebugEnabled()) {
+    console.log(`${view.id} ${kind}: ${msg} - `, obj);
+  }
+};
+var closure2 = (val) => typeof val === "function" ? val : function() {
+  return val;
+};
+var clone = (obj) => {
+  return JSON.parse(JSON.stringify(obj));
+};
+var closestPhxBinding = (el, binding, borderEl) => {
+  do {
+    if (el.matches(`[${binding}]`) && !el.disabled) {
+      return el;
+    }
+    el = el.parentElement || el.parentNode;
+  } while (el !== null && el.nodeType === 1 && !(borderEl && borderEl.isSameNode(el) || el.matches(PHX_VIEW_SELECTOR)));
+  return null;
+};
+var isObject = (obj) => {
+  return obj !== null && typeof obj === "object" && !(obj instanceof Array);
+};
+var isEqualObj = (obj1, obj2) => JSON.stringify(obj1) === JSON.stringify(obj2);
+var isEmpty = (obj) => {
+  for (let x in obj) {
+    return false;
+  }
+  return true;
+};
+var maybe = (el, callback) => el && callback(el);
+var channelUploader = function(entries, onError, resp, liveSocket) {
+  entries.forEach((entry) => {
+    let entryUploader = new EntryUploader(entry, resp.config.chunk_size, liveSocket);
+    entryUploader.upload();
+  });
+};
+var Browser = {
+  canPushState() {
+    return typeof history.pushState !== "undefined";
+  },
+  dropLocal(localStorage, namespace, subkey) {
+    return localStorage.removeItem(this.localKey(namespace, subkey));
+  },
+  updateLocal(localStorage, namespace, subkey, initial, func) {
+    let current = this.getLocal(localStorage, namespace, subkey);
+    let key = this.localKey(namespace, subkey);
+    let newVal = current === null ? initial : func(current);
+    localStorage.setItem(key, JSON.stringify(newVal));
+    return newVal;
+  },
+  getLocal(localStorage, namespace, subkey) {
+    return JSON.parse(localStorage.getItem(this.localKey(namespace, subkey)));
+  },
+  updateCurrentState(callback) {
+    if (!this.canPushState()) {
+      return;
+    }
+    history.replaceState(callback(history.state || {}), "", window.location.href);
+  },
+  pushState(kind, meta, to) {
+    if (this.canPushState()) {
+      if (to !== window.location.href) {
+        if (meta.type == "redirect" && meta.scroll) {
+          let currentState = history.state || {};
+          currentState.scroll = meta.scroll;
+          history.replaceState(currentState, "", window.location.href);
+        }
+        delete meta.scroll;
+        history[kind + "State"](meta, "", to || null);
+        let hashEl = this.getHashTargetEl(window.location.hash);
+        if (hashEl) {
+          hashEl.scrollIntoView();
+        } else if (meta.type === "redirect") {
+          window.scroll(0, 0);
+        }
+      }
+    } else {
+      this.redirect(to);
+    }
+  },
+  setCookie(name, value) {
+    document.cookie = `${name}=${value}`;
+  },
+  getCookie(name) {
+    return document.cookie.replace(new RegExp(`(?:(?:^|.*;s*)${name}s*=s*([^;]*).*\$)|^.*\$`), "$1");
+  },
+  redirect(toURL, flash) {
+    if (flash) {
+      Browser.setCookie("__phoenix_flash__", flash + "; max-age=60000; path=/");
+    }
+    window.location = toURL;
+  },
+  localKey(namespace, subkey) {
+    return `${namespace}-${subkey}`;
+  },
+  getHashTargetEl(maybeHash) {
+    let hash = maybeHash.toString().substring(1);
+    if (hash === "") {
+      return;
+    }
+    return document.getElementById(hash) || document.querySelector(`a[name="${hash}"]`);
+  }
+};
+var browser_default = Browser;
+var ARIA = {
+  focusMain() {
+    let target = document.querySelector("main h1, main, h1");
+    if (target) {
+      let origTabIndex = target.tabIndex;
+      target.tabIndex = -1;
+      target.focus();
+      target.tabIndex = origTabIndex;
+    }
+  },
+  anyOf(instance, classes) {
+    return classes.find((name) => instance instanceof name);
+  },
+  isFocusable(el, interactiveOnly) {
+    return el instanceof HTMLAnchorElement && el.rel !== "ignore" || el instanceof HTMLAreaElement && el.href !== undefined || !el.disabled && this.anyOf(el, [HTMLInputElement, HTMLSelectElement, HTMLTextAreaElement, HTMLButtonElement]) || el instanceof HTMLIFrameElement || (el.tabIndex > 0 || !interactiveOnly && el.getAttribute("tabindex") !== null && el.getAttribute("aria-hidden") !== "true");
+  },
+  attemptFocus(el, interactiveOnly) {
+    if (this.isFocusable(el, interactiveOnly)) {
+      try {
+        el.focus();
+      } catch (e) {
+      }
+    }
+    return !!document.activeElement && document.activeElement.isSameNode(el);
+  },
+  focusFirstInteractive(el) {
+    let child = el.firstElementChild;
+    while (child) {
+      if (this.attemptFocus(child, true) || this.focusFirstInteractive(child, true)) {
+        return true;
+      }
+      child = child.nextElementSibling;
+    }
+  },
+  focusFirst(el) {
+    let child = el.firstElementChild;
+    while (child) {
+      if (this.attemptFocus(child) || this.focusFirst(child)) {
+        return true;
+      }
+      child = child.nextElementSibling;
+    }
+  },
+  focusLast(el) {
+    let child = el.lastElementChild;
+    while (child) {
+      if (this.attemptFocus(child) || this.focusLast(child)) {
+        return true;
+      }
+      child = child.previousElementSibling;
+    }
+  }
+};
+var aria_default = ARIA;
+var focusStack = null;
+var default_transition_time = 200;
+var JS = {
+  exec(eventType, phxEvent, view, sourceEl, defaults) {
+    let [defaultKind, defaultArgs] = defaults || [null, { callback: defaults && defaults.callback }];
+    let commands = phxEvent.charAt(0) === "[" ? JSON.parse(phxEvent) : [[defaultKind, defaultArgs]];
+    commands.forEach(([kind, args]) => {
+      if (kind === defaultKind && defaultArgs.data) {
+        args.data = Object.assign(args.data || {}, defaultArgs.data);
+        args.callback = args.callback || defaultArgs.callback;
+      }
+      this.filterToEls(sourceEl, args).forEach((el) => {
+        this[`exec_${kind}`](eventType, phxEvent, view, sourceEl, el, args);
+      });
+    });
+  },
+  isVisible(el) {
+    return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length > 0);
+  },
+  isInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+    const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+    return rect.right > 0 && rect.bottom > 0 && rect.left < windowWidth && rect.top < windowHeight;
+  },
+  exec_exec(eventType, phxEvent, view, sourceEl, el, { attr, to }) {
+    let nodes = to ? dom_default.all(document, to) : [sourceEl];
+    nodes.forEach((node) => {
+      let encodedJS = node.getAttribute(attr);
+      if (!encodedJS) {
+        throw new Error(`expected ${attr} to contain JS command on "${to}"`);
+      }
+      view.liveSocket.execJS(node, encodedJS, eventType);
+    });
+  },
+  exec_dispatch(eventType, phxEvent, view, sourceEl, el, { to, event, detail, bubbles }) {
+    detail = detail || {};
+    detail.dispatcher = sourceEl;
+    dom_default.dispatchEvent(el, event, { detail, bubbles });
+  },
+  exec_push(eventType, phxEvent, view, sourceEl, el, args) {
+    let { event, data, target, page_loading, loading, value, dispatcher, callback } = args;
+    let pushOpts = { loading, value, target, page_loading: !!page_loading };
+    let targetSrc = eventType === "change" && dispatcher ? dispatcher : sourceEl;
+    let phxTarget = target || targetSrc.getAttribute(view.binding("target")) || targetSrc;
+    view.withinTargets(phxTarget, (targetView, targetCtx) => {
+      if (!targetView.isConnected()) {
+        return;
+      }
+      if (eventType === "change") {
+        let { newCid, _target } = args;
+        _target = _target || (dom_default.isFormInput(sourceEl) ? sourceEl.name : undefined);
+        if (_target) {
+          pushOpts._target = _target;
+        }
+        targetView.pushInput(sourceEl, targetCtx, newCid, event || phxEvent, pushOpts, callback);
+      } else if (eventType === "submit") {
+        let { submitter } = args;
+        targetView.submitForm(sourceEl, targetCtx, event || phxEvent, submitter, pushOpts, callback);
+      } else {
+        targetView.pushEvent(eventType, sourceEl, targetCtx, event || phxEvent, data, pushOpts, callback);
+      }
+    });
+  },
+  exec_navigate(eventType, phxEvent, view, sourceEl, el, { href, replace }) {
+    view.liveSocket.historyRedirect(href, replace ? "replace" : "push");
+  },
+  exec_patch(eventType, phxEvent, view, sourceEl, el, { href, replace }) {
+    view.liveSocket.pushHistoryPatch(href, replace ? "replace" : "push", sourceEl);
+  },
+  exec_focus(eventType, phxEvent, view, sourceEl, el) {
+    window.requestAnimationFrame(() => aria_default.attemptFocus(el));
+  },
+  exec_focus_first(eventType, phxEvent, view, sourceEl, el) {
+    window.requestAnimationFrame(() => aria_default.focusFirstInteractive(el) || aria_default.focusFirst(el));
+  },
+  exec_push_focus(eventType, phxEvent, view, sourceEl, el) {
+    window.requestAnimationFrame(() => focusStack = el || sourceEl);
+  },
+  exec_pop_focus(eventType, phxEvent, view, sourceEl, el) {
+    window.requestAnimationFrame(() => {
+      if (focusStack) {
+        focusStack.focus();
+      }
+      focusStack = null;
+    });
+  },
+  exec_add_class(eventType, phxEvent, view, sourceEl, el, { names, transition, time }) {
+    this.addOrRemoveClasses(el, names, [], transition, time, view);
+  },
+  exec_remove_class(eventType, phxEvent, view, sourceEl, el, { names, transition, time }) {
+    this.addOrRemoveClasses(el, [], names, transition, time, view);
+  },
+  exec_toggle_class(eventType, phxEvent, view, sourceEl, el, { to, names, transition, time }) {
+    this.toggleClasses(el, names, transition, view);
+  },
+  exec_toggle_attr(eventType, phxEvent, view, sourceEl, el, { attr: [attr, val1, val2] }) {
+    if (el.hasAttribute(attr)) {
+      if (val2 !== undefined) {
+        if (el.getAttribute(attr) === val1) {
+          this.setOrRemoveAttrs(el, [[attr, val2]], []);
+        } else {
+          this.setOrRemoveAttrs(el, [[attr, val1]], []);
+        }
+      } else {
+        this.setOrRemoveAttrs(el, [], [attr]);
+      }
+    } else {
+      this.setOrRemoveAttrs(el, [[attr, val1]], []);
+    }
+  },
+  exec_transition(eventType, phxEvent, view, sourceEl, el, { time, transition }) {
+    this.addOrRemoveClasses(el, [], [], transition, time, view);
+  },
+  exec_toggle(eventType, phxEvent, view, sourceEl, el, { display, ins, outs, time }) {
+    this.toggle(eventType, view, el, display, ins, outs, time);
+  },
+  exec_show(eventType, phxEvent, view, sourceEl, el, { display, transition, time }) {
+    this.show(eventType, view, el, display, transition, time);
+  },
+  exec_hide(eventType, phxEvent, view, sourceEl, el, { display, transition, time }) {
+    this.hide(eventType, view, el, display, transition, time);
+  },
+  exec_set_attr(eventType, phxEvent, view, sourceEl, el, { attr: [attr, val] }) {
+    this.setOrRemoveAttrs(el, [[attr, val]], []);
+  },
+  exec_remove_attr(eventType, phxEvent, view, sourceEl, el, { attr }) {
+    this.setOrRemoveAttrs(el, [], [attr]);
+  },
+  show(eventType, view, el, display, transition, time) {
+    if (!this.isVisible(el)) {
+      this.toggle(eventType, view, el, display, transition, null, time);
+    }
+  },
+  hide(eventType, view, el, display, transition, time) {
+    if (this.isVisible(el)) {
+      this.toggle(eventType, view, el, display, null, transition, time);
+    }
+  },
+  toggle(eventType, view, el, display, ins, outs, time) {
+    time = time || default_transition_time;
+    let [inClasses, inStartClasses, inEndClasses] = ins || [[], [], []];
+    let [outClasses, outStartClasses, outEndClasses] = outs || [[], [], []];
+    if (inClasses.length > 0 || outClasses.length > 0) {
+      if (this.isVisible(el)) {
+        let onStart = () => {
+          this.addOrRemoveClasses(el, outStartClasses, inClasses.concat(inStartClasses).concat(inEndClasses));
+          window.requestAnimationFrame(() => {
+            this.addOrRemoveClasses(el, outClasses, []);
+            window.requestAnimationFrame(() => this.addOrRemoveClasses(el, outEndClasses, outStartClasses));
+          });
+        };
+        el.dispatchEvent(new Event("phx:hide-start"));
+        view.transition(time, onStart, () => {
+          this.addOrRemoveClasses(el, [], outClasses.concat(outEndClasses));
+          dom_default.putSticky(el, "toggle", (currentEl) => currentEl.style.display = "none");
+          el.dispatchEvent(new Event("phx:hide-end"));
+        });
+      } else {
+        if (eventType === "remove") {
+          return;
+        }
+        let onStart = () => {
+          this.addOrRemoveClasses(el, inStartClasses, outClasses.concat(outStartClasses).concat(outEndClasses));
+          let stickyDisplay = display || this.defaultDisplay(el);
+          dom_default.putSticky(el, "toggle", (currentEl) => currentEl.style.display = stickyDisplay);
+          window.requestAnimationFrame(() => {
+            this.addOrRemoveClasses(el, inClasses, []);
+            window.requestAnimationFrame(() => this.addOrRemoveClasses(el, inEndClasses, inStartClasses));
+          });
+        };
+        el.dispatchEvent(new Event("phx:show-start"));
+        view.transition(time, onStart, () => {
+          this.addOrRemoveClasses(el, [], inClasses.concat(inEndClasses));
+          el.dispatchEvent(new Event("phx:show-end"));
+        });
+      }
+    } else {
+      if (this.isVisible(el)) {
+        window.requestAnimationFrame(() => {
+          el.dispatchEvent(new Event("phx:hide-start"));
+          dom_default.putSticky(el, "toggle", (currentEl) => currentEl.style.display = "none");
+          el.dispatchEvent(new Event("phx:hide-end"));
+        });
+      } else {
+        window.requestAnimationFrame(() => {
+          el.dispatchEvent(new Event("phx:show-start"));
+          let stickyDisplay = display || this.defaultDisplay(el);
+          dom_default.putSticky(el, "toggle", (currentEl) => currentEl.style.display = stickyDisplay);
+          el.dispatchEvent(new Event("phx:show-end"));
+        });
+      }
+    }
+  },
+  toggleClasses(el, classes, transition, time, view) {
+    window.requestAnimationFrame(() => {
+      let [prevAdds, prevRemoves] = dom_default.getSticky(el, "classes", [[], []]);
+      let newAdds = classes.filter((name) => prevAdds.indexOf(name) < 0 && !el.classList.contains(name));
+      let newRemoves = classes.filter((name) => prevRemoves.indexOf(name) < 0 && el.classList.contains(name));
+      this.addOrRemoveClasses(el, newAdds, newRemoves, transition, time, view);
+    });
+  },
+  addOrRemoveClasses(el, adds, removes, transition, time, view) {
+    time = time || default_transition_time;
+    let [transitionRun, transitionStart, transitionEnd] = transition || [[], [], []];
+    if (transitionRun.length > 0) {
+      let onStart = () => {
+        this.addOrRemoveClasses(el, transitionStart, [].concat(transitionRun).concat(transitionEnd));
+        window.requestAnimationFrame(() => {
+          this.addOrRemoveClasses(el, transitionRun, []);
+          window.requestAnimationFrame(() => this.addOrRemoveClasses(el, transitionEnd, transitionStart));
+        });
+      };
+      let onDone = () => this.addOrRemoveClasses(el, adds.concat(transitionEnd), removes.concat(transitionRun).concat(transitionStart));
+      return view.transition(time, onStart, onDone);
+    }
+    window.requestAnimationFrame(() => {
+      let [prevAdds, prevRemoves] = dom_default.getSticky(el, "classes", [[], []]);
+      let keepAdds = adds.filter((name) => prevAdds.indexOf(name) < 0 && !el.classList.contains(name));
+      let keepRemoves = removes.filter((name) => prevRemoves.indexOf(name) < 0 && el.classList.contains(name));
+      let newAdds = prevAdds.filter((name) => removes.indexOf(name) < 0).concat(keepAdds);
+      let newRemoves = prevRemoves.filter((name) => adds.indexOf(name) < 0).concat(keepRemoves);
+      dom_default.putSticky(el, "classes", (currentEl) => {
+        currentEl.classList.remove(...newRemoves);
+        currentEl.classList.add(...newAdds);
+        return [newAdds, newRemoves];
+      });
+    });
+  },
+  setOrRemoveAttrs(el, sets, removes) {
+    let [prevSets, prevRemoves] = dom_default.getSticky(el, "attrs", [[], []]);
+    let alteredAttrs = sets.map(([attr, _val]) => attr).concat(removes);
+    let newSets = prevSets.filter(([attr, _val]) => !alteredAttrs.includes(attr)).concat(sets);
+    let newRemoves = prevRemoves.filter((attr) => !alteredAttrs.includes(attr)).concat(removes);
+    dom_default.putSticky(el, "attrs", (currentEl) => {
+      newRemoves.forEach((attr) => currentEl.removeAttribute(attr));
+      newSets.forEach(([attr, val]) => currentEl.setAttribute(attr, val));
+      return [newSets, newRemoves];
+    });
+  },
+  hasAllClasses(el, classes) {
+    return classes.every((name) => el.classList.contains(name));
+  },
+  isToggledOut(el, outClasses) {
+    return !this.isVisible(el) || this.hasAllClasses(el, outClasses);
+  },
+  filterToEls(sourceEl, { to }) {
+    return to ? dom_default.all(document, to) : [sourceEl];
+  },
+  defaultDisplay(el) {
+    return { tr: "table-row", td: "table-cell" }[el.tagName.toLowerCase()] || "block";
+  }
+};
+var js_default = JS;
+var DOM = {
+  byId(id) {
+    return document.getElementById(id) || logError(`no id found for ${id}`);
+  },
+  removeClass(el, className) {
+    el.classList.remove(className);
+    if (el.classList.length === 0) {
+      el.removeAttribute("class");
+    }
+  },
+  all(node, query, callback) {
+    if (!node) {
+      return [];
+    }
+    let array = Array.from(node.querySelectorAll(query));
+    return callback ? array.forEach(callback) : array;
+  },
+  childNodeLength(html) {
+    let template = document.createElement("template");
+    template.innerHTML = html;
+    return template.content.childElementCount;
+  },
+  isUploadInput(el) {
+    return el.type === "file" && el.getAttribute(PHX_UPLOAD_REF) !== null;
+  },
+  isAutoUpload(inputEl) {
+    return inputEl.hasAttribute("data-phx-auto-upload");
+  },
+  findUploadInputs(node) {
+    const formId = node.id;
+    const inputsOutsideForm = this.all(document, `input[type="file"][${PHX_UPLOAD_REF}][form="${formId}"]`);
+    return this.all(node, `input[type="file"][${PHX_UPLOAD_REF}]`).concat(inputsOutsideForm);
+  },
+  findComponentNodeList(node, cid) {
+    return this.filterWithinSameLiveView(this.all(node, `[${PHX_COMPONENT}="${cid}"]`), node);
+  },
+  isPhxDestroyed(node) {
+    return node.id && DOM.private(node, "destroyed") ? true : false;
+  },
+  wantsNewTab(e) {
+    let wantsNewTab = e.ctrlKey || e.shiftKey || e.metaKey || e.button && e.button === 1;
+    let isDownload = e.target instanceof HTMLAnchorElement && e.target.hasAttribute("download");
+    let isTargetBlank = e.target.hasAttribute("target") && e.target.getAttribute("target").toLowerCase() === "_blank";
+    return wantsNewTab || isTargetBlank || isDownload;
+  },
+  isUnloadableFormSubmit(e) {
+    let isDialogSubmit = e.target && e.target.getAttribute("method") === "dialog" || e.submitter && e.submitter.getAttribute("formmethod") === "dialog";
+    if (isDialogSubmit) {
+      return false;
+    } else {
+      return !e.defaultPrevented && !this.wantsNewTab(e);
+    }
+  },
+  isNewPageClick(e, currentLocation) {
+    let href = e.target instanceof HTMLAnchorElement ? e.target.getAttribute("href") : null;
+    let url;
+    if (e.defaultPrevented || href === null || this.wantsNewTab(e)) {
+      return false;
+    }
+    if (href.startsWith("mailto:") || href.startsWith("tel:")) {
+      return false;
+    }
+    if (e.target.isContentEditable) {
+      return false;
+    }
+    try {
+      url = new URL(href);
+    } catch (e2) {
+      try {
+        url = new URL(href, currentLocation);
+      } catch (e3) {
+        return true;
+      }
+    }
+    if (url.host === currentLocation.host && url.protocol === currentLocation.protocol) {
+      if (url.pathname === currentLocation.pathname && url.search === currentLocation.search) {
+        return url.hash === "" && !url.href.endsWith("#");
+      }
+    }
+    return url.protocol.startsWith("http");
+  },
+  markPhxChildDestroyed(el) {
+    if (this.isPhxChild(el)) {
+      el.setAttribute(PHX_SESSION, "");
+    }
+    this.putPrivate(el, "destroyed", true);
+  },
+  findPhxChildrenInFragment(html, parentId) {
+    let template = document.createElement("template");
+    template.innerHTML = html;
+    return this.findPhxChildren(template.content, parentId);
+  },
+  isIgnored(el, phxUpdate) {
+    return (el.getAttribute(phxUpdate) || el.getAttribute("data-phx-update")) === "ignore";
+  },
+  isPhxUpdate(el, phxUpdate, updateTypes) {
+    return el.getAttribute && updateTypes.indexOf(el.getAttribute(phxUpdate)) >= 0;
+  },
+  findPhxSticky(el) {
+    return this.all(el, `[${PHX_STICKY}]`);
+  },
+  findPhxChildren(el, parentId) {
+    return this.all(el, `${PHX_VIEW_SELECTOR}[${PHX_PARENT_ID}="${parentId}"]`);
+  },
+  findExistingParentCIDs(node, cids) {
+    let parentCids = new Set;
+    let childrenCids = new Set;
+    cids.forEach((cid) => {
+      this.filterWithinSameLiveView(this.all(node, `[${PHX_COMPONENT}="${cid}"]`), node).forEach((parent) => {
+        parentCids.add(cid);
+        this.all(parent, `[${PHX_COMPONENT}]`).map((el) => parseInt(el.getAttribute(PHX_COMPONENT))).forEach((childCID) => childrenCids.add(childCID));
+      });
+    });
+    childrenCids.forEach((childCid) => parentCids.delete(childCid));
+    return parentCids;
+  },
+  filterWithinSameLiveView(nodes, parent) {
+    if (parent.querySelector(PHX_VIEW_SELECTOR)) {
+      return nodes.filter((el) => this.withinSameLiveView(el, parent));
+    } else {
+      return nodes;
+    }
+  },
+  withinSameLiveView(node, parent) {
+    while (node = node.parentNode) {
+      if (node.isSameNode(parent)) {
+        return true;
+      }
+      if (node.getAttribute(PHX_SESSION) !== null) {
+        return false;
+      }
+    }
+  },
+  private(el, key) {
+    return el[PHX_PRIVATE] && el[PHX_PRIVATE][key];
+  },
+  deletePrivate(el, key) {
+    el[PHX_PRIVATE] && delete el[PHX_PRIVATE][key];
+  },
+  putPrivate(el, key, value) {
+    if (!el[PHX_PRIVATE]) {
+      el[PHX_PRIVATE] = {};
+    }
+    el[PHX_PRIVATE][key] = value;
+  },
+  updatePrivate(el, key, defaultVal, updateFunc) {
+    let existing = this.private(el, key);
+    if (existing === undefined) {
+      this.putPrivate(el, key, updateFunc(defaultVal));
+    } else {
+      this.putPrivate(el, key, updateFunc(existing));
+    }
+  },
+  copyPrivates(target, source) {
+    if (source[PHX_PRIVATE]) {
+      target[PHX_PRIVATE] = source[PHX_PRIVATE];
+    }
+  },
+  putTitle(str) {
+    let titleEl = document.querySelector("title");
+    if (titleEl) {
+      let { prefix, suffix } = titleEl.dataset;
+      document.title = `${prefix || ""}${str}${suffix || ""}`;
+    } else {
+      document.title = str;
+    }
+  },
+  debounce(el, event, phxDebounce, defaultDebounce, phxThrottle, defaultThrottle, asyncFilter, callback) {
+    let debounce = el.getAttribute(phxDebounce);
+    let throttle = el.getAttribute(phxThrottle);
+    if (debounce === "") {
+      debounce = defaultDebounce;
+    }
+    if (throttle === "") {
+      throttle = defaultThrottle;
+    }
+    let value = debounce || throttle;
+    switch (value) {
+      case null:
+        return callback();
+      case "blur":
+        if (this.once(el, "debounce-blur")) {
+          el.addEventListener("blur", () => callback());
+        }
+        return;
+      default:
+        let timeout = parseInt(value);
+        let trigger = () => throttle ? this.deletePrivate(el, THROTTLED) : callback();
+        let currentCycle = this.incCycle(el, DEBOUNCE_TRIGGER, trigger);
+        if (isNaN(timeout)) {
+          return logError(`invalid throttle/debounce value: ${value}`);
+        }
+        if (throttle) {
+          let newKeyDown = false;
+          if (event.type === "keydown") {
+            let prevKey = this.private(el, DEBOUNCE_PREV_KEY);
+            this.putPrivate(el, DEBOUNCE_PREV_KEY, event.key);
+            newKeyDown = prevKey !== event.key;
+          }
+          if (!newKeyDown && this.private(el, THROTTLED)) {
+            return false;
+          } else {
+            callback();
+            const t = setTimeout(() => {
+              if (asyncFilter()) {
+                this.triggerCycle(el, DEBOUNCE_TRIGGER);
+              }
+            }, timeout);
+            this.putPrivate(el, THROTTLED, t);
+          }
+        } else {
+          setTimeout(() => {
+            if (asyncFilter()) {
+              this.triggerCycle(el, DEBOUNCE_TRIGGER, currentCycle);
+            }
+          }, timeout);
+        }
+        let form = el.form;
+        if (form && this.once(form, "bind-debounce")) {
+          form.addEventListener("submit", () => {
+            Array.from(new FormData(form).entries(), ([name]) => {
+              let input = form.querySelector(`[name="${name}"]`);
+              this.incCycle(input, DEBOUNCE_TRIGGER);
+              this.deletePrivate(input, THROTTLED);
+            });
+          });
+        }
+        if (this.once(el, "bind-debounce")) {
+          el.addEventListener("blur", () => {
+            clearTimeout(this.private(el, THROTTLED));
+            this.triggerCycle(el, DEBOUNCE_TRIGGER);
+          });
+        }
+    }
+  },
+  triggerCycle(el, key, currentCycle) {
+    let [cycle, trigger] = this.private(el, key);
+    if (!currentCycle) {
+      currentCycle = cycle;
+    }
+    if (currentCycle === cycle) {
+      this.incCycle(el, key);
+      trigger();
+    }
+  },
+  once(el, key) {
+    if (this.private(el, key) === true) {
+      return false;
+    }
+    this.putPrivate(el, key, true);
+    return true;
+  },
+  incCycle(el, key, trigger = function() {
+  }) {
+    let [currentCycle] = this.private(el, key) || [0, trigger];
+    currentCycle++;
+    this.putPrivate(el, key, [currentCycle, trigger]);
+    return currentCycle;
+  },
+  maybeAddPrivateHooks(el, phxViewportTop, phxViewportBottom) {
+    if (el.hasAttribute && (el.hasAttribute(phxViewportTop) || el.hasAttribute(phxViewportBottom))) {
+      el.setAttribute("data-phx-hook", "Phoenix.InfiniteScroll");
+    }
+  },
+  isFeedbackContainer(el, phxFeedbackFor) {
+    return el.hasAttribute && el.hasAttribute(phxFeedbackFor);
+  },
+  maybeHideFeedback(container, feedbackContainers, phxFeedbackFor, phxFeedbackGroup) {
+    const feedbackResults = {};
+    feedbackContainers.forEach((el) => {
+      if (!container.contains(el))
+        return;
+      const feedback = el.getAttribute(phxFeedbackFor);
+      if (!feedback) {
+        js_default.addOrRemoveClasses(el, [], [PHX_NO_FEEDBACK_CLASS]);
+        return;
+      }
+      if (feedbackResults[feedback] === true) {
+        this.hideFeedback(el);
+        return;
+      }
+      feedbackResults[feedback] = this.shouldHideFeedback(container, feedback, phxFeedbackGroup);
+      if (feedbackResults[feedback] === true) {
+        this.hideFeedback(el);
+      }
+    });
+  },
+  hideFeedback(container) {
+    js_default.addOrRemoveClasses(container, [PHX_NO_FEEDBACK_CLASS], []);
+  },
+  shouldHideFeedback(container, nameOrGroup, phxFeedbackGroup) {
+    const query = `[name="${nameOrGroup}"],
+                   [name="${nameOrGroup}[]"],
+                   [${phxFeedbackGroup}="${nameOrGroup}"]`;
+    let focused = false;
+    DOM.all(container, query, (input) => {
+      if (this.private(input, PHX_HAS_FOCUSED) || this.private(input, PHX_HAS_SUBMITTED)) {
+        focused = true;
+      }
+    });
+    return !focused;
+  },
+  feedbackSelector(input, phxFeedbackFor, phxFeedbackGroup) {
+    let query = `[${phxFeedbackFor}="${input.name}"],
+                 [${phxFeedbackFor}="${input.name.replace(/\[\]$/, "")}"]`;
+    if (input.getAttribute(phxFeedbackGroup)) {
+      query += `,[${phxFeedbackFor}="${input.getAttribute(phxFeedbackGroup)}"]`;
+    }
+    return query;
+  },
+  resetForm(form, phxFeedbackFor, phxFeedbackGroup) {
+    Array.from(form.elements).forEach((input) => {
+      let query = this.feedbackSelector(input, phxFeedbackFor, phxFeedbackGroup);
+      this.deletePrivate(input, PHX_HAS_FOCUSED);
+      this.deletePrivate(input, PHX_HAS_SUBMITTED);
+      this.all(document, query, (feedbackEl) => {
+        js_default.addOrRemoveClasses(feedbackEl, [PHX_NO_FEEDBACK_CLASS], []);
+      });
+    });
+  },
+  showError(inputEl, phxFeedbackFor, phxFeedbackGroup) {
+    if (inputEl.name) {
+      let query = this.feedbackSelector(inputEl, phxFeedbackFor, phxFeedbackGroup);
+      this.all(document, query, (el) => {
+        js_default.addOrRemoveClasses(el, [], [PHX_NO_FEEDBACK_CLASS]);
+      });
+    }
+  },
+  isPhxChild(node) {
+    return node.getAttribute && node.getAttribute(PHX_PARENT_ID);
+  },
+  isPhxSticky(node) {
+    return node.getAttribute && node.getAttribute(PHX_STICKY) !== null;
+  },
+  isChildOfAny(el, parents) {
+    return !!parents.find((parent) => parent.contains(el));
+  },
+  firstPhxChild(el) {
+    return this.isPhxChild(el) ? el : this.all(el, `[${PHX_PARENT_ID}]`)[0];
+  },
+  dispatchEvent(target, name, opts = {}) {
+    let defaultBubble = true;
+    let isUploadTarget = target.nodeName === "INPUT" && target.type === "file";
+    if (isUploadTarget && name === "click") {
+      defaultBubble = false;
+    }
+    let bubbles = opts.bubbles === undefined ? defaultBubble : !!opts.bubbles;
+    let eventOpts = { bubbles, cancelable: true, detail: opts.detail || {} };
+    let event = name === "click" ? new MouseEvent("click", eventOpts) : new CustomEvent(name, eventOpts);
+    target.dispatchEvent(event);
+  },
+  cloneNode(node, html) {
+    if (typeof html === "undefined") {
+      return node.cloneNode(true);
+    } else {
+      let cloned = node.cloneNode(false);
+      cloned.innerHTML = html;
+      return cloned;
+    }
+  },
+  mergeAttrs(target, source, opts = {}) {
+    let exclude = new Set(opts.exclude || []);
+    let isIgnored = opts.isIgnored;
+    let sourceAttrs = source.attributes;
+    for (let i = sourceAttrs.length - 1;i >= 0; i--) {
+      let name = sourceAttrs[i].name;
+      if (!exclude.has(name)) {
+        const sourceValue = source.getAttribute(name);
+        if (target.getAttribute(name) !== sourceValue && (!isIgnored || isIgnored && name.startsWith("data-"))) {
+          target.setAttribute(name, sourceValue);
+        }
+      } else {
+        if (name === "value" && target.value === source.value) {
+          target.setAttribute("value", source.getAttribute(name));
+        }
+      }
+    }
+    let targetAttrs = target.attributes;
+    for (let i = targetAttrs.length - 1;i >= 0; i--) {
+      let name = targetAttrs[i].name;
+      if (isIgnored) {
+        if (name.startsWith("data-") && !source.hasAttribute(name) && ![PHX_REF, PHX_REF_SRC].includes(name)) {
+          target.removeAttribute(name);
+        }
+      } else {
+        if (!source.hasAttribute(name)) {
+          target.removeAttribute(name);
+        }
+      }
+    }
+  },
+  mergeFocusedInput(target, source) {
+    if (!(target instanceof HTMLSelectElement)) {
+      DOM.mergeAttrs(target, source, { exclude: ["value"] });
+    }
+    if (source.readOnly) {
+      target.setAttribute("readonly", true);
+    } else {
+      target.removeAttribute("readonly");
+    }
+  },
+  hasSelectionRange(el) {
+    return el.setSelectionRange && (el.type === "text" || el.type === "textarea");
+  },
+  restoreFocus(focused, selectionStart, selectionEnd) {
+    if (focused instanceof HTMLSelectElement) {
+      focused.focus();
+    }
+    if (!DOM.isTextualInput(focused)) {
+      return;
+    }
+    let wasFocused = focused.matches(":focus");
+    if (focused.readOnly) {
+      focused.blur();
+    }
+    if (!wasFocused) {
+      focused.focus();
+    }
+    if (this.hasSelectionRange(focused)) {
+      focused.setSelectionRange(selectionStart, selectionEnd);
+    }
+  },
+  isFormInput(el) {
+    return /^(?:input|select|textarea)$/i.test(el.tagName) && el.type !== "button";
+  },
+  syncAttrsToProps(el) {
+    if (el instanceof HTMLInputElement && CHECKABLE_INPUTS.indexOf(el.type.toLocaleLowerCase()) >= 0) {
+      el.checked = el.getAttribute("checked") !== null;
+    }
+  },
+  isTextualInput(el) {
+    return FOCUSABLE_INPUTS.indexOf(el.type) >= 0;
+  },
+  isNowTriggerFormExternal(el, phxTriggerExternal) {
+    return el.getAttribute && el.getAttribute(phxTriggerExternal) !== null;
+  },
+  syncPendingRef(fromEl, toEl, disableWith) {
+    let ref = fromEl.getAttribute(PHX_REF);
+    if (ref === null) {
+      return true;
+    }
+    let refSrc = fromEl.getAttribute(PHX_REF_SRC);
+    if (DOM.isFormInput(fromEl) || fromEl.getAttribute(disableWith) !== null) {
+      if (DOM.isUploadInput(fromEl)) {
+        DOM.mergeAttrs(fromEl, toEl, { isIgnored: true });
+      }
+      DOM.putPrivate(fromEl, PHX_REF, toEl);
+      return false;
+    } else {
+      PHX_EVENT_CLASSES.forEach((className) => {
+        fromEl.classList.contains(className) && toEl.classList.add(className);
+      });
+      toEl.setAttribute(PHX_REF, ref);
+      toEl.setAttribute(PHX_REF_SRC, refSrc);
+      return true;
+    }
+  },
+  cleanChildNodes(container, phxUpdate) {
+    if (DOM.isPhxUpdate(container, phxUpdate, ["append", "prepend"])) {
+      let toRemove = [];
+      container.childNodes.forEach((childNode) => {
+        if (!childNode.id) {
+          let isEmptyTextNode = childNode.nodeType === Node.TEXT_NODE && childNode.nodeValue.trim() === "";
+          if (!isEmptyTextNode) {
+            logError(`only HTML element tags with an id are allowed inside containers with phx-update.
+
+removing illegal node: "${(childNode.outerHTML || childNode.nodeValue).trim()}"
+
+`);
+          }
+          toRemove.push(childNode);
+        }
+      });
+      toRemove.forEach((childNode) => childNode.remove());
+    }
+  },
+  replaceRootContainer(container, tagName, attrs) {
+    let retainedAttrs = new Set(["id", PHX_SESSION, PHX_STATIC, PHX_MAIN, PHX_ROOT_ID]);
+    if (container.tagName.toLowerCase() === tagName.toLowerCase()) {
+      Array.from(container.attributes).filter((attr) => !retainedAttrs.has(attr.name.toLowerCase())).forEach((attr) => container.removeAttribute(attr.name));
+      Object.keys(attrs).filter((name) => !retainedAttrs.has(name.toLowerCase())).forEach((attr) => container.setAttribute(attr, attrs[attr]));
+      return container;
+    } else {
+      let newContainer = document.createElement(tagName);
+      Object.keys(attrs).forEach((attr) => newContainer.setAttribute(attr, attrs[attr]));
+      retainedAttrs.forEach((attr) => newContainer.setAttribute(attr, container.getAttribute(attr)));
+      newContainer.innerHTML = container.innerHTML;
+      container.replaceWith(newContainer);
+      return newContainer;
+    }
+  },
+  getSticky(el, name, defaultVal) {
+    let op = (DOM.private(el, "sticky") || []).find(([existingName]) => name === existingName);
+    if (op) {
+      let [_name, _op, stashedResult] = op;
+      return stashedResult;
+    } else {
+      return typeof defaultVal === "function" ? defaultVal() : defaultVal;
+    }
+  },
+  deleteSticky(el, name) {
+    this.updatePrivate(el, "sticky", [], (ops) => {
+      return ops.filter(([existingName, _]) => existingName !== name);
+    });
+  },
+  putSticky(el, name, op) {
+    let stashedResult = op(el);
+    this.updatePrivate(el, "sticky", [], (ops) => {
+      let existingIndex = ops.findIndex(([existingName]) => name === existingName);
+      if (existingIndex >= 0) {
+        ops[existingIndex] = [name, op, stashedResult];
+      } else {
+        ops.push([name, op, stashedResult]);
+      }
+      return ops;
+    });
+  },
+  applyStickyOperations(el) {
+    let ops = DOM.private(el, "sticky");
+    if (!ops) {
+      return;
+    }
+    ops.forEach(([name, op, _stashed]) => this.putSticky(el, name, op));
+  }
+};
+var dom_default = DOM;
+var UploadEntry = class {
+  static isActive(fileEl, file) {
+    let isNew = file._phxRef === undefined;
+    let activeRefs = fileEl.getAttribute(PHX_ACTIVE_ENTRY_REFS).split(",");
+    let isActive = activeRefs.indexOf(LiveUploader.genFileRef(file)) >= 0;
+    return file.size > 0 && (isNew || isActive);
+  }
+  static isPreflighted(fileEl, file) {
+    let preflightedRefs = fileEl.getAttribute(PHX_PREFLIGHTED_REFS).split(",");
+    let isPreflighted = preflightedRefs.indexOf(LiveUploader.genFileRef(file)) >= 0;
+    return isPreflighted && this.isActive(fileEl, file);
+  }
+  static isPreflightInProgress(file) {
+    return file._preflightInProgress === true;
+  }
+  static markPreflightInProgress(file) {
+    file._preflightInProgress = true;
+  }
+  constructor(fileEl, file, view, autoUpload) {
+    this.ref = LiveUploader.genFileRef(file);
+    this.fileEl = fileEl;
+    this.file = file;
+    this.view = view;
+    this.meta = null;
+    this._isCancelled = false;
+    this._isDone = false;
+    this._progress = 0;
+    this._lastProgressSent = -1;
+    this._onDone = function() {
+    };
+    this._onElUpdated = this.onElUpdated.bind(this);
+    this.fileEl.addEventListener(PHX_LIVE_FILE_UPDATED, this._onElUpdated);
+    this.autoUpload = autoUpload;
+  }
+  metadata() {
+    return this.meta;
+  }
+  progress(progress) {
+    this._progress = Math.floor(progress);
+    if (this._progress > this._lastProgressSent) {
+      if (this._progress >= 100) {
+        this._progress = 100;
+        this._lastProgressSent = 100;
+        this._isDone = true;
+        this.view.pushFileProgress(this.fileEl, this.ref, 100, () => {
+          LiveUploader.untrackFile(this.fileEl, this.file);
+          this._onDone();
+        });
+      } else {
+        this._lastProgressSent = this._progress;
+        this.view.pushFileProgress(this.fileEl, this.ref, this._progress);
+      }
+    }
+  }
+  isCancelled() {
+    return this._isCancelled;
+  }
+  cancel() {
+    this.file._preflightInProgress = false;
+    this._isCancelled = true;
+    this._isDone = true;
+    this._onDone();
+  }
+  isDone() {
+    return this._isDone;
+  }
+  error(reason = "failed") {
+    this.fileEl.removeEventListener(PHX_LIVE_FILE_UPDATED, this._onElUpdated);
+    this.view.pushFileProgress(this.fileEl, this.ref, { error: reason });
+    if (!this.isAutoUpload()) {
+      LiveUploader.clearFiles(this.fileEl);
+    }
+  }
+  isAutoUpload() {
+    return this.autoUpload;
+  }
+  onDone(callback) {
+    this._onDone = () => {
+      this.fileEl.removeEventListener(PHX_LIVE_FILE_UPDATED, this._onElUpdated);
+      callback();
+    };
+  }
+  onElUpdated() {
+    let activeRefs = this.fileEl.getAttribute(PHX_ACTIVE_ENTRY_REFS).split(",");
+    if (activeRefs.indexOf(this.ref) === -1) {
+      LiveUploader.untrackFile(this.fileEl, this.file);
+      this.cancel();
+    }
+  }
+  toPreflightPayload() {
+    return {
+      last_modified: this.file.lastModified,
+      name: this.file.name,
+      relative_path: this.file.webkitRelativePath,
+      size: this.file.size,
+      type: this.file.type,
+      ref: this.ref,
+      meta: typeof this.file.meta === "function" ? this.file.meta() : undefined
+    };
+  }
+  uploader(uploaders) {
+    if (this.meta.uploader) {
+      let callback = uploaders[this.meta.uploader] || logError(`no uploader configured for ${this.meta.uploader}`);
+      return { name: this.meta.uploader, callback };
+    } else {
+      return { name: "channel", callback: channelUploader };
+    }
+  }
+  zipPostFlight(resp) {
+    this.meta = resp.entries[this.ref];
+    if (!this.meta) {
+      logError(`no preflight upload response returned with ref ${this.ref}`, { input: this.fileEl, response: resp });
+    }
+  }
+};
+var liveUploaderFileRef = 0;
+var LiveUploader = class {
+  static genFileRef(file) {
+    let ref = file._phxRef;
+    if (ref !== undefined) {
+      return ref;
+    } else {
+      file._phxRef = (liveUploaderFileRef++).toString();
+      return file._phxRef;
+    }
+  }
+  static getEntryDataURL(inputEl, ref, callback) {
+    let file = this.activeFiles(inputEl).find((file2) => this.genFileRef(file2) === ref);
+    callback(URL.createObjectURL(file));
+  }
+  static hasUploadsInProgress(formEl) {
+    let active = 0;
+    dom_default.findUploadInputs(formEl).forEach((input) => {
+      if (input.getAttribute(PHX_PREFLIGHTED_REFS) !== input.getAttribute(PHX_DONE_REFS)) {
+        active++;
+      }
+    });
+    return active > 0;
+  }
+  static serializeUploads(inputEl) {
+    let files = this.activeFiles(inputEl);
+    let fileData = {};
+    files.forEach((file) => {
+      let entry = { path: inputEl.name };
+      let uploadRef = inputEl.getAttribute(PHX_UPLOAD_REF);
+      fileData[uploadRef] = fileData[uploadRef] || [];
+      entry.ref = this.genFileRef(file);
+      entry.last_modified = file.lastModified;
+      entry.name = file.name || entry.ref;
+      entry.relative_path = file.webkitRelativePath;
+      entry.type = file.type;
+      entry.size = file.size;
+      if (typeof file.meta === "function") {
+        entry.meta = file.meta();
+      }
+      fileData[uploadRef].push(entry);
+    });
+    return fileData;
+  }
+  static clearFiles(inputEl) {
+    inputEl.value = null;
+    inputEl.removeAttribute(PHX_UPLOAD_REF);
+    dom_default.putPrivate(inputEl, "files", []);
+  }
+  static untrackFile(inputEl, file) {
+    dom_default.putPrivate(inputEl, "files", dom_default.private(inputEl, "files").filter((f) => !Object.is(f, file)));
+  }
+  static trackFiles(inputEl, files, dataTransfer) {
+    if (inputEl.getAttribute("multiple") !== null) {
+      let newFiles = files.filter((file) => !this.activeFiles(inputEl).find((f) => Object.is(f, file)));
+      dom_default.updatePrivate(inputEl, "files", [], (existing) => existing.concat(newFiles));
+      inputEl.value = null;
+    } else {
+      if (dataTransfer && dataTransfer.files.length > 0) {
+        inputEl.files = dataTransfer.files;
+      }
+      dom_default.putPrivate(inputEl, "files", files);
+    }
+  }
+  static activeFileInputs(formEl) {
+    let fileInputs = dom_default.findUploadInputs(formEl);
+    return Array.from(fileInputs).filter((el) => el.files && this.activeFiles(el).length > 0);
+  }
+  static activeFiles(input) {
+    return (dom_default.private(input, "files") || []).filter((f) => UploadEntry.isActive(input, f));
+  }
+  static inputsAwaitingPreflight(formEl) {
+    let fileInputs = dom_default.findUploadInputs(formEl);
+    return Array.from(fileInputs).filter((input) => this.filesAwaitingPreflight(input).length > 0);
+  }
+  static filesAwaitingPreflight(input) {
+    return this.activeFiles(input).filter((f) => !UploadEntry.isPreflighted(input, f) && !UploadEntry.isPreflightInProgress(f));
+  }
+  static markPreflightInProgress(entries) {
+    entries.forEach((entry) => UploadEntry.markPreflightInProgress(entry.file));
+  }
+  constructor(inputEl, view, onComplete) {
+    this.autoUpload = dom_default.isAutoUpload(inputEl);
+    this.view = view;
+    this.onComplete = onComplete;
+    this._entries = Array.from(LiveUploader.filesAwaitingPreflight(inputEl) || []).map((file) => new UploadEntry(inputEl, file, view, this.autoUpload));
+    LiveUploader.markPreflightInProgress(this._entries);
+    this.numEntriesInProgress = this._entries.length;
+  }
+  isAutoUpload() {
+    return this.autoUpload;
+  }
+  entries() {
+    return this._entries;
+  }
+  initAdapterUpload(resp, onError, liveSocket) {
+    this._entries = this._entries.map((entry) => {
+      if (entry.isCancelled()) {
+        this.numEntriesInProgress--;
+        if (this.numEntriesInProgress === 0) {
+          this.onComplete();
+        }
+      } else {
+        entry.zipPostFlight(resp);
+        entry.onDone(() => {
+          this.numEntriesInProgress--;
+          if (this.numEntriesInProgress === 0) {
+            this.onComplete();
+          }
+        });
+      }
+      return entry;
+    });
+    let groupedEntries = this._entries.reduce((acc, entry) => {
+      if (!entry.meta) {
+        return acc;
+      }
+      let { name, callback } = entry.uploader(liveSocket.uploaders);
+      acc[name] = acc[name] || { callback, entries: [] };
+      acc[name].entries.push(entry);
+      return acc;
+    }, {});
+    for (let name in groupedEntries) {
+      let { callback, entries } = groupedEntries[name];
+      callback(entries, onError, resp, liveSocket);
+    }
+  }
+};
+var Hooks = {
+  LiveFileUpload: {
+    activeRefs() {
+      return this.el.getAttribute(PHX_ACTIVE_ENTRY_REFS);
+    },
+    preflightedRefs() {
+      return this.el.getAttribute(PHX_PREFLIGHTED_REFS);
+    },
+    mounted() {
+      this.preflightedWas = this.preflightedRefs();
+    },
+    updated() {
+      let newPreflights = this.preflightedRefs();
+      if (this.preflightedWas !== newPreflights) {
+        this.preflightedWas = newPreflights;
+        if (newPreflights === "") {
+          this.__view.cancelSubmit(this.el.form);
+        }
+      }
+      if (this.activeRefs() === "") {
+        this.el.value = null;
+      }
+      this.el.dispatchEvent(new CustomEvent(PHX_LIVE_FILE_UPDATED));
+    }
+  },
+  LiveImgPreview: {
+    mounted() {
+      this.ref = this.el.getAttribute("data-phx-entry-ref");
+      this.inputEl = document.getElementById(this.el.getAttribute(PHX_UPLOAD_REF));
+      LiveUploader.getEntryDataURL(this.inputEl, this.ref, (url) => {
+        this.url = url;
+        this.el.src = url;
+      });
+    },
+    destroyed() {
+      URL.revokeObjectURL(this.url);
+    }
+  },
+  FocusWrap: {
+    mounted() {
+      this.focusStart = this.el.firstElementChild;
+      this.focusEnd = this.el.lastElementChild;
+      this.focusStart.addEventListener("focus", () => aria_default.focusLast(this.el));
+      this.focusEnd.addEventListener("focus", () => aria_default.focusFirst(this.el));
+      this.el.addEventListener("phx:show-end", () => this.el.focus());
+      if (window.getComputedStyle(this.el).display !== "none") {
+        aria_default.focusFirst(this.el);
+      }
+    }
+  }
+};
+var findScrollContainer = (el) => {
+  if (["scroll", "auto"].indexOf(getComputedStyle(el).overflowY) >= 0)
+    return el;
+  if (document.documentElement === el)
+    return null;
+  return findScrollContainer(el.parentElement);
+};
+var scrollTop = (scrollContainer) => {
+  if (scrollContainer) {
+    return scrollContainer.scrollTop;
+  } else {
+    return document.documentElement.scrollTop || document.body.scrollTop;
+  }
+};
+var bottom = (scrollContainer) => {
+  if (scrollContainer) {
+    return scrollContainer.getBoundingClientRect().bottom;
+  } else {
+    return window.innerHeight || document.documentElement.clientHeight;
+  }
+};
+var top = (scrollContainer) => {
+  if (scrollContainer) {
+    return scrollContainer.getBoundingClientRect().top;
+  } else {
+    return 0;
+  }
+};
+var isAtViewportTop = (el, scrollContainer) => {
+  let rect = el.getBoundingClientRect();
+  return rect.top >= top(scrollContainer) && rect.left >= 0 && rect.top <= bottom(scrollContainer);
+};
+var isAtViewportBottom = (el, scrollContainer) => {
+  let rect = el.getBoundingClientRect();
+  return rect.right >= top(scrollContainer) && rect.left >= 0 && rect.bottom <= bottom(scrollContainer);
+};
+var isWithinViewport = (el, scrollContainer) => {
+  let rect = el.getBoundingClientRect();
+  return rect.top >= top(scrollContainer) && rect.left >= 0 && rect.top <= bottom(scrollContainer);
+};
+Hooks.InfiniteScroll = {
+  mounted() {
+    this.scrollContainer = findScrollContainer(this.el);
+    let scrollBefore = scrollTop(this.scrollContainer);
+    let topOverran = false;
+    let throttleInterval = 500;
+    let pendingOp = null;
+    let onTopOverrun = this.throttle(throttleInterval, (topEvent, firstChild) => {
+      pendingOp = () => true;
+      this.liveSocket.execJSHookPush(this.el, topEvent, { id: firstChild.id, _overran: true }, () => {
+        pendingOp = null;
+      });
+    });
+    let onFirstChildAtTop = this.throttle(throttleInterval, (topEvent, firstChild) => {
+      pendingOp = () => firstChild.scrollIntoView({ block: "start" });
+      this.liveSocket.execJSHookPush(this.el, topEvent, { id: firstChild.id }, () => {
+        pendingOp = null;
+        window.requestAnimationFrame(() => {
+          if (!isWithinViewport(firstChild, this.scrollContainer)) {
+            firstChild.scrollIntoView({ block: "start" });
+          }
+        });
+      });
+    });
+    let onLastChildAtBottom = this.throttle(throttleInterval, (bottomEvent, lastChild) => {
+      pendingOp = () => lastChild.scrollIntoView({ block: "end" });
+      this.liveSocket.execJSHookPush(this.el, bottomEvent, { id: lastChild.id }, () => {
+        pendingOp = null;
+        window.requestAnimationFrame(() => {
+          if (!isWithinViewport(lastChild, this.scrollContainer)) {
+            lastChild.scrollIntoView({ block: "end" });
+          }
+        });
+      });
+    });
+    this.onScroll = (_e) => {
+      let scrollNow = scrollTop(this.scrollContainer);
+      if (pendingOp) {
+        scrollBefore = scrollNow;
+        return pendingOp();
+      }
+      let rect = this.el.getBoundingClientRect();
+      let topEvent = this.el.getAttribute(this.liveSocket.binding("viewport-top"));
+      let bottomEvent = this.el.getAttribute(this.liveSocket.binding("viewport-bottom"));
+      let lastChild = this.el.lastElementChild;
+      let firstChild = this.el.firstElementChild;
+      let isScrollingUp = scrollNow < scrollBefore;
+      let isScrollingDown = scrollNow > scrollBefore;
+      if (isScrollingUp && topEvent && !topOverran && rect.top >= 0) {
+        topOverran = true;
+        onTopOverrun(topEvent, firstChild);
+      } else if (isScrollingDown && topOverran && rect.top <= 0) {
+        topOverran = false;
+      }
+      if (topEvent && isScrollingUp && isAtViewportTop(firstChild, this.scrollContainer)) {
+        onFirstChildAtTop(topEvent, firstChild);
+      } else if (bottomEvent && isScrollingDown && isAtViewportBottom(lastChild, this.scrollContainer)) {
+        onLastChildAtBottom(bottomEvent, lastChild);
+      }
+      scrollBefore = scrollNow;
+    };
+    if (this.scrollContainer) {
+      this.scrollContainer.addEventListener("scroll", this.onScroll);
+    } else {
+      window.addEventListener("scroll", this.onScroll);
+    }
+  },
+  destroyed() {
+    if (this.scrollContainer) {
+      this.scrollContainer.removeEventListener("scroll", this.onScroll);
+    } else {
+      window.removeEventListener("scroll", this.onScroll);
+    }
+  },
+  throttle(interval, callback) {
+    let lastCallAt = 0;
+    let timer;
+    return (...args) => {
+      let now = Date.now();
+      let remainingTime = interval - (now - lastCallAt);
+      if (remainingTime <= 0 || remainingTime > interval) {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        lastCallAt = now;
+        callback(...args);
+      } else if (!timer) {
+        timer = setTimeout(() => {
+          lastCallAt = Date.now();
+          timer = null;
+          callback(...args);
+        }, remainingTime);
+      }
+    };
+  }
+};
+var hooks_default = Hooks;
+var DOMPostMorphRestorer = class {
+  constructor(containerBefore, containerAfter, updateType) {
+    let idsBefore = new Set;
+    let idsAfter = new Set([...containerAfter.children].map((child) => child.id));
+    let elementsToModify = [];
+    Array.from(containerBefore.children).forEach((child) => {
+      if (child.id) {
+        idsBefore.add(child.id);
+        if (idsAfter.has(child.id)) {
+          let previousElementId = child.previousElementSibling && child.previousElementSibling.id;
+          elementsToModify.push({ elementId: child.id, previousElementId });
+        }
+      }
+    });
+    this.containerId = containerAfter.id;
+    this.updateType = updateType;
+    this.elementsToModify = elementsToModify;
+    this.elementIdsToAdd = [...idsAfter].filter((id) => !idsBefore.has(id));
+  }
+  perform() {
+    let container = dom_default.byId(this.containerId);
+    this.elementsToModify.forEach((elementToModify) => {
+      if (elementToModify.previousElementId) {
+        maybe(document.getElementById(elementToModify.previousElementId), (previousElem) => {
+          maybe(document.getElementById(elementToModify.elementId), (elem) => {
+            let isInRightPlace = elem.previousElementSibling && elem.previousElementSibling.id == previousElem.id;
+            if (!isInRightPlace) {
+              previousElem.insertAdjacentElement("afterend", elem);
+            }
+          });
+        });
+      } else {
+        maybe(document.getElementById(elementToModify.elementId), (elem) => {
+          let isInRightPlace = elem.previousElementSibling == null;
+          if (!isInRightPlace) {
+            container.insertAdjacentElement("afterbegin", elem);
+          }
+        });
+      }
+    });
+    if (this.updateType == "prepend") {
+      this.elementIdsToAdd.reverse().forEach((elemId) => {
+        maybe(document.getElementById(elemId), (elem) => container.insertAdjacentElement("afterbegin", elem));
+      });
+    }
+  }
+};
+var DOCUMENT_FRAGMENT_NODE = 11;
+var range;
+var NS_XHTML = "http://www.w3.org/1999/xhtml";
+var doc = typeof document === "undefined" ? undefined : document;
+var HAS_TEMPLATE_SUPPORT = !!doc && "content" in doc.createElement("template");
+var HAS_RANGE_SUPPORT = !!doc && doc.createRange && "createContextualFragment" in doc.createRange();
+var specialElHandlers = {
+  OPTION: function(fromEl, toEl) {
+    var parentNode = fromEl.parentNode;
+    if (parentNode) {
+      var parentName = parentNode.nodeName.toUpperCase();
+      if (parentName === "OPTGROUP") {
+        parentNode = parentNode.parentNode;
+        parentName = parentNode && parentNode.nodeName.toUpperCase();
+      }
+      if (parentName === "SELECT" && !parentNode.hasAttribute("multiple")) {
+        if (fromEl.hasAttribute("selected") && !toEl.selected) {
+          fromEl.setAttribute("selected", "selected");
+          fromEl.removeAttribute("selected");
+        }
+        parentNode.selectedIndex = -1;
+      }
+    }
+    syncBooleanAttrProp(fromEl, toEl, "selected");
+  },
+  INPUT: function(fromEl, toEl) {
+    syncBooleanAttrProp(fromEl, toEl, "checked");
+    syncBooleanAttrProp(fromEl, toEl, "disabled");
+    if (fromEl.value !== toEl.value) {
+      fromEl.value = toEl.value;
+    }
+    if (!toEl.hasAttribute("value")) {
+      fromEl.removeAttribute("value");
+    }
+  },
+  TEXTAREA: function(fromEl, toEl) {
+    var newValue = toEl.value;
+    if (fromEl.value !== newValue) {
+      fromEl.value = newValue;
+    }
+    var firstChild = fromEl.firstChild;
+    if (firstChild) {
+      var oldValue = firstChild.nodeValue;
+      if (oldValue == newValue || !newValue && oldValue == fromEl.placeholder) {
+        return;
+      }
+      firstChild.nodeValue = newValue;
+    }
+  },
+  SELECT: function(fromEl, toEl) {
+    if (!toEl.hasAttribute("multiple")) {
+      var selectedIndex = -1;
+      var i = 0;
+      var curChild = fromEl.firstChild;
+      var optgroup;
+      var nodeName;
+      while (curChild) {
+        nodeName = curChild.nodeName && curChild.nodeName.toUpperCase();
+        if (nodeName === "OPTGROUP") {
+          optgroup = curChild;
+          curChild = optgroup.firstChild;
+        } else {
+          if (nodeName === "OPTION") {
+            if (curChild.hasAttribute("selected")) {
+              selectedIndex = i;
+              break;
+            }
+            i++;
+          }
+          curChild = curChild.nextSibling;
+          if (!curChild && optgroup) {
+            curChild = optgroup.nextSibling;
+            optgroup = null;
+          }
+        }
+      }
+      fromEl.selectedIndex = selectedIndex;
+    }
+  }
+};
+var ELEMENT_NODE = 1;
+var DOCUMENT_FRAGMENT_NODE$1 = 11;
+var TEXT_NODE = 3;
+var COMMENT_NODE = 8;
+var morphdom = morphdomFactory(morphAttrs);
+var morphdom_esm_default = morphdom;
+var DOMPatch = class {
+  static patchEl(fromEl, toEl, activeElement) {
+    morphdom_esm_default(fromEl, toEl, {
+      childrenOnly: false,
+      onBeforeElUpdated: (fromEl2, toEl2) => {
+        if (activeElement && activeElement.isSameNode(fromEl2) && dom_default.isFormInput(fromEl2)) {
+          dom_default.mergeFocusedInput(fromEl2, toEl2);
+          return false;
+        }
+      }
+    });
+  }
+  constructor(view, container, id, html, streams, targetCID) {
+    this.view = view;
+    this.liveSocket = view.liveSocket;
+    this.container = container;
+    this.id = id;
+    this.rootID = view.root.id;
+    this.html = html;
+    this.streams = streams;
+    this.streamInserts = {};
+    this.streamComponentRestore = {};
+    this.targetCID = targetCID;
+    this.cidPatch = isCid(this.targetCID);
+    this.pendingRemoves = [];
+    this.phxRemove = this.liveSocket.binding("remove");
+    this.callbacks = {
+      beforeadded: [],
+      beforeupdated: [],
+      beforephxChildAdded: [],
+      afteradded: [],
+      afterupdated: [],
+      afterdiscarded: [],
+      afterphxChildAdded: [],
+      aftertransitionsDiscarded: []
+    };
+  }
+  before(kind, callback) {
+    this.callbacks[`before${kind}`].push(callback);
+  }
+  after(kind, callback) {
+    this.callbacks[`after${kind}`].push(callback);
+  }
+  trackBefore(kind, ...args) {
+    this.callbacks[`before${kind}`].forEach((callback) => callback(...args));
+  }
+  trackAfter(kind, ...args) {
+    this.callbacks[`after${kind}`].forEach((callback) => callback(...args));
+  }
+  markPrunableContentForRemoval() {
+    let phxUpdate = this.liveSocket.binding(PHX_UPDATE);
+    dom_default.all(this.container, `[${phxUpdate}=append] > *, [${phxUpdate}=prepend] > *`, (el) => {
+      el.setAttribute(PHX_PRUNE, "");
+    });
+  }
+  perform(isJoinPatch) {
+    let { view, liveSocket, container, html } = this;
+    let targetContainer = this.isCIDPatch() ? this.targetCIDContainer(html) : container;
+    if (this.isCIDPatch() && !targetContainer) {
+      return;
+    }
+    let focused = liveSocket.getActiveElement();
+    let { selectionStart, selectionEnd } = focused && dom_default.hasSelectionRange(focused) ? focused : {};
+    let phxUpdate = liveSocket.binding(PHX_UPDATE);
+    let phxFeedbackFor = liveSocket.binding(PHX_FEEDBACK_FOR);
+    let phxFeedbackGroup = liveSocket.binding(PHX_FEEDBACK_GROUP);
+    let disableWith = liveSocket.binding(PHX_DISABLE_WITH);
+    let phxViewportTop = liveSocket.binding(PHX_VIEWPORT_TOP);
+    let phxViewportBottom = liveSocket.binding(PHX_VIEWPORT_BOTTOM);
+    let phxTriggerExternal = liveSocket.binding(PHX_TRIGGER_ACTION);
+    let added = [];
+    let feedbackContainers = [];
+    let updates = [];
+    let appendPrependUpdates = [];
+    let externalFormTriggered = null;
+    function morph(targetContainer2, source) {
+      morphdom_esm_default(targetContainer2, source, {
+        childrenOnly: targetContainer2.getAttribute(PHX_COMPONENT) === null,
+        getNodeKey: (node) => {
+          if (dom_default.isPhxDestroyed(node)) {
+            return null;
+          }
+          if (isJoinPatch) {
+            return node.id;
+          }
+          return node.id || node.getAttribute && node.getAttribute(PHX_MAGIC_ID);
+        },
+        skipFromChildren: (from) => {
+          return from.getAttribute(phxUpdate) === PHX_STREAM;
+        },
+        addChild: (parent, child) => {
+          let { ref, streamAt } = this.getStreamInsert(child);
+          if (ref === undefined) {
+            return parent.appendChild(child);
+          }
+          this.setStreamRef(child, ref);
+          if (streamAt === 0) {
+            parent.insertAdjacentElement("afterbegin", child);
+          } else if (streamAt === -1) {
+            parent.appendChild(child);
+          } else if (streamAt > 0) {
+            let sibling = Array.from(parent.children)[streamAt];
+            parent.insertBefore(child, sibling);
+          }
+        },
+        onBeforeNodeAdded: (el) => {
+          dom_default.maybeAddPrivateHooks(el, phxViewportTop, phxViewportBottom);
+          this.trackBefore("added", el);
+          let morphedEl = el;
+          if (!isJoinPatch && this.streamComponentRestore[el.id]) {
+            morphedEl = this.streamComponentRestore[el.id];
+            delete this.streamComponentRestore[el.id];
+            morph.bind(this)(morphedEl, el);
+          }
+          return morphedEl;
+        },
+        onNodeAdded: (el) => {
+          if (el.getAttribute) {
+            this.maybeReOrderStream(el, true);
+          }
+          if (dom_default.isFeedbackContainer(el, phxFeedbackFor))
+            feedbackContainers.push(el);
+          if (el instanceof HTMLImageElement && el.srcset) {
+            el.srcset = el.srcset;
+          } else if (el instanceof HTMLVideoElement && el.autoplay) {
+            el.play();
+          }
+          if (dom_default.isNowTriggerFormExternal(el, phxTriggerExternal)) {
+            externalFormTriggered = el;
+          }
+          if (dom_default.isPhxChild(el) && view.ownsElement(el) || dom_default.isPhxSticky(el) && view.ownsElement(el.parentNode)) {
+            this.trackAfter("phxChildAdded", el);
+          }
+          added.push(el);
+        },
+        onNodeDiscarded: (el) => this.onNodeDiscarded(el),
+        onBeforeNodeDiscarded: (el) => {
+          if (el.getAttribute && el.getAttribute(PHX_PRUNE) !== null) {
+            return true;
+          }
+          if (el.parentElement !== null && el.id && dom_default.isPhxUpdate(el.parentElement, phxUpdate, [PHX_STREAM, "append", "prepend"])) {
+            return false;
+          }
+          if (this.maybePendingRemove(el)) {
+            return false;
+          }
+          if (this.skipCIDSibling(el)) {
+            return false;
+          }
+          return true;
+        },
+        onElUpdated: (el) => {
+          if (dom_default.isNowTriggerFormExternal(el, phxTriggerExternal)) {
+            externalFormTriggered = el;
+          }
+          updates.push(el);
+          this.maybeReOrderStream(el, false);
+        },
+        onBeforeElUpdated: (fromEl, toEl) => {
+          dom_default.maybeAddPrivateHooks(toEl, phxViewportTop, phxViewportBottom);
+          if (dom_default.isFeedbackContainer(fromEl, phxFeedbackFor) || dom_default.isFeedbackContainer(toEl, phxFeedbackFor)) {
+            feedbackContainers.push(fromEl);
+            feedbackContainers.push(toEl);
+          }
+          dom_default.cleanChildNodes(toEl, phxUpdate);
+          if (this.skipCIDSibling(toEl)) {
+            this.maybeReOrderStream(fromEl);
+            return false;
+          }
+          if (dom_default.isPhxSticky(fromEl)) {
+            return false;
+          }
+          if (dom_default.isIgnored(fromEl, phxUpdate) || fromEl.form && fromEl.form.isSameNode(externalFormTriggered)) {
+            this.trackBefore("updated", fromEl, toEl);
+            dom_default.mergeAttrs(fromEl, toEl, { isIgnored: true });
+            updates.push(fromEl);
+            dom_default.applyStickyOperations(fromEl);
+            return false;
+          }
+          if (fromEl.type === "number" && (fromEl.validity && fromEl.validity.badInput)) {
+            return false;
+          }
+          if (!dom_default.syncPendingRef(fromEl, toEl, disableWith)) {
+            if (dom_default.isUploadInput(fromEl)) {
+              this.trackBefore("updated", fromEl, toEl);
+              updates.push(fromEl);
+            }
+            dom_default.applyStickyOperations(fromEl);
+            return false;
+          }
+          if (dom_default.isPhxChild(toEl)) {
+            let prevSession = fromEl.getAttribute(PHX_SESSION);
+            dom_default.mergeAttrs(fromEl, toEl, { exclude: [PHX_STATIC] });
+            if (prevSession !== "") {
+              fromEl.setAttribute(PHX_SESSION, prevSession);
+            }
+            fromEl.setAttribute(PHX_ROOT_ID, this.rootID);
+            dom_default.applyStickyOperations(fromEl);
+            return false;
+          }
+          dom_default.copyPrivates(toEl, fromEl);
+          let isFocusedFormEl = focused && fromEl.isSameNode(focused) && dom_default.isFormInput(fromEl);
+          let focusedSelectChanged = isFocusedFormEl && this.isChangedSelect(fromEl, toEl);
+          if (isFocusedFormEl && fromEl.type !== "hidden" && !focusedSelectChanged) {
+            this.trackBefore("updated", fromEl, toEl);
+            dom_default.mergeFocusedInput(fromEl, toEl);
+            dom_default.syncAttrsToProps(fromEl);
+            updates.push(fromEl);
+            dom_default.applyStickyOperations(fromEl);
+            return false;
+          } else {
+            if (focusedSelectChanged) {
+              fromEl.blur();
+            }
+            if (dom_default.isPhxUpdate(toEl, phxUpdate, ["append", "prepend"])) {
+              appendPrependUpdates.push(new DOMPostMorphRestorer(fromEl, toEl, toEl.getAttribute(phxUpdate)));
+            }
+            dom_default.syncAttrsToProps(toEl);
+            dom_default.applyStickyOperations(toEl);
+            this.trackBefore("updated", fromEl, toEl);
+            return true;
+          }
+        }
+      });
+    }
+    this.trackBefore("added", container);
+    this.trackBefore("updated", container, container);
+    liveSocket.time("morphdom", () => {
+      this.streams.forEach(([ref, inserts, deleteIds, reset]) => {
+        inserts.forEach(([key, streamAt, limit]) => {
+          this.streamInserts[key] = { ref, streamAt, limit, reset };
+        });
+        if (reset !== undefined) {
+          dom_default.all(container, `[${PHX_STREAM_REF}="${ref}"]`, (child) => {
+            this.removeStreamChildElement(child);
+          });
+        }
+        deleteIds.forEach((id) => {
+          let child = container.querySelector(`[id="${id}"]`);
+          if (child) {
+            this.removeStreamChildElement(child);
+          }
+        });
+      });
+      if (isJoinPatch) {
+        dom_default.all(this.container, `[${phxUpdate}=${PHX_STREAM}]`, (el) => {
+          this.liveSocket.owner(el, (view2) => {
+            if (view2 === this.view) {
+              Array.from(el.children).forEach((child) => {
+                this.removeStreamChildElement(child);
+              });
+            }
+          });
+        });
+      }
+      morph.bind(this)(targetContainer, html);
+    });
+    if (liveSocket.isDebugEnabled()) {
+      detectDuplicateIds();
+    }
+    if (appendPrependUpdates.length > 0) {
+      liveSocket.time("post-morph append/prepend restoration", () => {
+        appendPrependUpdates.forEach((update) => update.perform());
+      });
+    }
+    dom_default.maybeHideFeedback(targetContainer, feedbackContainers, phxFeedbackFor, phxFeedbackGroup);
+    liveSocket.silenceEvents(() => dom_default.restoreFocus(focused, selectionStart, selectionEnd));
+    dom_default.dispatchEvent(document, "phx:update");
+    added.forEach((el) => this.trackAfter("added", el));
+    updates.forEach((el) => this.trackAfter("updated", el));
+    this.transitionPendingRemoves();
+    if (externalFormTriggered) {
+      liveSocket.unload();
+      Object.getPrototypeOf(externalFormTriggered).submit.call(externalFormTriggered);
+    }
+    return true;
+  }
+  onNodeDiscarded(el) {
+    if (dom_default.isPhxChild(el) || dom_default.isPhxSticky(el)) {
+      this.liveSocket.destroyViewByEl(el);
+    }
+    this.trackAfter("discarded", el);
+  }
+  maybePendingRemove(node) {
+    if (node.getAttribute && node.getAttribute(this.phxRemove) !== null) {
+      this.pendingRemoves.push(node);
+      return true;
+    } else {
+      return false;
+    }
+  }
+  removeStreamChildElement(child) {
+    if (this.streamInserts[child.id]) {
+      this.streamComponentRestore[child.id] = child;
+      child.remove();
+    } else {
+      if (!this.maybePendingRemove(child)) {
+        child.remove();
+        this.onNodeDiscarded(child);
+      }
+    }
+  }
+  getStreamInsert(el) {
+    let insert = el.id ? this.streamInserts[el.id] : {};
+    return insert || {};
+  }
+  setStreamRef(el, ref) {
+    dom_default.putSticky(el, PHX_STREAM_REF, (el2) => el2.setAttribute(PHX_STREAM_REF, ref));
+  }
+  maybeReOrderStream(el, isNew) {
+    let { ref, streamAt, reset } = this.getStreamInsert(el);
+    if (streamAt === undefined) {
+      return;
+    }
+    this.setStreamRef(el, ref);
+    if (!reset && !isNew) {
+      return;
+    }
+    if (!el.parentElement) {
+      return;
+    }
+    if (streamAt === 0) {
+      el.parentElement.insertBefore(el, el.parentElement.firstElementChild);
+    } else if (streamAt > 0) {
+      let children = Array.from(el.parentElement.children);
+      let oldIndex = children.indexOf(el);
+      if (streamAt >= children.length - 1) {
+        el.parentElement.appendChild(el);
+      } else {
+        let sibling = children[streamAt];
+        if (oldIndex > streamAt) {
+          el.parentElement.insertBefore(el, sibling);
+        } else {
+          el.parentElement.insertBefore(el, sibling.nextElementSibling);
+        }
+      }
+    }
+    this.maybeLimitStream(el);
+  }
+  maybeLimitStream(el) {
+    let { limit } = this.getStreamInsert(el);
+    let children = limit !== null && Array.from(el.parentElement.children);
+    if (limit && limit < 0 && children.length > limit * -1) {
+      children.slice(0, children.length + limit).forEach((child) => this.removeStreamChildElement(child));
+    } else if (limit && limit >= 0 && children.length > limit) {
+      children.slice(limit).forEach((child) => this.removeStreamChildElement(child));
+    }
+  }
+  transitionPendingRemoves() {
+    let { pendingRemoves, liveSocket } = this;
+    if (pendingRemoves.length > 0) {
+      liveSocket.transitionRemoves(pendingRemoves);
+      liveSocket.requestDOMUpdate(() => {
+        pendingRemoves.forEach((el) => {
+          let child = dom_default.firstPhxChild(el);
+          if (child) {
+            liveSocket.destroyViewByEl(child);
+          }
+          el.remove();
+        });
+        this.trackAfter("transitionsDiscarded", pendingRemoves);
+      });
+    }
+  }
+  isChangedSelect(fromEl, toEl) {
+    if (!(fromEl instanceof HTMLSelectElement) || fromEl.multiple) {
+      return false;
+    }
+    if (fromEl.options.length !== toEl.options.length) {
+      return true;
+    }
+    let fromSelected = fromEl.selectedOptions[0];
+    let toSelected = toEl.selectedOptions[0];
+    if (fromSelected && fromSelected.hasAttribute("selected")) {
+      toSelected.setAttribute("selected", fromSelected.getAttribute("selected"));
+    }
+    return !fromEl.isEqualNode(toEl);
+  }
+  isCIDPatch() {
+    return this.cidPatch;
+  }
+  skipCIDSibling(el) {
+    return el.nodeType === Node.ELEMENT_NODE && el.hasAttribute(PHX_SKIP);
+  }
+  targetCIDContainer(html) {
+    if (!this.isCIDPatch()) {
+      return;
+    }
+    let [first, ...rest] = dom_default.findComponentNodeList(this.container, this.targetCID);
+    if (rest.length === 0 && dom_default.childNodeLength(html) === 1) {
+      return first;
+    } else {
+      return first && first.parentNode;
+    }
+  }
+  indexOf(parent, child) {
+    return Array.from(parent.children).indexOf(child);
+  }
+};
+var VOID_TAGS = new Set([
+  "area",
+  "base",
+  "br",
+  "col",
+  "command",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "keygen",
+  "link",
+  "meta",
+  "param",
+  "source",
+  "track",
+  "wbr"
+]);
+var quoteChars = new Set(["'", '"']);
+var modifyRoot = (html, attrs, clearInnerHTML) => {
+  let i = 0;
+  let insideComment = false;
+  let beforeTag, afterTag, tag, tagNameEndsAt, id, newHTML;
+  let lookahead = html.match(/^(\s*(?:<!--.*?-->\s*)*)<([^\s\/>]+)/);
+  if (lookahead === null) {
+    throw new Error(`malformed html ${html}`);
+  }
+  i = lookahead[0].length;
+  beforeTag = lookahead[1];
+  tag = lookahead[2];
+  tagNameEndsAt = i;
+  for (i;i < html.length; i++) {
+    if (html.charAt(i) === ">") {
+      break;
+    }
+    if (html.charAt(i) === "=") {
+      let isId = html.slice(i - 3, i) === " id";
+      i++;
+      let char = html.charAt(i);
+      if (quoteChars.has(char)) {
+        let attrStartsAt = i;
+        i++;
+        for (i;i < html.length; i++) {
+          if (html.charAt(i) === char) {
+            break;
+          }
+        }
+        if (isId) {
+          id = html.slice(attrStartsAt + 1, i);
+          break;
+        }
+      }
+    }
+  }
+  let closeAt = html.length - 1;
+  insideComment = false;
+  while (closeAt >= beforeTag.length + tag.length) {
+    let char = html.charAt(closeAt);
+    if (insideComment) {
+      if (char === "-" && html.slice(closeAt - 3, closeAt) === "<!-") {
+        insideComment = false;
+        closeAt -= 4;
+      } else {
+        closeAt -= 1;
+      }
+    } else if (char === ">" && html.slice(closeAt - 2, closeAt) === "--") {
+      insideComment = true;
+      closeAt -= 3;
+    } else if (char === ">") {
+      break;
+    } else {
+      closeAt -= 1;
+    }
+  }
+  afterTag = html.slice(closeAt + 1, html.length);
+  let attrsStr = Object.keys(attrs).map((attr) => attrs[attr] === true ? attr : `${attr}="${attrs[attr]}"`).join(" ");
+  if (clearInnerHTML) {
+    let idAttrStr = id ? ` id="${id}"` : "";
+    if (VOID_TAGS.has(tag)) {
+      newHTML = `<${tag}${idAttrStr}${attrsStr === "" ? "" : " "}${attrsStr}/>`;
+    } else {
+      newHTML = `<${tag}${idAttrStr}${attrsStr === "" ? "" : " "}${attrsStr}></${tag}>`;
+    }
+  } else {
+    let rest = html.slice(tagNameEndsAt, closeAt + 1);
+    newHTML = `<${tag}${attrsStr === "" ? "" : " "}${attrsStr}${rest}`;
+  }
+  return [newHTML, beforeTag, afterTag];
+};
+var Rendered = class {
+  static extract(diff) {
+    let { [REPLY]: reply, [EVENTS]: events, [TITLE]: title } = diff;
+    delete diff[REPLY];
+    delete diff[EVENTS];
+    delete diff[TITLE];
+    return { diff, title, reply: reply || null, events: events || [] };
+  }
+  constructor(viewId, rendered) {
+    this.viewId = viewId;
+    this.rendered = {};
+    this.magicId = 0;
+    this.mergeDiff(rendered);
+  }
+  parentViewId() {
+    return this.viewId;
+  }
+  toString(onlyCids) {
+    let [str, streams] = this.recursiveToString(this.rendered, this.rendered[COMPONENTS], onlyCids, true, {});
+    return [str, streams];
+  }
+  recursiveToString(rendered, components = rendered[COMPONENTS], onlyCids, changeTracking, rootAttrs) {
+    onlyCids = onlyCids ? new Set(onlyCids) : null;
+    let output = { buffer: "", components, onlyCids, streams: new Set };
+    this.toOutputBuffer(rendered, null, output, changeTracking, rootAttrs);
+    return [output.buffer, output.streams];
+  }
+  componentCIDs(diff) {
+    return Object.keys(diff[COMPONENTS] || {}).map((i) => parseInt(i));
+  }
+  isComponentOnlyDiff(diff) {
+    if (!diff[COMPONENTS]) {
+      return false;
+    }
+    return Object.keys(diff).length === 1;
+  }
+  getComponent(diff, cid) {
+    return diff[COMPONENTS][cid];
+  }
+  resetRender(cid) {
+    if (this.rendered[COMPONENTS][cid]) {
+      this.rendered[COMPONENTS][cid].reset = true;
+    }
+  }
+  mergeDiff(diff) {
+    let newc = diff[COMPONENTS];
+    let cache = {};
+    delete diff[COMPONENTS];
+    this.rendered = this.mutableMerge(this.rendered, diff);
+    this.rendered[COMPONENTS] = this.rendered[COMPONENTS] || {};
+    if (newc) {
+      let oldc = this.rendered[COMPONENTS];
+      for (let cid in newc) {
+        newc[cid] = this.cachedFindComponent(cid, newc[cid], oldc, newc, cache);
+      }
+      for (let cid in newc) {
+        oldc[cid] = newc[cid];
+      }
+      diff[COMPONENTS] = newc;
+    }
+  }
+  cachedFindComponent(cid, cdiff, oldc, newc, cache) {
+    if (cache[cid]) {
+      return cache[cid];
+    } else {
+      let ndiff, stat, scid = cdiff[STATIC];
+      if (isCid(scid)) {
+        let tdiff;
+        if (scid > 0) {
+          tdiff = this.cachedFindComponent(scid, newc[scid], oldc, newc, cache);
+        } else {
+          tdiff = oldc[-scid];
+        }
+        stat = tdiff[STATIC];
+        ndiff = this.cloneMerge(tdiff, cdiff, true);
+        ndiff[STATIC] = stat;
+      } else {
+        ndiff = cdiff[STATIC] !== undefined || oldc[cid] === undefined ? cdiff : this.cloneMerge(oldc[cid], cdiff, false);
+      }
+      cache[cid] = ndiff;
+      return ndiff;
+    }
+  }
+  mutableMerge(target, source) {
+    if (source[STATIC] !== undefined) {
+      return source;
+    } else {
+      this.doMutableMerge(target, source);
+      return target;
+    }
+  }
+  doMutableMerge(target, source) {
+    for (let key in source) {
+      let val = source[key];
+      let targetVal = target[key];
+      let isObjVal = isObject(val);
+      if (isObjVal && val[STATIC] === undefined && isObject(targetVal)) {
+        this.doMutableMerge(targetVal, val);
+      } else {
+        target[key] = val;
+      }
+    }
+    if (target[ROOT]) {
+      target.newRender = true;
+    }
+  }
+  cloneMerge(target, source, pruneMagicId) {
+    let merged = { ...target, ...source };
+    for (let key in merged) {
+      let val = source[key];
+      let targetVal = target[key];
+      if (isObject(val) && val[STATIC] === undefined && isObject(targetVal)) {
+        merged[key] = this.cloneMerge(targetVal, val, pruneMagicId);
+      } else if (val === undefined && isObject(targetVal)) {
+        merged[key] = this.cloneMerge(targetVal, {}, pruneMagicId);
+      }
+    }
+    if (pruneMagicId) {
+      delete merged.magicId;
+      delete merged.newRender;
+    } else if (target[ROOT]) {
+      merged.newRender = true;
+    }
+    return merged;
+  }
+  componentToString(cid) {
+    let [str, streams] = this.recursiveCIDToString(this.rendered[COMPONENTS], cid, null);
+    let [strippedHTML, _before, _after] = modifyRoot(str, {});
+    return [strippedHTML, streams];
+  }
+  pruneCIDs(cids) {
+    cids.forEach((cid) => delete this.rendered[COMPONENTS][cid]);
+  }
+  get() {
+    return this.rendered;
+  }
+  isNewFingerprint(diff = {}) {
+    return !!diff[STATIC];
+  }
+  templateStatic(part, templates) {
+    if (typeof part === "number") {
+      return templates[part];
+    } else {
+      return part;
+    }
+  }
+  nextMagicID() {
+    this.magicId++;
+    return `m${this.magicId}-${this.parentViewId()}`;
+  }
+  toOutputBuffer(rendered, templates, output, changeTracking, rootAttrs = {}) {
+    if (rendered[DYNAMICS]) {
+      return this.comprehensionToBuffer(rendered, templates, output);
+    }
+    let { [STATIC]: statics } = rendered;
+    statics = this.templateStatic(statics, templates);
+    let isRoot = rendered[ROOT];
+    let prevBuffer = output.buffer;
+    if (isRoot) {
+      output.buffer = "";
+    }
+    if (changeTracking && isRoot && !rendered.magicId) {
+      rendered.newRender = true;
+      rendered.magicId = this.nextMagicID();
+    }
+    output.buffer += statics[0];
+    for (let i = 1;i < statics.length; i++) {
+      this.dynamicToBuffer(rendered[i - 1], templates, output, changeTracking);
+      output.buffer += statics[i];
+    }
+    if (isRoot) {
+      let skip = false;
+      let attrs;
+      if (changeTracking || rendered.magicId) {
+        skip = changeTracking && !rendered.newRender;
+        attrs = { [PHX_MAGIC_ID]: rendered.magicId, ...rootAttrs };
+      } else {
+        attrs = rootAttrs;
+      }
+      if (skip) {
+        attrs[PHX_SKIP] = true;
+      }
+      let [newRoot, commentBefore, commentAfter] = modifyRoot(output.buffer, attrs, skip);
+      rendered.newRender = false;
+      output.buffer = prevBuffer + commentBefore + newRoot + commentAfter;
+    }
+  }
+  comprehensionToBuffer(rendered, templates, output) {
+    let { [DYNAMICS]: dynamics, [STATIC]: statics, [STREAM]: stream } = rendered;
+    let [_ref, _inserts, deleteIds, reset] = stream || [null, {}, [], null];
+    statics = this.templateStatic(statics, templates);
+    let compTemplates = templates || rendered[TEMPLATES];
+    for (let d = 0;d < dynamics.length; d++) {
+      let dynamic = dynamics[d];
+      output.buffer += statics[0];
+      for (let i = 1;i < statics.length; i++) {
+        let changeTracking = false;
+        this.dynamicToBuffer(dynamic[i - 1], compTemplates, output, changeTracking);
+        output.buffer += statics[i];
+      }
+    }
+    if (stream !== undefined && (rendered[DYNAMICS].length > 0 || deleteIds.length > 0 || reset)) {
+      delete rendered[STREAM];
+      rendered[DYNAMICS] = [];
+      output.streams.add(stream);
+    }
+  }
+  dynamicToBuffer(rendered, templates, output, changeTracking) {
+    if (typeof rendered === "number") {
+      let [str, streams] = this.recursiveCIDToString(output.components, rendered, output.onlyCids);
+      output.buffer += str;
+      output.streams = new Set([...output.streams, ...streams]);
+    } else if (isObject(rendered)) {
+      this.toOutputBuffer(rendered, templates, output, changeTracking, {});
+    } else {
+      output.buffer += rendered;
+    }
+  }
+  recursiveCIDToString(components, cid, onlyCids) {
+    let component = components[cid] || logError(`no component for CID ${cid}`, components);
+    let attrs = { [PHX_COMPONENT]: cid };
+    let skip = onlyCids && !onlyCids.has(cid);
+    component.newRender = !skip;
+    component.magicId = `c${cid}-${this.parentViewId()}`;
+    let changeTracking = !component.reset;
+    let [html, streams] = this.recursiveToString(component, components, onlyCids, changeTracking, attrs);
+    delete component.reset;
+    return [html, streams];
+  }
+};
+var viewHookID = 1;
+var ViewHook = class {
+  static makeID() {
+    return viewHookID++;
+  }
+  static elementID(el) {
+    return el.phxHookId;
+  }
+  constructor(view, el, callbacks) {
+    this.__view = view;
+    this.liveSocket = view.liveSocket;
+    this.__callbacks = callbacks;
+    this.__listeners = new Set;
+    this.__isDisconnected = false;
+    this.el = el;
+    this.el.phxHookId = this.constructor.makeID();
+    for (let key in this.__callbacks) {
+      this[key] = this.__callbacks[key];
+    }
+  }
+  __mounted() {
+    this.mounted && this.mounted();
+  }
+  __updated() {
+    this.updated && this.updated();
+  }
+  __beforeUpdate() {
+    this.beforeUpdate && this.beforeUpdate();
+  }
+  __destroyed() {
+    this.destroyed && this.destroyed();
+  }
+  __reconnected() {
+    if (this.__isDisconnected) {
+      this.__isDisconnected = false;
+      this.reconnected && this.reconnected();
+    }
+  }
+  __disconnected() {
+    this.__isDisconnected = true;
+    this.disconnected && this.disconnected();
+  }
+  pushEvent(event, payload = {}, onReply = function() {
+  }) {
+    return this.__view.pushHookEvent(this.el, null, event, payload, onReply);
+  }
+  pushEventTo(phxTarget, event, payload = {}, onReply = function() {
+  }) {
+    return this.__view.withinTargets(phxTarget, (view, targetCtx) => {
+      return view.pushHookEvent(this.el, targetCtx, event, payload, onReply);
+    });
+  }
+  handleEvent(event, callback) {
+    let callbackRef = (customEvent, bypass) => bypass ? event : callback(customEvent.detail);
+    window.addEventListener(`phx:${event}`, callbackRef);
+    this.__listeners.add(callbackRef);
+    return callbackRef;
+  }
+  removeHandleEvent(callbackRef) {
+    let event = callbackRef(null, true);
+    window.removeEventListener(`phx:${event}`, callbackRef);
+    this.__listeners.delete(callbackRef);
+  }
+  upload(name, files) {
+    return this.__view.dispatchUploads(null, name, files);
+  }
+  uploadTo(phxTarget, name, files) {
+    return this.__view.withinTargets(phxTarget, (view, targetCtx) => {
+      view.dispatchUploads(targetCtx, name, files);
+    });
+  }
+  __cleanup__() {
+    this.__listeners.forEach((callbackRef) => this.removeHandleEvent(callbackRef));
+  }
+};
+var serializeForm = (form, metadata, onlyNames = []) => {
+  const { submitter, ...meta } = metadata;
+  let injectedElement;
+  if (submitter && submitter.name) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    const formId = submitter.getAttribute("form");
+    if (formId) {
+      input.setAttribute("form", formId);
+    }
+    input.name = submitter.name;
+    input.value = submitter.value;
+    submitter.parentElement.insertBefore(input, submitter);
+    injectedElement = input;
+  }
+  const formData = new FormData(form);
+  const toRemove = [];
+  formData.forEach((val, key, _index) => {
+    if (val instanceof File) {
+      toRemove.push(key);
+    }
+  });
+  toRemove.forEach((key) => formData.delete(key));
+  const params = new URLSearchParams;
+  for (let [key, val] of formData.entries()) {
+    if (onlyNames.length === 0 || onlyNames.indexOf(key) >= 0) {
+      params.append(key, val);
+    }
+  }
+  if (submitter && injectedElement) {
+    submitter.parentElement.removeChild(injectedElement);
+  }
+  for (let metaKey in meta) {
+    params.append(metaKey, meta[metaKey]);
+  }
+  return params.toString();
+};
+var View = class {
+  constructor(el, liveSocket, parentView, flash, liveReferer) {
+    this.isDead = false;
+    this.liveSocket = liveSocket;
+    this.flash = flash;
+    this.parent = parentView;
+    this.root = parentView ? parentView.root : this;
+    this.el = el;
+    this.id = this.el.id;
+    this.ref = 0;
+    this.childJoins = 0;
+    this.loaderTimer = null;
+    this.pendingDiffs = [];
+    this.pendingForms = new Set;
+    this.redirect = false;
+    this.href = null;
+    this.joinCount = this.parent ? this.parent.joinCount - 1 : 0;
+    this.joinPending = true;
+    this.destroyed = false;
+    this.joinCallback = function(onDone) {
+      onDone && onDone();
+    };
+    this.stopCallback = function() {
+    };
+    this.pendingJoinOps = this.parent ? null : [];
+    this.viewHooks = {};
+    this.formSubmits = [];
+    this.children = this.parent ? null : {};
+    this.root.children[this.id] = {};
+    this.channel = this.liveSocket.channel(`lv:${this.id}`, () => {
+      let url = this.href && this.expandURL(this.href);
+      return {
+        redirect: this.redirect ? url : undefined,
+        url: this.redirect ? undefined : url || undefined,
+        params: this.connectParams(liveReferer),
+        session: this.getSession(),
+        static: this.getStatic(),
+        flash: this.flash
+      };
+    });
+  }
+  setHref(href) {
+    this.href = href;
+  }
+  setRedirect(href) {
+    this.redirect = true;
+    this.href = href;
+  }
+  isMain() {
+    return this.el.hasAttribute(PHX_MAIN);
+  }
+  connectParams(liveReferer) {
+    let params = this.liveSocket.params(this.el);
+    let manifest = dom_default.all(document, `[${this.binding(PHX_TRACK_STATIC)}]`).map((node) => node.src || node.href).filter((url) => typeof url === "string");
+    if (manifest.length > 0) {
+      params["_track_static"] = manifest;
+    }
+    params["_mounts"] = this.joinCount;
+    params["_live_referer"] = liveReferer;
+    return params;
+  }
+  isConnected() {
+    return this.channel.canPush();
+  }
+  getSession() {
+    return this.el.getAttribute(PHX_SESSION);
+  }
+  getStatic() {
+    let val = this.el.getAttribute(PHX_STATIC);
+    return val === "" ? null : val;
+  }
+  destroy(callback = function() {
+  }) {
+    this.destroyAllChildren();
+    this.destroyed = true;
+    delete this.root.children[this.id];
+    if (this.parent) {
+      delete this.root.children[this.parent.id][this.id];
+    }
+    clearTimeout(this.loaderTimer);
+    let onFinished = () => {
+      callback();
+      for (let id in this.viewHooks) {
+        this.destroyHook(this.viewHooks[id]);
+      }
+    };
+    dom_default.markPhxChildDestroyed(this.el);
+    this.log("destroyed", () => ["the child has been removed from the parent"]);
+    this.channel.leave().receive("ok", onFinished).receive("error", onFinished).receive("timeout", onFinished);
+  }
+  setContainerClasses(...classes) {
+    this.el.classList.remove(PHX_CONNECTED_CLASS, PHX_LOADING_CLASS, PHX_ERROR_CLASS, PHX_CLIENT_ERROR_CLASS, PHX_SERVER_ERROR_CLASS);
+    this.el.classList.add(...classes);
+  }
+  showLoader(timeout) {
+    clearTimeout(this.loaderTimer);
+    if (timeout) {
+      this.loaderTimer = setTimeout(() => this.showLoader(), timeout);
+    } else {
+      for (let id in this.viewHooks) {
+        this.viewHooks[id].__disconnected();
+      }
+      this.setContainerClasses(PHX_LOADING_CLASS);
+    }
+  }
+  execAll(binding) {
+    dom_default.all(this.el, `[${binding}]`, (el) => this.liveSocket.execJS(el, el.getAttribute(binding)));
+  }
+  hideLoader() {
+    clearTimeout(this.loaderTimer);
+    this.setContainerClasses(PHX_CONNECTED_CLASS);
+    this.execAll(this.binding("connected"));
+  }
+  triggerReconnected() {
+    for (let id in this.viewHooks) {
+      this.viewHooks[id].__reconnected();
+    }
+  }
+  log(kind, msgCallback) {
+    this.liveSocket.log(this, kind, msgCallback);
+  }
+  transition(time, onStart, onDone = function() {
+  }) {
+    this.liveSocket.transition(time, onStart, onDone);
+  }
+  withinTargets(phxTarget, callback) {
+    if (phxTarget instanceof HTMLElement || phxTarget instanceof SVGElement) {
+      return this.liveSocket.owner(phxTarget, (view) => callback(view, phxTarget));
+    }
+    if (isCid(phxTarget)) {
+      let targets = dom_default.findComponentNodeList(this.el, phxTarget);
+      if (targets.length === 0) {
+        logError(`no component found matching phx-target of ${phxTarget}`);
+      } else {
+        callback(this, parseInt(phxTarget));
+      }
+    } else {
+      let targets = Array.from(document.querySelectorAll(phxTarget));
+      if (targets.length === 0) {
+        logError(`nothing found matching the phx-target selector "${phxTarget}"`);
+      }
+      targets.forEach((target) => this.liveSocket.owner(target, (view) => callback(view, target)));
+    }
+  }
+  applyDiff(type, rawDiff, callback) {
+    this.log(type, () => ["", clone(rawDiff)]);
+    let { diff, reply, events, title } = Rendered.extract(rawDiff);
+    callback({ diff, reply, events });
+    if (title) {
+      window.requestAnimationFrame(() => dom_default.putTitle(title));
+    }
+  }
+  onJoin(resp) {
+    let { rendered, container } = resp;
+    if (container) {
+      let [tag, attrs] = container;
+      this.el = dom_default.replaceRootContainer(this.el, tag, attrs);
+    }
+    this.childJoins = 0;
+    this.joinPending = true;
+    this.flash = null;
+    browser_default.dropLocal(this.liveSocket.localStorage, window.location.pathname, CONSECUTIVE_RELOADS);
+    this.applyDiff("mount", rendered, ({ diff, events }) => {
+      this.rendered = new Rendered(this.id, diff);
+      let [html, streams] = this.renderContainer(null, "join");
+      this.dropPendingRefs();
+      let forms = this.formsForRecovery(html).filter(([form, newForm, newCid]) => {
+        return !this.pendingForms.has(form.id);
+      });
+      this.joinCount++;
+      if (forms.length > 0) {
+        forms.forEach(([form, newForm, newCid], i) => {
+          this.pendingForms.add(form.id);
+          this.pushFormRecovery(form, newCid, (resp2) => {
+            this.pendingForms.delete(form.id);
+            if (i === forms.length - 1) {
+              this.onJoinComplete(resp2, html, streams, events);
+            }
+          });
+        });
+      } else {
+        this.onJoinComplete(resp, html, streams, events);
+      }
+    });
+  }
+  dropPendingRefs() {
+    dom_default.all(document, `[${PHX_REF_SRC}="${this.id}"][${PHX_REF}]`, (el) => {
+      el.removeAttribute(PHX_REF);
+      el.removeAttribute(PHX_REF_SRC);
+    });
+  }
+  onJoinComplete({ live_patch }, html, streams, events) {
+    this.pendingForms.clear();
+    if (this.joinCount > 1 || this.parent && !this.parent.isJoinPending()) {
+      return this.applyJoinPatch(live_patch, html, streams, events);
+    }
+    let newChildren = dom_default.findPhxChildrenInFragment(html, this.id).filter((toEl) => {
+      let fromEl = toEl.id && this.el.querySelector(`[id="${toEl.id}"]`);
+      let phxStatic = fromEl && fromEl.getAttribute(PHX_STATIC);
+      if (phxStatic) {
+        toEl.setAttribute(PHX_STATIC, phxStatic);
+      }
+      if (fromEl) {
+        fromEl.setAttribute(PHX_ROOT_ID, this.root.id);
+      }
+      return this.joinChild(toEl);
+    });
+    if (newChildren.length === 0) {
+      if (this.parent) {
+        this.root.pendingJoinOps.push([this, () => this.applyJoinPatch(live_patch, html, streams, events)]);
+        this.parent.ackJoin(this);
+      } else {
+        this.onAllChildJoinsComplete();
+        this.applyJoinPatch(live_patch, html, streams, events);
+      }
+    } else {
+      this.root.pendingJoinOps.push([this, () => this.applyJoinPatch(live_patch, html, streams, events)]);
+    }
+  }
+  attachTrueDocEl() {
+    this.el = dom_default.byId(this.id);
+    this.el.setAttribute(PHX_ROOT_ID, this.root.id);
+  }
+  execNewMounted() {
+    let phxViewportTop = this.binding(PHX_VIEWPORT_TOP);
+    let phxViewportBottom = this.binding(PHX_VIEWPORT_BOTTOM);
+    dom_default.all(this.el, `[${phxViewportTop}], [${phxViewportBottom}]`, (hookEl) => {
+      dom_default.maybeAddPrivateHooks(hookEl, phxViewportTop, phxViewportBottom);
+      this.maybeAddNewHook(hookEl);
+    });
+    dom_default.all(this.el, `[${this.binding(PHX_HOOK)}], [data-phx-${PHX_HOOK}]`, (hookEl) => {
+      this.maybeAddNewHook(hookEl);
+    });
+    dom_default.all(this.el, `[${this.binding(PHX_MOUNTED)}]`, (el) => this.maybeMounted(el));
+  }
+  applyJoinPatch(live_patch, html, streams, events) {
+    this.attachTrueDocEl();
+    let patch = new DOMPatch(this, this.el, this.id, html, streams, null);
+    patch.markPrunableContentForRemoval();
+    this.performPatch(patch, false, true);
+    this.joinNewChildren();
+    this.execNewMounted();
+    this.joinPending = false;
+    this.liveSocket.dispatchEvents(events);
+    this.applyPendingUpdates();
+    if (live_patch) {
+      let { kind, to } = live_patch;
+      this.liveSocket.historyPatch(to, kind);
+    }
+    this.hideLoader();
+    if (this.joinCount > 1) {
+      this.triggerReconnected();
+    }
+    this.stopCallback();
+  }
+  triggerBeforeUpdateHook(fromEl, toEl) {
+    this.liveSocket.triggerDOM("onBeforeElUpdated", [fromEl, toEl]);
+    let hook = this.getHook(fromEl);
+    let isIgnored = hook && dom_default.isIgnored(fromEl, this.binding(PHX_UPDATE));
+    if (hook && !fromEl.isEqualNode(toEl) && !(isIgnored && isEqualObj(fromEl.dataset, toEl.dataset))) {
+      hook.__beforeUpdate();
+      return hook;
+    }
+  }
+  maybeMounted(el) {
+    let phxMounted = el.getAttribute(this.binding(PHX_MOUNTED));
+    let hasBeenInvoked = phxMounted && dom_default.private(el, "mounted");
+    if (phxMounted && !hasBeenInvoked) {
+      this.liveSocket.execJS(el, phxMounted);
+      dom_default.putPrivate(el, "mounted", true);
+    }
+  }
+  maybeAddNewHook(el, force) {
+    let newHook = this.addHook(el);
+    if (newHook) {
+      newHook.__mounted();
+    }
+  }
+  performPatch(patch, pruneCids, isJoinPatch = false) {
+    let removedEls = [];
+    let phxChildrenAdded = false;
+    let updatedHookIds = new Set;
+    patch.after("added", (el) => {
+      this.liveSocket.triggerDOM("onNodeAdded", [el]);
+      let phxViewportTop = this.binding(PHX_VIEWPORT_TOP);
+      let phxViewportBottom = this.binding(PHX_VIEWPORT_BOTTOM);
+      dom_default.maybeAddPrivateHooks(el, phxViewportTop, phxViewportBottom);
+      this.maybeAddNewHook(el);
+      if (el.getAttribute) {
+        this.maybeMounted(el);
+      }
+    });
+    patch.after("phxChildAdded", (el) => {
+      if (dom_default.isPhxSticky(el)) {
+        this.liveSocket.joinRootViews();
+      } else {
+        phxChildrenAdded = true;
+      }
+    });
+    patch.before("updated", (fromEl, toEl) => {
+      let hook = this.triggerBeforeUpdateHook(fromEl, toEl);
+      if (hook) {
+        updatedHookIds.add(fromEl.id);
+      }
+    });
+    patch.after("updated", (el) => {
+      if (updatedHookIds.has(el.id)) {
+        this.getHook(el).__updated();
+      }
+    });
+    patch.after("discarded", (el) => {
+      if (el.nodeType === Node.ELEMENT_NODE) {
+        removedEls.push(el);
+      }
+    });
+    patch.after("transitionsDiscarded", (els) => this.afterElementsRemoved(els, pruneCids));
+    patch.perform(isJoinPatch);
+    this.afterElementsRemoved(removedEls, pruneCids);
+    return phxChildrenAdded;
+  }
+  afterElementsRemoved(elements, pruneCids) {
+    let destroyedCIDs = [];
+    elements.forEach((parent) => {
+      let components = dom_default.all(parent, `[${PHX_COMPONENT}]`);
+      let hooks = dom_default.all(parent, `[${this.binding(PHX_HOOK)}]`);
+      components.concat(parent).forEach((el) => {
+        let cid = this.componentID(el);
+        if (isCid(cid) && destroyedCIDs.indexOf(cid) === -1) {
+          destroyedCIDs.push(cid);
+        }
+      });
+      hooks.concat(parent).forEach((hookEl) => {
+        let hook = this.getHook(hookEl);
+        hook && this.destroyHook(hook);
+      });
+    });
+    if (pruneCids) {
+      this.maybePushComponentsDestroyed(destroyedCIDs);
+    }
+  }
+  joinNewChildren() {
+    dom_default.findPhxChildren(this.el, this.id).forEach((el) => this.joinChild(el));
+  }
+  getChildById(id) {
+    return this.root.children[this.id][id];
+  }
+  getDescendentByEl(el) {
+    if (el.id === this.id) {
+      return this;
+    } else {
+      return this.children[el.getAttribute(PHX_PARENT_ID)][el.id];
+    }
+  }
+  destroyDescendent(id) {
+    for (let parentId in this.root.children) {
+      for (let childId in this.root.children[parentId]) {
+        if (childId === id) {
+          return this.root.children[parentId][childId].destroy();
+        }
+      }
+    }
+  }
+  joinChild(el) {
+    let child = this.getChildById(el.id);
+    if (!child) {
+      let view = new View(el, this.liveSocket, this);
+      this.root.children[this.id][view.id] = view;
+      view.join();
+      this.childJoins++;
+      return true;
+    }
+  }
+  isJoinPending() {
+    return this.joinPending;
+  }
+  ackJoin(_child) {
+    this.childJoins--;
+    if (this.childJoins === 0) {
+      if (this.parent) {
+        this.parent.ackJoin(this);
+      } else {
+        this.onAllChildJoinsComplete();
+      }
+    }
+  }
+  onAllChildJoinsComplete() {
+    this.joinCallback(() => {
+      this.pendingJoinOps.forEach(([view, op]) => {
+        if (!view.isDestroyed()) {
+          op();
+        }
+      });
+      this.pendingJoinOps = [];
+    });
+  }
+  update(diff, events) {
+    if (this.isJoinPending() || this.liveSocket.hasPendingLink() && this.root.isMain()) {
+      return this.pendingDiffs.push({ diff, events });
+    }
+    this.rendered.mergeDiff(diff);
+    let phxChildrenAdded = false;
+    if (this.rendered.isComponentOnlyDiff(diff)) {
+      this.liveSocket.time("component patch complete", () => {
+        let parentCids = dom_default.findExistingParentCIDs(this.el, this.rendered.componentCIDs(diff));
+        parentCids.forEach((parentCID) => {
+          if (this.componentPatch(this.rendered.getComponent(diff, parentCID), parentCID)) {
+            phxChildrenAdded = true;
+          }
+        });
+      });
+    } else if (!isEmpty(diff)) {
+      this.liveSocket.time("full patch complete", () => {
+        let [html, streams] = this.renderContainer(diff, "update");
+        let patch = new DOMPatch(this, this.el, this.id, html, streams, null);
+        phxChildrenAdded = this.performPatch(patch, true);
+      });
+    }
+    this.liveSocket.dispatchEvents(events);
+    if (phxChildrenAdded) {
+      this.joinNewChildren();
+    }
+  }
+  renderContainer(diff, kind) {
+    return this.liveSocket.time(`toString diff (${kind})`, () => {
+      let tag = this.el.tagName;
+      let cids = diff ? this.rendered.componentCIDs(diff) : null;
+      let [html, streams] = this.rendered.toString(cids);
+      return [`<${tag}>${html}</${tag}>`, streams];
+    });
+  }
+  componentPatch(diff, cid) {
+    if (isEmpty(diff))
+      return false;
+    let [html, streams] = this.rendered.componentToString(cid);
+    let patch = new DOMPatch(this, this.el, this.id, html, streams, cid);
+    let childrenAdded = this.performPatch(patch, true);
+    return childrenAdded;
+  }
+  getHook(el) {
+    return this.viewHooks[ViewHook.elementID(el)];
+  }
+  addHook(el) {
+    if (ViewHook.elementID(el) || !el.getAttribute) {
+      return;
+    }
+    let hookName = el.getAttribute(`data-phx-${PHX_HOOK}`) || el.getAttribute(this.binding(PHX_HOOK));
+    if (hookName && !this.ownsElement(el)) {
+      return;
+    }
+    let callbacks = this.liveSocket.getHookCallbacks(hookName);
+    if (callbacks) {
+      if (!el.id) {
+        logError(`no DOM ID for hook "${hookName}". Hooks require a unique ID on each element.`, el);
+      }
+      let hook = new ViewHook(this, el, callbacks);
+      this.viewHooks[ViewHook.elementID(hook.el)] = hook;
+      return hook;
+    } else if (hookName !== null) {
+      logError(`unknown hook found for "${hookName}"`, el);
+    }
+  }
+  destroyHook(hook) {
+    hook.__destroyed();
+    hook.__cleanup__();
+    delete this.viewHooks[ViewHook.elementID(hook.el)];
+  }
+  applyPendingUpdates() {
+    this.pendingDiffs.forEach(({ diff, events }) => this.update(diff, events));
+    this.pendingDiffs = [];
+    this.eachChild((child) => child.applyPendingUpdates());
+  }
+  eachChild(callback) {
+    let children = this.root.children[this.id] || {};
+    for (let id in children) {
+      callback(this.getChildById(id));
+    }
+  }
+  onChannel(event, cb) {
+    this.liveSocket.onChannel(this.channel, event, (resp) => {
+      if (this.isJoinPending()) {
+        this.root.pendingJoinOps.push([this, () => cb(resp)]);
+      } else {
+        this.liveSocket.requestDOMUpdate(() => cb(resp));
+      }
+    });
+  }
+  bindChannel() {
+    this.liveSocket.onChannel(this.channel, "diff", (rawDiff) => {
+      this.liveSocket.requestDOMUpdate(() => {
+        this.applyDiff("update", rawDiff, ({ diff, events }) => this.update(diff, events));
+      });
+    });
+    this.onChannel("redirect", ({ to, flash }) => this.onRedirect({ to, flash }));
+    this.onChannel("live_patch", (redir) => this.onLivePatch(redir));
+    this.onChannel("live_redirect", (redir) => this.onLiveRedirect(redir));
+    this.channel.onError((reason) => this.onError(reason));
+    this.channel.onClose((reason) => this.onClose(reason));
+  }
+  destroyAllChildren() {
+    this.eachChild((child) => child.destroy());
+  }
+  onLiveRedirect(redir) {
+    let { to, kind, flash } = redir;
+    let url = this.expandURL(to);
+    this.liveSocket.historyRedirect(url, kind, flash);
+  }
+  onLivePatch(redir) {
+    let { to, kind } = redir;
+    this.href = this.expandURL(to);
+    this.liveSocket.historyPatch(to, kind);
+  }
+  expandURL(to) {
+    return to.startsWith("/") ? `${window.location.protocol}//${window.location.host}${to}` : to;
+  }
+  onRedirect({ to, flash }) {
+    this.liveSocket.redirect(to, flash);
+  }
+  isDestroyed() {
+    return this.destroyed;
+  }
+  joinDead() {
+    this.isDead = true;
+  }
+  join(callback) {
+    this.showLoader(this.liveSocket.loaderTimeout);
+    this.bindChannel();
+    if (this.isMain()) {
+      this.stopCallback = this.liveSocket.withPageLoading({ to: this.href, kind: "initial" });
+    }
+    this.joinCallback = (onDone) => {
+      onDone = onDone || function() {
+      };
+      callback ? callback(this.joinCount, onDone) : onDone();
+    };
+    this.liveSocket.wrapPush(this, { timeout: false }, () => {
+      return this.channel.join().receive("ok", (data) => {
+        if (!this.isDestroyed()) {
+          this.liveSocket.requestDOMUpdate(() => this.onJoin(data));
+        }
+      }).receive("error", (resp) => !this.isDestroyed() && this.onJoinError(resp)).receive("timeout", () => !this.isDestroyed() && this.onJoinError({ reason: "timeout" }));
+    });
+  }
+  onJoinError(resp) {
+    if (resp.reason === "reload") {
+      this.log("error", () => [`failed mount with ${resp.status}. Falling back to page request`, resp]);
+      if (this.isMain()) {
+        this.onRedirect({ to: this.href });
+      }
+      return;
+    } else if (resp.reason === "unauthorized" || resp.reason === "stale") {
+      this.log("error", () => ["unauthorized live_redirect. Falling back to page request", resp]);
+      if (this.isMain()) {
+        this.onRedirect({ to: this.href });
+      }
+      return;
+    }
+    if (resp.redirect || resp.live_redirect) {
+      this.joinPending = false;
+      this.channel.leave();
+    }
+    if (resp.redirect) {
+      return this.onRedirect(resp.redirect);
+    }
+    if (resp.live_redirect) {
+      return this.onLiveRedirect(resp.live_redirect);
+    }
+    this.displayError([PHX_LOADING_CLASS, PHX_ERROR_CLASS, PHX_SERVER_ERROR_CLASS]);
+    this.log("error", () => ["unable to join", resp]);
+    if (this.liveSocket.isConnected()) {
+      this.liveSocket.reloadWithJitter(this);
+    }
+  }
+  onClose(reason) {
+    if (this.isDestroyed()) {
+      return;
+    }
+    if (this.liveSocket.hasPendingLink() && reason !== "leave") {
+      return this.liveSocket.reloadWithJitter(this);
+    }
+    this.destroyAllChildren();
+    this.liveSocket.dropActiveElement(this);
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
+    if (this.liveSocket.isUnloaded()) {
+      this.showLoader(BEFORE_UNLOAD_LOADER_TIMEOUT);
+    }
+  }
+  onError(reason) {
+    this.onClose(reason);
+    if (this.liveSocket.isConnected()) {
+      this.log("error", () => ["view crashed", reason]);
+    }
+    if (!this.liveSocket.isUnloaded()) {
+      if (this.liveSocket.isConnected()) {
+        this.displayError([PHX_LOADING_CLASS, PHX_ERROR_CLASS, PHX_SERVER_ERROR_CLASS]);
+      } else {
+        this.displayError([PHX_LOADING_CLASS, PHX_ERROR_CLASS, PHX_CLIENT_ERROR_CLASS]);
+      }
+    }
+  }
+  displayError(classes) {
+    if (this.isMain()) {
+      dom_default.dispatchEvent(window, "phx:page-loading-start", { detail: { to: this.href, kind: "error" } });
+    }
+    this.showLoader();
+    this.setContainerClasses(...classes);
+    this.execAll(this.binding("disconnected"));
+  }
+  pushWithReply(refGenerator, event, payload, onReply = function() {
+  }) {
+    if (!this.isConnected()) {
+      return;
+    }
+    let [ref, [el], opts] = refGenerator ? refGenerator() : [null, [], {}];
+    let onLoadingDone = function() {
+    };
+    if (opts.page_loading || el && el.getAttribute(this.binding(PHX_PAGE_LOADING)) !== null) {
+      onLoadingDone = this.liveSocket.withPageLoading({ kind: "element", target: el });
+    }
+    if (typeof payload.cid !== "number") {
+      delete payload.cid;
+    }
+    return this.liveSocket.wrapPush(this, { timeout: true }, () => {
+      return this.channel.push(event, payload, PUSH_TIMEOUT).receive("ok", (resp) => {
+        let finish = (hookReply) => {
+          if (resp.redirect) {
+            this.onRedirect(resp.redirect);
+          }
+          if (resp.live_patch) {
+            this.onLivePatch(resp.live_patch);
+          }
+          if (resp.live_redirect) {
+            this.onLiveRedirect(resp.live_redirect);
+          }
+          onLoadingDone();
+          onReply(resp, hookReply);
+        };
+        if (resp.diff) {
+          this.liveSocket.requestDOMUpdate(() => {
+            this.applyDiff("update", resp.diff, ({ diff, reply, events }) => {
+              if (ref !== null) {
+                this.undoRefs(ref);
+              }
+              this.update(diff, events);
+              finish(reply);
+            });
+          });
+        } else {
+          if (ref !== null) {
+            this.undoRefs(ref);
+          }
+          finish(null);
+        }
+      });
+    });
+  }
+  undoRefs(ref) {
+    if (!this.isConnected()) {
+      return;
+    }
+    dom_default.all(document, `[${PHX_REF_SRC}="${this.id}"][${PHX_REF}="${ref}"]`, (el) => {
+      let disabledVal = el.getAttribute(PHX_DISABLED);
+      let readOnlyVal = el.getAttribute(PHX_READONLY);
+      el.removeAttribute(PHX_REF);
+      el.removeAttribute(PHX_REF_SRC);
+      if (readOnlyVal !== null) {
+        el.readOnly = readOnlyVal === "true" ? true : false;
+        el.removeAttribute(PHX_READONLY);
+      }
+      if (disabledVal !== null) {
+        el.disabled = disabledVal === "true" ? true : false;
+        el.removeAttribute(PHX_DISABLED);
+      }
+      PHX_EVENT_CLASSES.forEach((className) => dom_default.removeClass(el, className));
+      let disableRestore = el.getAttribute(PHX_DISABLE_WITH_RESTORE);
+      if (disableRestore !== null) {
+        el.innerText = disableRestore;
+        el.removeAttribute(PHX_DISABLE_WITH_RESTORE);
+      }
+      let toEl = dom_default.private(el, PHX_REF);
+      if (toEl) {
+        let hook = this.triggerBeforeUpdateHook(el, toEl);
+        DOMPatch.patchEl(el, toEl, this.liveSocket.getActiveElement());
+        if (hook) {
+          hook.__updated();
+        }
+        dom_default.deletePrivate(el, PHX_REF);
+      }
+    });
+  }
+  putRef(elements, event, opts = {}) {
+    let newRef = this.ref++;
+    let disableWith = this.binding(PHX_DISABLE_WITH);
+    if (opts.loading) {
+      elements = elements.concat(dom_default.all(document, opts.loading));
+    }
+    elements.forEach((el) => {
+      el.classList.add(`phx-${event}-loading`);
+      el.setAttribute(PHX_REF, newRef);
+      el.setAttribute(PHX_REF_SRC, this.el.id);
+      let disableText = el.getAttribute(disableWith);
+      if (disableText !== null) {
+        if (!el.getAttribute(PHX_DISABLE_WITH_RESTORE)) {
+          el.setAttribute(PHX_DISABLE_WITH_RESTORE, el.innerText);
+        }
+        if (disableText !== "") {
+          el.innerText = disableText;
+        }
+        el.setAttribute(PHX_DISABLED, el.getAttribute(PHX_DISABLED) || el.disabled);
+        el.setAttribute("disabled", "");
+      }
+    });
+    return [newRef, elements, opts];
+  }
+  componentID(el) {
+    let cid = el.getAttribute && el.getAttribute(PHX_COMPONENT);
+    return cid ? parseInt(cid) : null;
+  }
+  targetComponentID(target, targetCtx, opts = {}) {
+    if (isCid(targetCtx)) {
+      return targetCtx;
+    }
+    let cidOrSelector = opts.target || target.getAttribute(this.binding("target"));
+    if (isCid(cidOrSelector)) {
+      return parseInt(cidOrSelector);
+    } else if (targetCtx && (cidOrSelector !== null || opts.target)) {
+      return this.closestComponentID(targetCtx);
+    } else {
+      return null;
+    }
+  }
+  closestComponentID(targetCtx) {
+    if (isCid(targetCtx)) {
+      return targetCtx;
+    } else if (targetCtx) {
+      return maybe(targetCtx.closest(`[${PHX_COMPONENT}]`), (el) => this.ownsElement(el) && this.componentID(el));
+    } else {
+      return null;
+    }
+  }
+  pushHookEvent(el, targetCtx, event, payload, onReply) {
+    if (!this.isConnected()) {
+      this.log("hook", () => ["unable to push hook event. LiveView not connected", event, payload]);
+      return false;
+    }
+    let [ref, els, opts] = this.putRef([el], "hook");
+    this.pushWithReply(() => [ref, els, opts], "event", {
+      type: "hook",
+      event,
+      value: payload,
+      cid: this.closestComponentID(targetCtx)
+    }, (resp, reply) => onReply(reply, ref));
+    return ref;
+  }
+  extractMeta(el, meta, value) {
+    let prefix = this.binding("value-");
+    for (let i = 0;i < el.attributes.length; i++) {
+      if (!meta) {
+        meta = {};
+      }
+      let name = el.attributes[i].name;
+      if (name.startsWith(prefix)) {
+        meta[name.replace(prefix, "")] = el.getAttribute(name);
+      }
+    }
+    if (el.value !== undefined && !(el instanceof HTMLFormElement)) {
+      if (!meta) {
+        meta = {};
+      }
+      meta.value = el.value;
+      if (el.tagName === "INPUT" && CHECKABLE_INPUTS.indexOf(el.type) >= 0 && !el.checked) {
+        delete meta.value;
+      }
+    }
+    if (value) {
+      if (!meta) {
+        meta = {};
+      }
+      for (let key in value) {
+        meta[key] = value[key];
+      }
+    }
+    return meta;
+  }
+  pushEvent(type, el, targetCtx, phxEvent, meta, opts = {}, onReply) {
+    this.pushWithReply(() => this.putRef([el], type, opts), "event", {
+      type,
+      event: phxEvent,
+      value: this.extractMeta(el, meta, opts.value),
+      cid: this.targetComponentID(el, targetCtx, opts)
+    }, (resp, reply) => onReply && onReply(reply));
+  }
+  pushFileProgress(fileEl, entryRef, progress, onReply = function() {
+  }) {
+    this.liveSocket.withinOwners(fileEl.form, (view, targetCtx) => {
+      view.pushWithReply(null, "progress", {
+        event: fileEl.getAttribute(view.binding(PHX_PROGRESS)),
+        ref: fileEl.getAttribute(PHX_UPLOAD_REF),
+        entry_ref: entryRef,
+        progress,
+        cid: view.targetComponentID(fileEl.form, targetCtx)
+      }, onReply);
+    });
+  }
+  pushInput(inputEl, targetCtx, forceCid, phxEvent, opts, callback) {
+    let uploads;
+    let cid = isCid(forceCid) ? forceCid : this.targetComponentID(inputEl.form, targetCtx, opts);
+    let refGenerator = () => this.putRef([inputEl, inputEl.form], "change", opts);
+    let formData;
+    let meta = this.extractMeta(inputEl.form);
+    if (inputEl instanceof HTMLButtonElement) {
+      meta.submitter = inputEl;
+    }
+    if (inputEl.getAttribute(this.binding("change"))) {
+      formData = serializeForm(inputEl.form, { _target: opts._target, ...meta }, [inputEl.name]);
+    } else {
+      formData = serializeForm(inputEl.form, { _target: opts._target, ...meta });
+    }
+    if (dom_default.isUploadInput(inputEl) && inputEl.files && inputEl.files.length > 0) {
+      LiveUploader.trackFiles(inputEl, Array.from(inputEl.files));
+    }
+    uploads = LiveUploader.serializeUploads(inputEl);
+    let event = {
+      type: "form",
+      event: phxEvent,
+      value: formData,
+      uploads,
+      cid
+    };
+    this.pushWithReply(refGenerator, "event", event, (resp) => {
+      dom_default.showError(inputEl, this.liveSocket.binding(PHX_FEEDBACK_FOR), this.liveSocket.binding(PHX_FEEDBACK_GROUP));
+      if (dom_default.isUploadInput(inputEl) && dom_default.isAutoUpload(inputEl)) {
+        if (LiveUploader.filesAwaitingPreflight(inputEl).length > 0) {
+          let [ref, _els] = refGenerator();
+          this.uploadFiles(inputEl.form, targetCtx, ref, cid, (_uploads) => {
+            callback && callback(resp);
+            this.triggerAwaitingSubmit(inputEl.form);
+            this.undoRefs(ref);
+          });
+        }
+      } else {
+        callback && callback(resp);
+      }
+    });
+  }
+  triggerAwaitingSubmit(formEl) {
+    let awaitingSubmit = this.getScheduledSubmit(formEl);
+    if (awaitingSubmit) {
+      let [_el, _ref, _opts, callback] = awaitingSubmit;
+      this.cancelSubmit(formEl);
+      callback();
+    }
+  }
+  getScheduledSubmit(formEl) {
+    return this.formSubmits.find(([el, _ref, _opts, _callback]) => el.isSameNode(formEl));
+  }
+  scheduleSubmit(formEl, ref, opts, callback) {
+    if (this.getScheduledSubmit(formEl)) {
+      return true;
+    }
+    this.formSubmits.push([formEl, ref, opts, callback]);
+  }
+  cancelSubmit(formEl) {
+    this.formSubmits = this.formSubmits.filter(([el, ref, _callback]) => {
+      if (el.isSameNode(formEl)) {
+        this.undoRefs(ref);
+        return false;
+      } else {
+        return true;
+      }
+    });
+  }
+  disableForm(formEl, opts = {}) {
+    let filterIgnored = (el) => {
+      let userIgnored = closestPhxBinding(el, `${this.binding(PHX_UPDATE)}=ignore`, el.form);
+      return !(userIgnored || closestPhxBinding(el, "data-phx-update=ignore", el.form));
+    };
+    let filterDisables = (el) => {
+      return el.hasAttribute(this.binding(PHX_DISABLE_WITH));
+    };
+    let filterButton = (el) => el.tagName == "BUTTON";
+    let filterInput = (el) => ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName);
+    let formElements = Array.from(formEl.elements);
+    let disables = formElements.filter(filterDisables);
+    let buttons = formElements.filter(filterButton).filter(filterIgnored);
+    let inputs = formElements.filter(filterInput).filter(filterIgnored);
+    buttons.forEach((button) => {
+      button.setAttribute(PHX_DISABLED, button.disabled);
+      button.disabled = true;
+    });
+    inputs.forEach((input) => {
+      input.setAttribute(PHX_READONLY, input.readOnly);
+      input.readOnly = true;
+      if (input.files) {
+        input.setAttribute(PHX_DISABLED, input.disabled);
+        input.disabled = true;
+      }
+    });
+    formEl.setAttribute(this.binding(PHX_PAGE_LOADING), "");
+    return this.putRef([formEl].concat(disables).concat(buttons).concat(inputs), "submit", opts);
+  }
+  pushFormSubmit(formEl, targetCtx, phxEvent, submitter, opts, onReply) {
+    let refGenerator = () => this.disableForm(formEl, opts);
+    let cid = this.targetComponentID(formEl, targetCtx);
+    if (LiveUploader.hasUploadsInProgress(formEl)) {
+      let [ref, _els] = refGenerator();
+      let push = () => this.pushFormSubmit(formEl, targetCtx, phxEvent, submitter, opts, onReply);
+      return this.scheduleSubmit(formEl, ref, opts, push);
+    } else if (LiveUploader.inputsAwaitingPreflight(formEl).length > 0) {
+      let [ref, els] = refGenerator();
+      let proxyRefGen = () => [ref, els, opts];
+      this.uploadFiles(formEl, targetCtx, ref, cid, (uploads) => {
+        if (LiveUploader.inputsAwaitingPreflight(formEl).length > 0) {
+          return this.undoRefs(ref);
+        }
+        let meta = this.extractMeta(formEl);
+        let formData = serializeForm(formEl, { submitter, ...meta });
+        this.pushWithReply(proxyRefGen, "event", {
+          type: "form",
+          event: phxEvent,
+          value: formData,
+          cid
+        }, onReply);
+      });
+    } else if (!(formEl.hasAttribute(PHX_REF) && formEl.classList.contains("phx-submit-loading"))) {
+      let meta = this.extractMeta(formEl);
+      let formData = serializeForm(formEl, { submitter, ...meta });
+      this.pushWithReply(refGenerator, "event", {
+        type: "form",
+        event: phxEvent,
+        value: formData,
+        cid
+      }, onReply);
+    }
+  }
+  uploadFiles(formEl, targetCtx, ref, cid, onComplete) {
+    let joinCountAtUpload = this.joinCount;
+    let inputEls = LiveUploader.activeFileInputs(formEl);
+    let numFileInputsInProgress = inputEls.length;
+    inputEls.forEach((inputEl) => {
+      let uploader = new LiveUploader(inputEl, this, () => {
+        numFileInputsInProgress--;
+        if (numFileInputsInProgress === 0) {
+          onComplete();
+        }
+      });
+      let entries = uploader.entries().map((entry) => entry.toPreflightPayload());
+      if (entries.length === 0) {
+        numFileInputsInProgress--;
+        return;
+      }
+      let payload = {
+        ref: inputEl.getAttribute(PHX_UPLOAD_REF),
+        entries,
+        cid: this.targetComponentID(inputEl.form, targetCtx)
+      };
+      this.log("upload", () => ["sending preflight request", payload]);
+      this.pushWithReply(null, "allow_upload", payload, (resp) => {
+        this.log("upload", () => ["got preflight response", resp]);
+        uploader.entries().forEach((entry) => {
+          if (resp.entries && !resp.entries[entry.ref]) {
+            this.handleFailedEntryPreflight(entry.ref, "failed preflight", uploader);
+          }
+        });
+        if (resp.error || Object.keys(resp.entries).length === 0) {
+          this.undoRefs(ref);
+          let errors = resp.error || [];
+          errors.map(([entry_ref, reason]) => {
+            this.handleFailedEntryPreflight(entry_ref, reason, uploader);
+          });
+        } else {
+          let onError = (callback) => {
+            this.channel.onError(() => {
+              if (this.joinCount === joinCountAtUpload) {
+                callback();
+              }
+            });
+          };
+          uploader.initAdapterUpload(resp, onError, this.liveSocket);
+        }
+      });
+    });
+  }
+  handleFailedEntryPreflight(uploadRef, reason, uploader) {
+    if (uploader.isAutoUpload()) {
+      let entry = uploader.entries().find((entry2) => entry2.ref === uploadRef.toString());
+      if (entry) {
+        entry.cancel();
+      }
+    } else {
+      uploader.entries().map((entry) => entry.cancel());
+    }
+    this.log("upload", () => [`error for entry ${uploadRef}`, reason]);
+  }
+  dispatchUploads(targetCtx, name, filesOrBlobs) {
+    let targetElement = this.targetCtxElement(targetCtx) || this.el;
+    let inputs = dom_default.findUploadInputs(targetElement).filter((el) => el.name === name);
+    if (inputs.length === 0) {
+      logError(`no live file inputs found matching the name "${name}"`);
+    } else if (inputs.length > 1) {
+      logError(`duplicate live file inputs found matching the name "${name}"`);
+    } else {
+      dom_default.dispatchEvent(inputs[0], PHX_TRACK_UPLOADS, { detail: { files: filesOrBlobs } });
+    }
+  }
+  targetCtxElement(targetCtx) {
+    if (isCid(targetCtx)) {
+      let [target] = dom_default.findComponentNodeList(this.el, targetCtx);
+      return target;
+    } else if (targetCtx) {
+      return targetCtx;
+    } else {
+      return null;
+    }
+  }
+  pushFormRecovery(form, newCid, callback) {
+    this.liveSocket.withinOwners(form, (view, targetCtx) => {
+      let phxChange = this.binding("change");
+      let inputs = Array.from(form.elements).filter((el) => dom_default.isFormInput(el) && el.name && !el.hasAttribute(phxChange));
+      if (inputs.length === 0) {
+        return;
+      }
+      inputs.forEach((input2) => input2.hasAttribute(PHX_UPLOAD_REF) && LiveUploader.clearFiles(input2));
+      let input = inputs.find((el) => el.type !== "hidden") || inputs[0];
+      let phxEvent = form.getAttribute(this.binding(PHX_AUTO_RECOVER)) || form.getAttribute(this.binding("change"));
+      js_default.exec("change", phxEvent, view, input, ["push", { _target: input.name, newCid, callback }]);
+    });
+  }
+  pushLinkPatch(href, targetEl, callback) {
+    let linkRef = this.liveSocket.setPendingLink(href);
+    let refGen = targetEl ? () => this.putRef([targetEl], "click") : null;
+    let fallback = () => this.liveSocket.redirect(window.location.href);
+    let url = href.startsWith("/") ? `${location.protocol}//${location.host}${href}` : href;
+    let push = this.pushWithReply(refGen, "live_patch", { url }, (resp) => {
+      this.liveSocket.requestDOMUpdate(() => {
+        if (resp.link_redirect) {
+          this.liveSocket.replaceMain(href, null, callback, linkRef);
+        } else {
+          if (this.liveSocket.commitPendingLink(linkRef)) {
+            this.href = href;
+          }
+          this.applyPendingUpdates();
+          callback && callback(linkRef);
+        }
+      });
+    });
+    if (push) {
+      push.receive("timeout", fallback);
+    } else {
+      fallback();
+    }
+  }
+  formsForRecovery(html) {
+    if (this.joinCount === 0) {
+      return [];
+    }
+    let phxChange = this.binding("change");
+    let template = document.createElement("template");
+    template.innerHTML = html;
+    return dom_default.all(this.el, `form[${phxChange}]`).filter((form) => form.id && this.ownsElement(form)).filter((form) => form.elements.length > 0).filter((form) => form.getAttribute(this.binding(PHX_AUTO_RECOVER)) !== "ignore").map((form) => {
+      const phxChangeValue = CSS.escape(form.getAttribute(phxChange));
+      let newForm = template.content.querySelector(`form[id="${form.id}"][${phxChange}="${phxChangeValue}"]`);
+      if (newForm) {
+        return [form, newForm, this.targetComponentID(newForm)];
+      } else {
+        return [form, form, this.targetComponentID(form)];
+      }
+    }).filter(([form, newForm, newCid]) => newForm);
+  }
+  maybePushComponentsDestroyed(destroyedCIDs) {
+    let willDestroyCIDs = destroyedCIDs.filter((cid) => {
+      return dom_default.findComponentNodeList(this.el, cid).length === 0;
+    });
+    if (willDestroyCIDs.length > 0) {
+      willDestroyCIDs.forEach((cid) => this.rendered.resetRender(cid));
+      this.pushWithReply(null, "cids_will_destroy", { cids: willDestroyCIDs }, () => {
+        let completelyDestroyCIDs = willDestroyCIDs.filter((cid) => {
+          return dom_default.findComponentNodeList(this.el, cid).length === 0;
+        });
+        if (completelyDestroyCIDs.length > 0) {
+          this.pushWithReply(null, "cids_destroyed", { cids: completelyDestroyCIDs }, (resp) => {
+            this.rendered.pruneCIDs(resp.cids);
+          });
+        }
+      });
+    }
+  }
+  ownsElement(el) {
+    let parentViewEl = el.closest(PHX_VIEW_SELECTOR);
+    return el.getAttribute(PHX_PARENT_ID) === this.id || parentViewEl && parentViewEl.id === this.id || !parentViewEl && this.isDead;
+  }
+  submitForm(form, targetCtx, phxEvent, submitter, opts = {}) {
+    dom_default.putPrivate(form, PHX_HAS_SUBMITTED, true);
+    const phxFeedbackFor = this.liveSocket.binding(PHX_FEEDBACK_FOR);
+    const phxFeedbackGroup = this.liveSocket.binding(PHX_FEEDBACK_GROUP);
+    const inputs = Array.from(form.elements);
+    inputs.forEach((input) => dom_default.putPrivate(input, PHX_HAS_SUBMITTED, true));
+    this.liveSocket.blurActiveElement(this);
+    this.pushFormSubmit(form, targetCtx, phxEvent, submitter, opts, () => {
+      inputs.forEach((input) => dom_default.showError(input, phxFeedbackFor, phxFeedbackGroup));
+      this.liveSocket.restorePreviouslyActiveFocus();
+    });
+  }
+  binding(kind) {
+    return this.liveSocket.binding(kind);
+  }
+};
+var LiveSocket = class {
+  constructor(url, phxSocket, opts = {}) {
+    this.unloaded = false;
+    if (!phxSocket || phxSocket.constructor.name === "Object") {
+      throw new Error(`
       a phoenix Socket must be provided as the second argument to the LiveSocket constructor. For example:
 
           import {Socket} from "phoenix"
           import {LiveSocket} from "phoenix_live_view"
           let liveSocket = new LiveSocket("/live", Socket, {...})
-      `);this.socket=new Z(Q,$),this.bindingPrefix=$.bindingPrefix||v5,this.opts=$,this.params=W1($.params||{}),this.viewLogger=$.viewLogger,this.metadataCallbacks=$.metadata||{},this.defaults=Object.assign(p0(E5),$.defaults||{}),this.activeElement=null,this.prevActive=null,this.silenced=!1,this.main=null,this.outgoingMainEl=null,this.clickStartedAtTarget=null,this.linkRef=1,this.roots={},this.href=window.location.href,this.pendingLink=null,this.currentLocation=p0(window.location),this.hooks=$.hooks||{},this.uploaders=$.uploaders||{},this.loaderTimeout=$.loaderTimeout||k5,this.reloadWithJitterTimer=null,this.maxReloads=$.maxReloads||x5,this.reloadJitterMin=$.reloadJitterMin||O5,this.reloadJitterMax=$.reloadJitterMax||A5,this.failsafeJitter=$.failsafeJitter||R5,this.localStorage=$.localStorage||window.localStorage,this.sessionStorage=$.sessionStorage||window.sessionStorage,this.boundTopLevelEvents=!1,this.domCallbacks=Object.assign({onNodeAdded:W1(),onBeforeElUpdated:W1()},$.dom||{}),this.transitions=new V9,window.addEventListener("pagehide",(Y)=>{this.unloaded=!0}),this.socket.onOpen(()=>{if(this.isUnloaded())window.location.reload()})}isProfileEnabled(){return this.sessionStorage.getItem(Y1)==="true"}isDebugEnabled(){return this.sessionStorage.getItem(N0)==="true"}isDebugDisabled(){return this.sessionStorage.getItem(N0)==="false"}enableDebug(){this.sessionStorage.setItem(N0,"true")}enableProfiling(){this.sessionStorage.setItem(Y1,"true")}disableDebug(){this.sessionStorage.setItem(N0,"false")}disableProfiling(){this.sessionStorage.removeItem(Y1)}enableLatencySim(Q){this.enableDebug(),console.log("latency simulator enabled for the duration of this browser session. Call disableLatencySim() to disable"),this.sessionStorage.setItem(z1,Q)}disableLatencySim(){this.sessionStorage.removeItem(z1)}getLatencySim(){let Q=this.sessionStorage.getItem(z1);return Q?parseInt(Q):null}getSocket(){return this.socket}connect(){if(window.location.hostname==="localhost"&&!this.isDebugDisabled())this.enableDebug();let Q=()=>{if(this.joinRootViews())this.bindTopLevelEvents(),this.socket.connect();else if(this.main)this.socket.connect();else this.bindTopLevelEvents({dead:!0});this.joinDeadView()};if(["complete","loaded","interactive"].indexOf(document.readyState)>=0)Q();else document.addEventListener("DOMContentLoaded",()=>Q())}disconnect(Q){clearTimeout(this.reloadWithJitterTimer),this.socket.disconnect(Q)}replaceTransport(Q){clearTimeout(this.reloadWithJitterTimer),this.socket.replaceTransport(Q),this.connect()}execJS(Q,Z,$=null){this.owner(Q,(Y)=>T.exec($,Z,Y,Q))}execJSHookPush(Q,Z,$,Y){this.withinOwners(Q,(z)=>{T.exec("hook",Z,z,Q,["push",{data:$,callback:Y}])})}unload(){if(this.unloaded)return;if(this.main&&this.isConnected())this.log(this.main,"socket",()=>["disconnect for page nav"]);this.unloaded=!0,this.destroyAllViews(),this.disconnect()}triggerDOM(Q,Z){this.domCallbacks[Q](...Z)}time(Q,Z){if(!this.isProfileEnabled()||!console.time)return Z();console.time(Q);let $=Z();return console.timeEnd(Q),$}log(Q,Z,$){if(this.viewLogger){let[Y,z]=$();this.viewLogger(Q,Z,Y,z)}else if(this.isDebugEnabled()){let[Y,z]=$();m5(Q,Z,Y,z)}}requestDOMUpdate(Q){this.transitions.after(Q)}transition(Q,Z,$=function(){}){this.transitions.addTransition(Q,Z,$)}onChannel(Q,Z,$){Q.on(Z,(Y)=>{let z=this.getLatencySim();if(!z)$(Y);else setTimeout(()=>$(Y),z)})}wrapPush(Q,Z,$){let Y=this.getLatencySim(),z=Q.joinCount;if(!Y)if(this.isConnected()&&Z.timeout)return $().receive("timeout",()=>{if(Q.joinCount===z&&!Q.isDestroyed())this.reloadWithJitter(Q,()=>{this.log(Q,"timeout",()=>["received timeout while communicating with server. Falling back to hard refresh for recovery"])})});else return $();let J={receives:[],receive(W,q){this.receives.push([W,q])}};return setTimeout(()=>{if(Q.isDestroyed())return;J.receives.reduce((W,[q,G])=>W.receive(q,G),$())},Y),J}reloadWithJitter(Q,Z){clearTimeout(this.reloadWithJitterTimer),this.disconnect();let $=this.reloadJitterMin,Y=this.reloadJitterMax,z=Math.floor(Math.random()*(Y-$+1))+$,J=s.updateLocal(this.localStorage,window.location.pathname,n1,0,(W)=>W+1);if(J>this.maxReloads)z=this.failsafeJitter;this.reloadWithJitterTimer=setTimeout(()=>{if(Q.isDestroyed()||Q.isConnected())return;if(Q.destroy(),Z?Z():this.log(Q,"join",()=>[`encountered ${J} consecutive reloads`]),J>this.maxReloads)this.log(Q,"join",()=>[`exceeded ${this.maxReloads} consecutive reloads. Entering failsafe mode`]);if(this.hasPendingLink())window.location=this.pendingLink;else window.location.reload()},z)}getHookCallbacks(Q){return Q&&Q.startsWith("Phoenix.")?o5[Q.split(".")[1]]:this.hooks[Q]}isUnloaded(){return this.unloaded}isConnected(){return this.socket.isConnected()}getBindingPrefix(){return this.bindingPrefix}binding(Q){return`${this.getBindingPrefix()}${Q}`}channel(Q,Z){return this.socket.channel(Q,Z)}joinDeadView(){let Q=document.body;if(Q&&!this.isPhxView(Q)&&!this.isPhxView(document.firstElementChild)){let Z=this.newRootView(Q);if(Z.setHref(this.getHref()),Z.joinDead(),!this.main)this.main=Z;window.requestAnimationFrame(()=>Z.execNewMounted())}}joinRootViews(){let Q=!1;return K.all(document,`${U0}:not([${K0}])`,(Z)=>{if(!this.getRootById(Z.id)){let $=this.newRootView(Z);if($.setHref(this.getHref()),$.join(),Z.hasAttribute(V1))this.main=$}Q=!0}),Q}redirect(Q,Z){this.unload(),s.redirect(Q,Z)}replaceMain(Q,Z,$=null,Y=this.setPendingLink(Q)){let z=this.currentLocation.href;this.outgoingMainEl=this.outgoingMainEl||this.main.el;let J=K.cloneNode(this.outgoingMainEl,"");this.main.showLoader(this.loaderTimeout),this.main.destroy(),this.main=this.newRootView(J,Z,z),this.main.setRedirect(Q),this.transitionRemoves(null,!0),this.main.join((W,q)=>{if(W===1&&this.commitPendingLink(Y))this.requestDOMUpdate(()=>{K.findPhxSticky(document).forEach((G)=>J.appendChild(G)),this.outgoingMainEl.replaceWith(J),this.outgoingMainEl=null,$&&$(Y),q()})})}transitionRemoves(Q,Z){let $=this.binding("remove");if(Q=Q||K.all(document,`[${$}]`),Z){const Y=K.findPhxSticky(document)||[];Q=Q.filter((z)=>!K.isChildOfAny(z,Y))}Q.forEach((Y)=>{this.execJS(Y,Y.getAttribute($),"remove")})}isPhxView(Q){return Q.getAttribute&&Q.getAttribute($0)!==null}newRootView(Q,Z,$){let Y=new $5(Q,this,null,Z,$);return this.roots[Y.id]=Y,Y}owner(Q,Z){let $=Z0(Q.closest(U0),(Y)=>this.getViewByEl(Y))||this.main;if($)Z($)}withinOwners(Q,Z){this.owner(Q,($)=>Z($,Q))}getViewByEl(Q){let Z=Q.getAttribute(M0);return Z0(this.getRootById(Z),($)=>$.getDescendentByEl(Q))}getRootById(Q){return this.roots[Q]}destroyAllViews(){for(let Q in this.roots)this.roots[Q].destroy(),delete this.roots[Q];this.main=null}destroyViewByEl(Q){let Z=this.getRootById(Q.getAttribute(M0));if(Z&&Z.id===Q.id)Z.destroy(),delete this.roots[Z.id];else if(Z)Z.destroyDescendent(Q.id)}setActiveElement(Q){if(this.activeElement===Q)return;this.activeElement=Q;let Z=()=>{if(Q===this.activeElement)this.activeElement=null;Q.removeEventListener("mouseup",this),Q.removeEventListener("touchend",this)};Q.addEventListener("mouseup",Z),Q.addEventListener("touchend",Z)}getActiveElement(){if(document.activeElement===document.body)return this.activeElement||document.activeElement;else return document.activeElement||document.body}dropActiveElement(Q){if(this.prevActive&&Q.ownsElement(this.prevActive))this.prevActive=null}restorePreviouslyActiveFocus(){if(this.prevActive&&this.prevActive!==document.body)this.prevActive.focus()}blurActiveElement(){if(this.prevActive=this.getActiveElement(),this.prevActive!==document.body)this.prevActive.blur()}bindTopLevelEvents({dead:Q}={}){if(this.boundTopLevelEvents)return;if(this.boundTopLevelEvents=!0,this.socket.onClose((Z)=>{if(Z&&Z.code===1000&&this.main)return this.reloadWithJitter(this.main)}),document.body.addEventListener("click",function(){}),window.addEventListener("pageshow",(Z)=>{if(Z.persisted)this.getSocket().disconnect(),this.withPageLoading({to:window.location.href,kind:"redirect"}),window.location.reload()},!0),!Q)this.bindNav();if(this.bindClicks(),!Q)this.bindForms();this.bind({keyup:"keyup",keydown:"keydown"},(Z,$,Y,z,J,W)=>{let q=z.getAttribute(this.binding(C5)),G=Z.key&&Z.key.toLowerCase();if(q&&q.toLowerCase()!==G)return;let j={key:Z.key,...this.eventMeta($,Z,z)};T.exec($,J,Y,z,["push",{data:j}])}),this.bind({blur:"focusout",focus:"focusin"},(Z,$,Y,z,J,W)=>{if(!W){let q={key:Z.key,...this.eventMeta($,Z,z)};T.exec($,J,Y,z,["push",{data:q}])}}),this.bind({blur:"blur",focus:"focus"},(Z,$,Y,z,J,W)=>{if(W==="window"){let q=this.eventMeta($,Z,z);T.exec($,J,Y,z,["push",{data:q}])}}),window.addEventListener("dragover",(Z)=>Z.preventDefault()),window.addEventListener("drop",(Z)=>{Z.preventDefault();let $=Z0(R0(Z.target,this.binding(O1)),(J)=>{return J.getAttribute(this.binding(O1))}),Y=$&&document.getElementById($),z=Array.from(Z.dataTransfer.files||[]);if(!Y||Y.disabled||z.length===0||!(Y.files instanceof FileList))return;w.trackFiles(Y,z,Z.dataTransfer),Y.dispatchEvent(new Event("input",{bubbles:!0}))}),this.on(r1,(Z)=>{let $=Z.target;if(!K.isUploadInput($))return;let Y=Array.from(Z.detail.files||[]).filter((z)=>z instanceof File||z instanceof Blob);w.trackFiles($,Y),$.dispatchEvent(new Event("input",{bubbles:!0}))})}eventMeta(Q,Z,$){let Y=this.metadataCallbacks[Q];return Y?Y(Z,$):{}}setPendingLink(Q){return this.linkRef++,this.pendingLink=Q,this.linkRef}commitPendingLink(Q){if(this.linkRef!==Q)return!1;else return this.href=this.pendingLink,this.pendingLink=null,!0}getHref(){return this.href}hasPendingLink(){return!!this.pendingLink}bind(Q,Z){for(let $ in Q){let Y=Q[$];this.on(Y,(z)=>{let J=this.binding($),W=this.binding(`window-${$}`),q=z.target.getAttribute&&z.target.getAttribute(J);if(q)this.debounce(z.target,z,Y,()=>{this.withinOwners(z.target,(G)=>{Z(z,$,G,z.target,q,null)})});else K.all(document,`[${W}]`,(G)=>{let j=G.getAttribute(W);this.debounce(G,z,Y,()=>{this.withinOwners(G,(B)=>{Z(z,$,B,G,j,"window")})})})})}}bindClicks(){window.addEventListener("mousedown",(Q)=>this.clickStartedAtTarget=Q.target),this.bindClick("click","click",!1),this.bindClick("mousedown","capture-click",!0)}bindClick(Q,Z,$){let Y=this.binding(Z);window.addEventListener(Q,(z)=>{let J=null;if($)J=z.target.matches(`[${Y}]`)?z.target:z.target.querySelector(`[${Y}]`);else{if(z.detail===0)this.clickStartedAtTarget=z.target;let q=this.clickStartedAtTarget||z.target;J=R0(q,Y),this.dispatchClickAway(z,q),this.clickStartedAtTarget=null}let W=J&&J.getAttribute(Y);if(!W){if(!$&&K.isNewPageClick(z,window.location))this.unload();return}if(J.getAttribute("href")==="#")z.preventDefault();if(J.hasAttribute(v))return;this.debounce(J,z,"click",()=>{this.withinOwners(J,(q)=>{T.exec("click",W,q,J,["push",{data:this.eventMeta("click",z,J)}])})})},$)}dispatchClickAway(Q,Z){let $=this.binding("click-away");K.all(document,`[${$}]`,(Y)=>{if(!(Y.isSameNode(Z)||Y.contains(Z)))this.withinOwners(Y,(z)=>{let J=Y.getAttribute($);if(T.isVisible(Y)&&T.isInViewport(Y))T.exec("click",J,z,Y,["push",{data:this.eventMeta("click",Q,Q.target)}])})})}bindNav(){if(!s.canPushState())return;if(history.scrollRestoration)history.scrollRestoration="manual";let Q=null;window.addEventListener("scroll",(Z)=>{clearTimeout(Q),Q=setTimeout(()=>{s.updateCurrentState(($)=>Object.assign($,{scroll:window.scrollY}))},100)}),window.addEventListener("popstate",(Z)=>{if(!this.registerNewLocation(window.location))return;let{type:$,id:Y,root:z,scroll:J}=Z.state||{},W=window.location.href;K.dispatchEvent(window,"phx:navigate",{detail:{href:W,patch:$==="patch",pop:!0}}),this.requestDOMUpdate(()=>{if(this.main.isConnected()&&($==="patch"&&Y===this.main.id))this.main.pushLinkPatch(W,null,()=>{this.maybeScroll(J)});else this.replaceMain(W,null,()=>{if(z)this.replaceRootHistory();this.maybeScroll(J)})})},!1),window.addEventListener("click",(Z)=>{let $=R0(Z.target,t0),Y=$&&$.getAttribute(t0);if(!Y||!this.isConnected()||!this.main||K.wantsNewTab(Z))return;let z=$.href instanceof SVGAnimatedString?$.href.baseVal:$.href,J=$.getAttribute(P5);if(Z.preventDefault(),Z.stopImmediatePropagation(),this.pendingLink===z)return;this.requestDOMUpdate(()=>{if(Y==="patch")this.pushHistoryPatch(z,J,$);else if(Y==="redirect")this.historyRedirect(z,J);else throw new Error(`expected ${t0} to be "patch" or "redirect", got: ${Y}`);let W=$.getAttribute(this.binding("click"));if(W)this.requestDOMUpdate(()=>this.execJS($,W,"click"))})},!1)}maybeScroll(Q){if(typeof Q==="number")requestAnimationFrame(()=>{window.scrollTo(0,Q)})}dispatchEvent(Q,Z={}){K.dispatchEvent(window,`phx:${Q}`,{detail:Z})}dispatchEvents(Q){Q.forEach(([Z,$])=>this.dispatchEvent(Z,$))}withPageLoading(Q,Z){K.dispatchEvent(window,"phx:page-loading-start",{detail:Q});let $=()=>K.dispatchEvent(window,"phx:page-loading-stop",{detail:Q});return Z?Z($):$}pushHistoryPatch(Q,Z,$){if(!this.isConnected()||!this.main.isMain())return s.redirect(Q);this.withPageLoading({to:Q,kind:"patch"},(Y)=>{this.main.pushLinkPatch(Q,$,(z)=>{this.historyPatch(Q,Z,z),Y()})})}historyPatch(Q,Z,$=this.setPendingLink(Q)){if(!this.commitPendingLink($))return;s.pushState(Z,{type:"patch",id:this.main.id},Q),K.dispatchEvent(window,"phx:navigate",{detail:{patch:!0,href:Q,pop:!1}}),this.registerNewLocation(window.location)}historyRedirect(Q,Z,$){if(!this.isConnected()||!this.main.isMain())return s.redirect(Q,$);if(/^\/$|^\/[^\/]+.*$/.test(Q)){let{protocol:z,host:J}=window.location;Q=`${z}//${J}${Q}`}let Y=window.scrollY;this.withPageLoading({to:Q,kind:"redirect"},(z)=>{this.replaceMain(Q,$,(J)=>{if(J===this.linkRef)s.pushState(Z,{type:"redirect",id:this.main.id,scroll:Y},Q),K.dispatchEvent(window,"phx:navigate",{detail:{href:Q,patch:!1,pop:!1}}),this.registerNewLocation(window.location);z()})})}replaceRootHistory(){s.pushState("replace",{root:!0,type:"patch",id:this.main.id})}registerNewLocation(Q){let{pathname:Z,search:$}=this.currentLocation;if(Z+$===Q.pathname+Q.search)return!1;else return this.currentLocation=p0(Q),!0}bindForms(){let Q=0,Z=!1;this.on("submit",($)=>{let Y=$.target.getAttribute(this.binding("submit")),z=$.target.getAttribute(this.binding("change"));if(!Z&&z&&!Y)Z=!0,$.preventDefault(),this.withinOwners($.target,(J)=>{J.disableForm($.target),window.requestAnimationFrame(()=>{if(K.isUnloadableFormSubmit($))this.unload();$.target.submit()})})},!0),this.on("submit",($)=>{let Y=$.target.getAttribute(this.binding("submit"));if(!Y){if(K.isUnloadableFormSubmit($))this.unload();return}$.preventDefault(),$.target.disabled=!0,this.withinOwners($.target,(z)=>{T.exec("submit",Y,z,$.target,["push",{submitter:$.submitter}])})},!1);for(let $ of["change","input"])this.on($,(Y)=>{let z=this.binding("change"),J=Y.target,W=J.getAttribute(z),q=J.form&&J.form.getAttribute(z),G=W||q;if(!G)return;if(J.type==="number"&&J.validity&&J.validity.badInput)return;let j=W?J:J.form,B=Q;Q++;let{at:U,type:V}=K.private(J,"prev-iteration")||{};if(U===B-1&&$==="change"&&V==="input")return;K.putPrivate(J,"prev-iteration",{at:B,type:$}),this.debounce(J,Y,$,()=>{this.withinOwners(j,(X)=>{if(K.putPrivate(J,B1,!0),!K.isTextualInput(J))this.setActiveElement(J);T.exec("change",G,X,J,["push",{_target:Y.target.name,dispatcher:j}])})})},!1);this.on("reset",($)=>{let Y=$.target;K.resetForm(Y,this.binding(m0),this.binding(c0));let z=Array.from(Y.elements).find((J)=>J.type==="reset");if(z)window.requestAnimationFrame(()=>{z.dispatchEvent(new Event("input",{bubbles:!0,cancelable:!1}))})})}debounce(Q,Z,$,Y){if($==="blur"||$==="focusout")return Y();let z=this.binding(b5),J=this.binding(g5),W=this.defaults.debounce.toString(),q=this.defaults.throttle.toString();this.withinOwners(Q,(G)=>{let j=()=>!G.isDestroyed()&&document.body.contains(Q);K.debounce(Q,Z,z,W,J,q,j,()=>{Y()})})}silenceEvents(Q){this.silenced=!0,Q(),this.silenced=!1}on(Q,Z){window.addEventListener(Q,($)=>{if(!this.silenced)Z($)})}},V9=class{constructor(){this.transitions=new Set,this.pendingOps=[]}reset(){this.transitions.forEach((Q)=>{clearTimeout(Q),this.transitions.delete(Q)}),this.flushPendingOps()}after(Q){if(this.size()===0)Q();else this.pushPendingOp(Q)}addTransition(Q,Z,$){Z();let Y=setTimeout(()=>{this.transitions.delete(Y),$(),this.flushPendingOps()},Q);this.transitions.add(Y)}pushPendingOp(Q){this.pendingOps.push(Q)}size(){return this.transitions.size}flushPendingOps(){if(this.size()>0)return;let Q=this.pendingOps.shift();if(Q)Q(),this.flushPendingOps()}};var n0=M5(J5(),1),X9=document.querySelector("meta[name='csrf-token']").getAttribute("content"),L9=document.querySelector("meta[name='socket-path']").getAttribute("content"),F9=document.querySelector("meta[name='socket-transport']").getAttribute("content"),D9=F9=="longpoll"?z0:WebSocket,W5=new Y5(L9,x1,{transport:D9,params:{_csrf_token:X9}});n0.default.config({barColors:{0:"#29d"},shadowColor:"rgba(0, 0, 0, .3)"});window.addEventListener("phx:page-loading-start",(Q)=>n0.default.show(300));window.addEventListener("phx:page-loading-stop",(Q)=>n0.default.hide());W5.connect();window.liveSocket=W5;
+      `);
+    }
+    this.socket = new phxSocket(url, opts);
+    this.bindingPrefix = opts.bindingPrefix || BINDING_PREFIX;
+    this.opts = opts;
+    this.params = closure2(opts.params || {});
+    this.viewLogger = opts.viewLogger;
+    this.metadataCallbacks = opts.metadata || {};
+    this.defaults = Object.assign(clone(DEFAULTS), opts.defaults || {});
+    this.activeElement = null;
+    this.prevActive = null;
+    this.silenced = false;
+    this.main = null;
+    this.outgoingMainEl = null;
+    this.clickStartedAtTarget = null;
+    this.linkRef = 1;
+    this.roots = {};
+    this.href = window.location.href;
+    this.pendingLink = null;
+    this.currentLocation = clone(window.location);
+    this.hooks = opts.hooks || {};
+    this.uploaders = opts.uploaders || {};
+    this.loaderTimeout = opts.loaderTimeout || LOADER_TIMEOUT;
+    this.reloadWithJitterTimer = null;
+    this.maxReloads = opts.maxReloads || MAX_RELOADS;
+    this.reloadJitterMin = opts.reloadJitterMin || RELOAD_JITTER_MIN;
+    this.reloadJitterMax = opts.reloadJitterMax || RELOAD_JITTER_MAX;
+    this.failsafeJitter = opts.failsafeJitter || FAILSAFE_JITTER;
+    this.localStorage = opts.localStorage || window.localStorage;
+    this.sessionStorage = opts.sessionStorage || window.sessionStorage;
+    this.boundTopLevelEvents = false;
+    this.domCallbacks = Object.assign({ onNodeAdded: closure2(), onBeforeElUpdated: closure2() }, opts.dom || {});
+    this.transitions = new TransitionSet;
+    window.addEventListener("pagehide", (_e) => {
+      this.unloaded = true;
+    });
+    this.socket.onOpen(() => {
+      if (this.isUnloaded()) {
+        window.location.reload();
+      }
+    });
+  }
+  isProfileEnabled() {
+    return this.sessionStorage.getItem(PHX_LV_PROFILE) === "true";
+  }
+  isDebugEnabled() {
+    return this.sessionStorage.getItem(PHX_LV_DEBUG) === "true";
+  }
+  isDebugDisabled() {
+    return this.sessionStorage.getItem(PHX_LV_DEBUG) === "false";
+  }
+  enableDebug() {
+    this.sessionStorage.setItem(PHX_LV_DEBUG, "true");
+  }
+  enableProfiling() {
+    this.sessionStorage.setItem(PHX_LV_PROFILE, "true");
+  }
+  disableDebug() {
+    this.sessionStorage.setItem(PHX_LV_DEBUG, "false");
+  }
+  disableProfiling() {
+    this.sessionStorage.removeItem(PHX_LV_PROFILE);
+  }
+  enableLatencySim(upperBoundMs) {
+    this.enableDebug();
+    console.log("latency simulator enabled for the duration of this browser session. Call disableLatencySim() to disable");
+    this.sessionStorage.setItem(PHX_LV_LATENCY_SIM, upperBoundMs);
+  }
+  disableLatencySim() {
+    this.sessionStorage.removeItem(PHX_LV_LATENCY_SIM);
+  }
+  getLatencySim() {
+    let str = this.sessionStorage.getItem(PHX_LV_LATENCY_SIM);
+    return str ? parseInt(str) : null;
+  }
+  getSocket() {
+    return this.socket;
+  }
+  connect() {
+    if (window.location.hostname === "localhost" && !this.isDebugDisabled()) {
+      this.enableDebug();
+    }
+    let doConnect = () => {
+      if (this.joinRootViews()) {
+        this.bindTopLevelEvents();
+        this.socket.connect();
+      } else if (this.main) {
+        this.socket.connect();
+      } else {
+        this.bindTopLevelEvents({ dead: true });
+      }
+      this.joinDeadView();
+    };
+    if (["complete", "loaded", "interactive"].indexOf(document.readyState) >= 0) {
+      doConnect();
+    } else {
+      document.addEventListener("DOMContentLoaded", () => doConnect());
+    }
+  }
+  disconnect(callback) {
+    clearTimeout(this.reloadWithJitterTimer);
+    this.socket.disconnect(callback);
+  }
+  replaceTransport(transport) {
+    clearTimeout(this.reloadWithJitterTimer);
+    this.socket.replaceTransport(transport);
+    this.connect();
+  }
+  execJS(el, encodedJS, eventType = null) {
+    this.owner(el, (view) => js_default.exec(eventType, encodedJS, view, el));
+  }
+  execJSHookPush(el, phxEvent, data, callback) {
+    this.withinOwners(el, (view) => {
+      js_default.exec("hook", phxEvent, view, el, ["push", { data, callback }]);
+    });
+  }
+  unload() {
+    if (this.unloaded) {
+      return;
+    }
+    if (this.main && this.isConnected()) {
+      this.log(this.main, "socket", () => ["disconnect for page nav"]);
+    }
+    this.unloaded = true;
+    this.destroyAllViews();
+    this.disconnect();
+  }
+  triggerDOM(kind, args) {
+    this.domCallbacks[kind](...args);
+  }
+  time(name, func) {
+    if (!this.isProfileEnabled() || !console.time) {
+      return func();
+    }
+    console.time(name);
+    let result = func();
+    console.timeEnd(name);
+    return result;
+  }
+  log(view, kind, msgCallback) {
+    if (this.viewLogger) {
+      let [msg, obj] = msgCallback();
+      this.viewLogger(view, kind, msg, obj);
+    } else if (this.isDebugEnabled()) {
+      let [msg, obj] = msgCallback();
+      debug(view, kind, msg, obj);
+    }
+  }
+  requestDOMUpdate(callback) {
+    this.transitions.after(callback);
+  }
+  transition(time, onStart, onDone = function() {
+  }) {
+    this.transitions.addTransition(time, onStart, onDone);
+  }
+  onChannel(channel, event, cb) {
+    channel.on(event, (data) => {
+      let latency = this.getLatencySim();
+      if (!latency) {
+        cb(data);
+      } else {
+        setTimeout(() => cb(data), latency);
+      }
+    });
+  }
+  wrapPush(view, opts, push) {
+    let latency = this.getLatencySim();
+    let oldJoinCount = view.joinCount;
+    if (!latency) {
+      if (this.isConnected() && opts.timeout) {
+        return push().receive("timeout", () => {
+          if (view.joinCount === oldJoinCount && !view.isDestroyed()) {
+            this.reloadWithJitter(view, () => {
+              this.log(view, "timeout", () => ["received timeout while communicating with server. Falling back to hard refresh for recovery"]);
+            });
+          }
+        });
+      } else {
+        return push();
+      }
+    }
+    let fakePush = {
+      receives: [],
+      receive(kind, cb) {
+        this.receives.push([kind, cb]);
+      }
+    };
+    setTimeout(() => {
+      if (view.isDestroyed()) {
+        return;
+      }
+      fakePush.receives.reduce((acc, [kind, cb]) => acc.receive(kind, cb), push());
+    }, latency);
+    return fakePush;
+  }
+  reloadWithJitter(view, log) {
+    clearTimeout(this.reloadWithJitterTimer);
+    this.disconnect();
+    let minMs = this.reloadJitterMin;
+    let maxMs = this.reloadJitterMax;
+    let afterMs = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+    let tries = browser_default.updateLocal(this.localStorage, window.location.pathname, CONSECUTIVE_RELOADS, 0, (count) => count + 1);
+    if (tries > this.maxReloads) {
+      afterMs = this.failsafeJitter;
+    }
+    this.reloadWithJitterTimer = setTimeout(() => {
+      if (view.isDestroyed() || view.isConnected()) {
+        return;
+      }
+      view.destroy();
+      log ? log() : this.log(view, "join", () => [`encountered ${tries} consecutive reloads`]);
+      if (tries > this.maxReloads) {
+        this.log(view, "join", () => [`exceeded ${this.maxReloads} consecutive reloads. Entering failsafe mode`]);
+      }
+      if (this.hasPendingLink()) {
+        window.location = this.pendingLink;
+      } else {
+        window.location.reload();
+      }
+    }, afterMs);
+  }
+  getHookCallbacks(name) {
+    return name && name.startsWith("Phoenix.") ? hooks_default[name.split(".")[1]] : this.hooks[name];
+  }
+  isUnloaded() {
+    return this.unloaded;
+  }
+  isConnected() {
+    return this.socket.isConnected();
+  }
+  getBindingPrefix() {
+    return this.bindingPrefix;
+  }
+  binding(kind) {
+    return `${this.getBindingPrefix()}${kind}`;
+  }
+  channel(topic, params) {
+    return this.socket.channel(topic, params);
+  }
+  joinDeadView() {
+    let body = document.body;
+    if (body && !this.isPhxView(body) && !this.isPhxView(document.firstElementChild)) {
+      let view = this.newRootView(body);
+      view.setHref(this.getHref());
+      view.joinDead();
+      if (!this.main) {
+        this.main = view;
+      }
+      window.requestAnimationFrame(() => view.execNewMounted());
+    }
+  }
+  joinRootViews() {
+    let rootsFound = false;
+    dom_default.all(document, `${PHX_VIEW_SELECTOR}:not([${PHX_PARENT_ID}])`, (rootEl) => {
+      if (!this.getRootById(rootEl.id)) {
+        let view = this.newRootView(rootEl);
+        view.setHref(this.getHref());
+        view.join();
+        if (rootEl.hasAttribute(PHX_MAIN)) {
+          this.main = view;
+        }
+      }
+      rootsFound = true;
+    });
+    return rootsFound;
+  }
+  redirect(to, flash) {
+    this.unload();
+    browser_default.redirect(to, flash);
+  }
+  replaceMain(href, flash, callback = null, linkRef = this.setPendingLink(href)) {
+    let liveReferer = this.currentLocation.href;
+    this.outgoingMainEl = this.outgoingMainEl || this.main.el;
+    let newMainEl = dom_default.cloneNode(this.outgoingMainEl, "");
+    this.main.showLoader(this.loaderTimeout);
+    this.main.destroy();
+    this.main = this.newRootView(newMainEl, flash, liveReferer);
+    this.main.setRedirect(href);
+    this.transitionRemoves(null, true);
+    this.main.join((joinCount, onDone) => {
+      if (joinCount === 1 && this.commitPendingLink(linkRef)) {
+        this.requestDOMUpdate(() => {
+          dom_default.findPhxSticky(document).forEach((el) => newMainEl.appendChild(el));
+          this.outgoingMainEl.replaceWith(newMainEl);
+          this.outgoingMainEl = null;
+          callback && callback(linkRef);
+          onDone();
+        });
+      }
+    });
+  }
+  transitionRemoves(elements, skipSticky) {
+    let removeAttr = this.binding("remove");
+    elements = elements || dom_default.all(document, `[${removeAttr}]`);
+    if (skipSticky) {
+      const stickies = dom_default.findPhxSticky(document) || [];
+      elements = elements.filter((el) => !dom_default.isChildOfAny(el, stickies));
+    }
+    elements.forEach((el) => {
+      this.execJS(el, el.getAttribute(removeAttr), "remove");
+    });
+  }
+  isPhxView(el) {
+    return el.getAttribute && el.getAttribute(PHX_SESSION) !== null;
+  }
+  newRootView(el, flash, liveReferer) {
+    let view = new View(el, this, null, flash, liveReferer);
+    this.roots[view.id] = view;
+    return view;
+  }
+  owner(childEl, callback) {
+    let view = maybe(childEl.closest(PHX_VIEW_SELECTOR), (el) => this.getViewByEl(el)) || this.main;
+    if (view) {
+      callback(view);
+    }
+  }
+  withinOwners(childEl, callback) {
+    this.owner(childEl, (view) => callback(view, childEl));
+  }
+  getViewByEl(el) {
+    let rootId = el.getAttribute(PHX_ROOT_ID);
+    return maybe(this.getRootById(rootId), (root) => root.getDescendentByEl(el));
+  }
+  getRootById(id) {
+    return this.roots[id];
+  }
+  destroyAllViews() {
+    for (let id in this.roots) {
+      this.roots[id].destroy();
+      delete this.roots[id];
+    }
+    this.main = null;
+  }
+  destroyViewByEl(el) {
+    let root = this.getRootById(el.getAttribute(PHX_ROOT_ID));
+    if (root && root.id === el.id) {
+      root.destroy();
+      delete this.roots[root.id];
+    } else if (root) {
+      root.destroyDescendent(el.id);
+    }
+  }
+  setActiveElement(target) {
+    if (this.activeElement === target) {
+      return;
+    }
+    this.activeElement = target;
+    let cancel = () => {
+      if (target === this.activeElement) {
+        this.activeElement = null;
+      }
+      target.removeEventListener("mouseup", this);
+      target.removeEventListener("touchend", this);
+    };
+    target.addEventListener("mouseup", cancel);
+    target.addEventListener("touchend", cancel);
+  }
+  getActiveElement() {
+    if (document.activeElement === document.body) {
+      return this.activeElement || document.activeElement;
+    } else {
+      return document.activeElement || document.body;
+    }
+  }
+  dropActiveElement(view) {
+    if (this.prevActive && view.ownsElement(this.prevActive)) {
+      this.prevActive = null;
+    }
+  }
+  restorePreviouslyActiveFocus() {
+    if (this.prevActive && this.prevActive !== document.body) {
+      this.prevActive.focus();
+    }
+  }
+  blurActiveElement() {
+    this.prevActive = this.getActiveElement();
+    if (this.prevActive !== document.body) {
+      this.prevActive.blur();
+    }
+  }
+  bindTopLevelEvents({ dead } = {}) {
+    if (this.boundTopLevelEvents) {
+      return;
+    }
+    this.boundTopLevelEvents = true;
+    this.socket.onClose((event) => {
+      if (event && event.code === 1000 && this.main) {
+        return this.reloadWithJitter(this.main);
+      }
+    });
+    document.body.addEventListener("click", function() {
+    });
+    window.addEventListener("pageshow", (e) => {
+      if (e.persisted) {
+        this.getSocket().disconnect();
+        this.withPageLoading({ to: window.location.href, kind: "redirect" });
+        window.location.reload();
+      }
+    }, true);
+    if (!dead) {
+      this.bindNav();
+    }
+    this.bindClicks();
+    if (!dead) {
+      this.bindForms();
+    }
+    this.bind({ keyup: "keyup", keydown: "keydown" }, (e, type, view, targetEl, phxEvent, phxTarget) => {
+      let matchKey = targetEl.getAttribute(this.binding(PHX_KEY));
+      let pressedKey = e.key && e.key.toLowerCase();
+      if (matchKey && matchKey.toLowerCase() !== pressedKey) {
+        return;
+      }
+      let data = { key: e.key, ...this.eventMeta(type, e, targetEl) };
+      js_default.exec(type, phxEvent, view, targetEl, ["push", { data }]);
+    });
+    this.bind({ blur: "focusout", focus: "focusin" }, (e, type, view, targetEl, phxEvent, phxTarget) => {
+      if (!phxTarget) {
+        let data = { key: e.key, ...this.eventMeta(type, e, targetEl) };
+        js_default.exec(type, phxEvent, view, targetEl, ["push", { data }]);
+      }
+    });
+    this.bind({ blur: "blur", focus: "focus" }, (e, type, view, targetEl, phxEvent, phxTarget) => {
+      if (phxTarget === "window") {
+        let data = this.eventMeta(type, e, targetEl);
+        js_default.exec(type, phxEvent, view, targetEl, ["push", { data }]);
+      }
+    });
+    window.addEventListener("dragover", (e) => e.preventDefault());
+    window.addEventListener("drop", (e) => {
+      e.preventDefault();
+      let dropTargetId = maybe(closestPhxBinding(e.target, this.binding(PHX_DROP_TARGET)), (trueTarget) => {
+        return trueTarget.getAttribute(this.binding(PHX_DROP_TARGET));
+      });
+      let dropTarget = dropTargetId && document.getElementById(dropTargetId);
+      let files = Array.from(e.dataTransfer.files || []);
+      if (!dropTarget || dropTarget.disabled || files.length === 0 || !(dropTarget.files instanceof FileList)) {
+        return;
+      }
+      LiveUploader.trackFiles(dropTarget, files, e.dataTransfer);
+      dropTarget.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    this.on(PHX_TRACK_UPLOADS, (e) => {
+      let uploadTarget = e.target;
+      if (!dom_default.isUploadInput(uploadTarget)) {
+        return;
+      }
+      let files = Array.from(e.detail.files || []).filter((f) => f instanceof File || f instanceof Blob);
+      LiveUploader.trackFiles(uploadTarget, files);
+      uploadTarget.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+  eventMeta(eventName, e, targetEl) {
+    let callback = this.metadataCallbacks[eventName];
+    return callback ? callback(e, targetEl) : {};
+  }
+  setPendingLink(href) {
+    this.linkRef++;
+    this.pendingLink = href;
+    return this.linkRef;
+  }
+  commitPendingLink(linkRef) {
+    if (this.linkRef !== linkRef) {
+      return false;
+    } else {
+      this.href = this.pendingLink;
+      this.pendingLink = null;
+      return true;
+    }
+  }
+  getHref() {
+    return this.href;
+  }
+  hasPendingLink() {
+    return !!this.pendingLink;
+  }
+  bind(events, callback) {
+    for (let event in events) {
+      let browserEventName = events[event];
+      this.on(browserEventName, (e) => {
+        let binding = this.binding(event);
+        let windowBinding = this.binding(`window-${event}`);
+        let targetPhxEvent = e.target.getAttribute && e.target.getAttribute(binding);
+        if (targetPhxEvent) {
+          this.debounce(e.target, e, browserEventName, () => {
+            this.withinOwners(e.target, (view) => {
+              callback(e, event, view, e.target, targetPhxEvent, null);
+            });
+          });
+        } else {
+          dom_default.all(document, `[${windowBinding}]`, (el) => {
+            let phxEvent = el.getAttribute(windowBinding);
+            this.debounce(el, e, browserEventName, () => {
+              this.withinOwners(el, (view) => {
+                callback(e, event, view, el, phxEvent, "window");
+              });
+            });
+          });
+        }
+      });
+    }
+  }
+  bindClicks() {
+    window.addEventListener("mousedown", (e) => this.clickStartedAtTarget = e.target);
+    this.bindClick("click", "click", false);
+    this.bindClick("mousedown", "capture-click", true);
+  }
+  bindClick(eventName, bindingName, capture) {
+    let click = this.binding(bindingName);
+    window.addEventListener(eventName, (e) => {
+      let target = null;
+      if (capture) {
+        target = e.target.matches(`[${click}]`) ? e.target : e.target.querySelector(`[${click}]`);
+      } else {
+        if (e.detail === 0)
+          this.clickStartedAtTarget = e.target;
+        let clickStartedAtTarget = this.clickStartedAtTarget || e.target;
+        target = closestPhxBinding(clickStartedAtTarget, click);
+        this.dispatchClickAway(e, clickStartedAtTarget);
+        this.clickStartedAtTarget = null;
+      }
+      let phxEvent = target && target.getAttribute(click);
+      if (!phxEvent) {
+        if (!capture && dom_default.isNewPageClick(e, window.location)) {
+          this.unload();
+        }
+        return;
+      }
+      if (target.getAttribute("href") === "#") {
+        e.preventDefault();
+      }
+      if (target.hasAttribute(PHX_REF)) {
+        return;
+      }
+      this.debounce(target, e, "click", () => {
+        this.withinOwners(target, (view) => {
+          js_default.exec("click", phxEvent, view, target, ["push", { data: this.eventMeta("click", e, target) }]);
+        });
+      });
+    }, capture);
+  }
+  dispatchClickAway(e, clickStartedAt) {
+    let phxClickAway = this.binding("click-away");
+    dom_default.all(document, `[${phxClickAway}]`, (el) => {
+      if (!(el.isSameNode(clickStartedAt) || el.contains(clickStartedAt))) {
+        this.withinOwners(el, (view) => {
+          let phxEvent = el.getAttribute(phxClickAway);
+          if (js_default.isVisible(el) && js_default.isInViewport(el)) {
+            js_default.exec("click", phxEvent, view, el, ["push", { data: this.eventMeta("click", e, e.target) }]);
+          }
+        });
+      }
+    });
+  }
+  bindNav() {
+    if (!browser_default.canPushState()) {
+      return;
+    }
+    if (history.scrollRestoration) {
+      history.scrollRestoration = "manual";
+    }
+    let scrollTimer = null;
+    window.addEventListener("scroll", (_e) => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        browser_default.updateCurrentState((state) => Object.assign(state, { scroll: window.scrollY }));
+      }, 100);
+    });
+    window.addEventListener("popstate", (event) => {
+      if (!this.registerNewLocation(window.location)) {
+        return;
+      }
+      let { type, id, root, scroll } = event.state || {};
+      let href = window.location.href;
+      dom_default.dispatchEvent(window, "phx:navigate", { detail: { href, patch: type === "patch", pop: true } });
+      this.requestDOMUpdate(() => {
+        if (this.main.isConnected() && (type === "patch" && id === this.main.id)) {
+          this.main.pushLinkPatch(href, null, () => {
+            this.maybeScroll(scroll);
+          });
+        } else {
+          this.replaceMain(href, null, () => {
+            if (root) {
+              this.replaceRootHistory();
+            }
+            this.maybeScroll(scroll);
+          });
+        }
+      });
+    }, false);
+    window.addEventListener("click", (e) => {
+      let target = closestPhxBinding(e.target, PHX_LIVE_LINK);
+      let type = target && target.getAttribute(PHX_LIVE_LINK);
+      if (!type || !this.isConnected() || !this.main || dom_default.wantsNewTab(e)) {
+        return;
+      }
+      let href = target.href instanceof SVGAnimatedString ? target.href.baseVal : target.href;
+      let linkState = target.getAttribute(PHX_LINK_STATE);
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if (this.pendingLink === href) {
+        return;
+      }
+      this.requestDOMUpdate(() => {
+        if (type === "patch") {
+          this.pushHistoryPatch(href, linkState, target);
+        } else if (type === "redirect") {
+          this.historyRedirect(href, linkState);
+        } else {
+          throw new Error(`expected ${PHX_LIVE_LINK} to be "patch" or "redirect", got: ${type}`);
+        }
+        let phxClick = target.getAttribute(this.binding("click"));
+        if (phxClick) {
+          this.requestDOMUpdate(() => this.execJS(target, phxClick, "click"));
+        }
+      });
+    }, false);
+  }
+  maybeScroll(scroll) {
+    if (typeof scroll === "number") {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scroll);
+      });
+    }
+  }
+  dispatchEvent(event, payload = {}) {
+    dom_default.dispatchEvent(window, `phx:${event}`, { detail: payload });
+  }
+  dispatchEvents(events) {
+    events.forEach(([event, payload]) => this.dispatchEvent(event, payload));
+  }
+  withPageLoading(info, callback) {
+    dom_default.dispatchEvent(window, "phx:page-loading-start", { detail: info });
+    let done = () => dom_default.dispatchEvent(window, "phx:page-loading-stop", { detail: info });
+    return callback ? callback(done) : done;
+  }
+  pushHistoryPatch(href, linkState, targetEl) {
+    if (!this.isConnected() || !this.main.isMain()) {
+      return browser_default.redirect(href);
+    }
+    this.withPageLoading({ to: href, kind: "patch" }, (done) => {
+      this.main.pushLinkPatch(href, targetEl, (linkRef) => {
+        this.historyPatch(href, linkState, linkRef);
+        done();
+      });
+    });
+  }
+  historyPatch(href, linkState, linkRef = this.setPendingLink(href)) {
+    if (!this.commitPendingLink(linkRef)) {
+      return;
+    }
+    browser_default.pushState(linkState, { type: "patch", id: this.main.id }, href);
+    dom_default.dispatchEvent(window, "phx:navigate", { detail: { patch: true, href, pop: false } });
+    this.registerNewLocation(window.location);
+  }
+  historyRedirect(href, linkState, flash) {
+    if (!this.isConnected() || !this.main.isMain()) {
+      return browser_default.redirect(href, flash);
+    }
+    if (/^\/$|^\/[^\/]+.*$/.test(href)) {
+      let { protocol, host } = window.location;
+      href = `${protocol}//${host}${href}`;
+    }
+    let scroll = window.scrollY;
+    this.withPageLoading({ to: href, kind: "redirect" }, (done) => {
+      this.replaceMain(href, flash, (linkRef) => {
+        if (linkRef === this.linkRef) {
+          browser_default.pushState(linkState, { type: "redirect", id: this.main.id, scroll }, href);
+          dom_default.dispatchEvent(window, "phx:navigate", { detail: { href, patch: false, pop: false } });
+          this.registerNewLocation(window.location);
+        }
+        done();
+      });
+    });
+  }
+  replaceRootHistory() {
+    browser_default.pushState("replace", { root: true, type: "patch", id: this.main.id });
+  }
+  registerNewLocation(newLocation) {
+    let { pathname, search } = this.currentLocation;
+    if (pathname + search === newLocation.pathname + newLocation.search) {
+      return false;
+    } else {
+      this.currentLocation = clone(newLocation);
+      return true;
+    }
+  }
+  bindForms() {
+    let iterations = 0;
+    let externalFormSubmitted = false;
+    this.on("submit", (e) => {
+      let phxSubmit = e.target.getAttribute(this.binding("submit"));
+      let phxChange = e.target.getAttribute(this.binding("change"));
+      if (!externalFormSubmitted && phxChange && !phxSubmit) {
+        externalFormSubmitted = true;
+        e.preventDefault();
+        this.withinOwners(e.target, (view) => {
+          view.disableForm(e.target);
+          window.requestAnimationFrame(() => {
+            if (dom_default.isUnloadableFormSubmit(e)) {
+              this.unload();
+            }
+            e.target.submit();
+          });
+        });
+      }
+    }, true);
+    this.on("submit", (e) => {
+      let phxEvent = e.target.getAttribute(this.binding("submit"));
+      if (!phxEvent) {
+        if (dom_default.isUnloadableFormSubmit(e)) {
+          this.unload();
+        }
+        return;
+      }
+      e.preventDefault();
+      e.target.disabled = true;
+      this.withinOwners(e.target, (view) => {
+        js_default.exec("submit", phxEvent, view, e.target, ["push", { submitter: e.submitter }]);
+      });
+    }, false);
+    for (let type of ["change", "input"]) {
+      this.on(type, (e) => {
+        let phxChange = this.binding("change");
+        let input = e.target;
+        let inputEvent = input.getAttribute(phxChange);
+        let formEvent = input.form && input.form.getAttribute(phxChange);
+        let phxEvent = inputEvent || formEvent;
+        if (!phxEvent) {
+          return;
+        }
+        if (input.type === "number" && input.validity && input.validity.badInput) {
+          return;
+        }
+        let dispatcher = inputEvent ? input : input.form;
+        let currentIterations = iterations;
+        iterations++;
+        let { at, type: lastType } = dom_default.private(input, "prev-iteration") || {};
+        if (at === currentIterations - 1 && type === "change" && lastType === "input") {
+          return;
+        }
+        dom_default.putPrivate(input, "prev-iteration", { at: currentIterations, type });
+        this.debounce(input, e, type, () => {
+          this.withinOwners(dispatcher, (view) => {
+            dom_default.putPrivate(input, PHX_HAS_FOCUSED, true);
+            if (!dom_default.isTextualInput(input)) {
+              this.setActiveElement(input);
+            }
+            js_default.exec("change", phxEvent, view, input, ["push", { _target: e.target.name, dispatcher }]);
+          });
+        });
+      }, false);
+    }
+    this.on("reset", (e) => {
+      let form = e.target;
+      dom_default.resetForm(form, this.binding(PHX_FEEDBACK_FOR), this.binding(PHX_FEEDBACK_GROUP));
+      let input = Array.from(form.elements).find((el) => el.type === "reset");
+      if (input) {
+        window.requestAnimationFrame(() => {
+          input.dispatchEvent(new Event("input", { bubbles: true, cancelable: false }));
+        });
+      }
+    });
+  }
+  debounce(el, event, eventType, callback) {
+    if (eventType === "blur" || eventType === "focusout") {
+      return callback();
+    }
+    let phxDebounce = this.binding(PHX_DEBOUNCE);
+    let phxThrottle = this.binding(PHX_THROTTLE);
+    let defaultDebounce = this.defaults.debounce.toString();
+    let defaultThrottle = this.defaults.throttle.toString();
+    this.withinOwners(el, (view) => {
+      let asyncFilter = () => !view.isDestroyed() && document.body.contains(el);
+      dom_default.debounce(el, event, phxDebounce, defaultDebounce, phxThrottle, defaultThrottle, asyncFilter, () => {
+        callback();
+      });
+    });
+  }
+  silenceEvents(callback) {
+    this.silenced = true;
+    callback();
+    this.silenced = false;
+  }
+  on(event, callback) {
+    window.addEventListener(event, (e) => {
+      if (!this.silenced) {
+        callback(e);
+      }
+    });
+  }
+};
+var TransitionSet = class {
+  constructor() {
+    this.transitions = new Set;
+    this.pendingOps = [];
+  }
+  reset() {
+    this.transitions.forEach((timer) => {
+      clearTimeout(timer);
+      this.transitions.delete(timer);
+    });
+    this.flushPendingOps();
+  }
+  after(callback) {
+    if (this.size() === 0) {
+      callback();
+    } else {
+      this.pushPendingOp(callback);
+    }
+  }
+  addTransition(time, onStart, onDone) {
+    onStart();
+    let timer = setTimeout(() => {
+      this.transitions.delete(timer);
+      onDone();
+      this.flushPendingOps();
+    }, time);
+    this.transitions.add(timer);
+  }
+  pushPendingOp(op) {
+    this.pendingOps.push(op);
+  }
+  size() {
+    return this.transitions.size;
+  }
+  flushPendingOps() {
+    if (this.size() > 0) {
+      return;
+    }
+    let op = this.pendingOps.shift();
+    if (op) {
+      op();
+      this.flushPendingOps();
+    }
+  }
+};
+
+// app.js
+var import_topbar = __toESM(require_topbar_min(), 1);
+var csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+var socketPath = document.querySelector("meta[name='socket-path']").getAttribute("content");
+var socketTransport = document.querySelector("meta[name='socket-transport']").getAttribute("content");
+var normalizedTransport = socketTransport == "longpoll" ? LongPoll : WebSocket;
+var Hooks2 = {
+  JsonPrettyPrint: {
+    mounted() {
+      this.formatJson();
+    },
+    updated() {
+      this.formatJson();
+    },
+    formatJson() {
+      try {
+        const rawJson = this.el.textContent.trim();
+        const formattedJson = JSON.stringify(JSON.parse(rawJson), null, 2);
+        this.el.textContent = formattedJson;
+      } catch (error) {
+        console.error("Error formatting JSON:", error);
+      }
+    }
+  }
+};
+var liveSocket = new LiveSocket(socketPath, Socket, {
+  transport: normalizedTransport,
+  params: { _csrf_token: csrfToken },
+  hooks: Hooks2
+});
+import_topbar.default.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
+window.addEventListener("phx:page-loading-start", (_info) => import_topbar.default.show(300));
+window.addEventListener("phx:page-loading-stop", (_info) => import_topbar.default.hide());
+liveSocket.connect();
+window.liveSocket = liveSocket;
