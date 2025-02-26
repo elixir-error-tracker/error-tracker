@@ -53,19 +53,23 @@ defmodule ErrorTracker.Occurrence do
           :sqlite -> Application.get_env(:ecto_sqlite3, :json_library, Jason)
         end)
 
-      case json_encoder.encode_to_iodata(context) do
-        {:ok, _} ->
-          put_change(changeset, :context, context)
+      validated_context =
+        try do
+          _iodata = json_encoder.encode_to_iodata!(context)
+          context
+        rescue
+          _e in Protocol.UndefinedError ->
+            Logger.warning(
+              "[ErrorTracker] Context has been ignored: it is not serializable to JSON."
+            )
 
-        {:error, _} ->
-          Logger.warning(
-            "[ErrorTracker] Context has been ignored: it is not serializable to JSON."
-          )
+            %{
+              error:
+                "Context not stored because it contains information not serializable to JSON."
+            }
+        end
 
-          put_change(changeset, :context, %{
-            error: "Context not stored because it contains information not serializable to JSON."
-          })
-      end
+      put_change(changeset, :context, validated_context)
     else
       changeset
     end
