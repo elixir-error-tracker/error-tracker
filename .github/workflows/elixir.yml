@@ -83,8 +83,8 @@ jobs:
       - name: Check application compile warnings
         run: mix compile --force --warnings-as-errors
 
-      # - name: Check Credo warnings
-      #   run: mix credo
+      - name: Check Credo warnings
+        run: mix credo
 
       - name: Run Tests - SQLite3
         run: mix test
