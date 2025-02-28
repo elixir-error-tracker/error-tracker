@@ -38,11 +38,21 @@ defmodule ErrorTrackerTest do
       assert error.kind == to_string(ArithmeticError)
       assert error.reason == "bad argument in arithmetic expression"
 
-      assert last_line.module == "erlang"
-      assert last_line.function == "+"
-      assert last_line.arity == 2
-      refute last_line.file
-      refute last_line.line
+      # Elixir 1.17.0 reports these errors differently than previous versions
+      if Version.compare(System.version(), "1.17.0") == :lt do
+        dbg(last_line)
+        assert last_line.module == "Elixir.ErrorTrackerTest"
+        assert last_line.function == "report_error/2"
+        assert last_line.arity == 1
+        assert last_line.file == @relative_file_path
+        assert last_line.line == 11
+      else
+        assert last_line.module == "erlang"
+        assert last_line.function == "+"
+        assert last_line.arity == 2
+        refute last_line.file
+        refute last_line.line
+      end
     end
 
     test "reports undefined function errors" do
