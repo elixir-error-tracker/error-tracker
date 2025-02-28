@@ -32,25 +32,17 @@ defmodule ErrorTrackerTest do
     test "reports badarith errors" do
       string_var = to_string(1)
 
-      # We set the otp_app to `nil` because the error is not reported by an OTP
-      # application but by this script, so the last line of the stacktrace is not
-      # the correct one if we leave the right value.
-      Application.put_env(:error_tracker, :otp_app, nil)
-      on_exit(fn -> Application.put_env(:error_tracker, :otp_app, :error_tracker) end)
-
-      %Occurrence{error: error = %Error{}} =
+      %Occurrence{error: error = %Error{}, stacktrace: %{lines: [last_line | _]}} =
         report_error(fn -> 1 + string_var end)
 
       assert error.kind == to_string(ArithmeticError)
       assert error.reason == "bad argument in arithmetic expression"
 
-      # Elixir 1.17.0 reports these errors differently than previous versions
-      if Version.compare(System.version(), "1.17.0") == :lt do
-        assert error.source_line =~ @relative_file_path
-      else
-        assert error.source_function == "erlang.+/2"
-        assert error.source_line == "(nofile)"
-      end
+      assert last_line.module == "erlang"
+      assert last_line.function == "+"
+      assert last_line.arity == 2
+      refute last_line.file
+      refute last_line.line
     end
 
     test "reports undefined function errors" do
