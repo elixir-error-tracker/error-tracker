@@ -4,7 +4,10 @@ defmodule ErrorTrackerTest do
   alias ErrorTracker.Error
   alias ErrorTracker.Occurrence
 
-  @relative_file_path Path.relative_to(__ENV__.file, File.cwd!())
+  # We use this file path because for some reason the test scripts are not
+  # handled as part of the application, so the last line of the app executed is
+  # on the case module.
+  @relative_file_path "test/support/case.ex"
 
   describe inspect(&ErrorTracker.report/3) do
     setup context do
@@ -28,6 +31,12 @@ defmodule ErrorTrackerTest do
 
     test "reports badarith errors" do
       string_var = to_string(1)
+
+      # We set the otp_app to `nil` because the error is not reported by an OTP
+      # application but by this script, so the last line of the stacktrace is not
+      # the correct one if we leave the right value.
+      Application.put_env(:error_tracker, :otp_app, nil)
+      on_exit(fn -> Application.put_env(:error_tracker, :otp_app, :error_tracker) end)
 
       %Occurrence{error: error = %Error{}} =
         report_error(fn -> 1 + string_var end)
