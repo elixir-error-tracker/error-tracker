@@ -55,7 +55,7 @@ defmodule ErrorTracker.Stacktrace do
   application, just the first line.
   """
   def source(stack = %__MODULE__{}) do
-    client_app = Application.fetch_env!(:error_tracker, :otp_app)
+    client_app = Application.fetch_env!(:error_tracker, :otp_app) |> to_string()
 
     Enum.find(stack.lines, &(&1.application == client_app)) || List.first(stack.lines)
   end

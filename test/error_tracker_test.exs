@@ -4,7 +4,10 @@ defmodule ErrorTrackerTest do
   alias ErrorTracker.Error
   alias ErrorTracker.Occurrence
 
-  @relative_file_path Path.relative_to(__ENV__.file, File.cwd!())
+  # We use this file path because for some reason the test scripts are not
+  # handled as part of the application, so the last line of the app executed is
+  # on the case module.
+  @relative_file_path "test/support/case.ex"
 
   describe inspect(&ErrorTracker.report/3) do
     setup context do
@@ -29,7 +32,7 @@ defmodule ErrorTrackerTest do
     test "reports badarith errors" do
       string_var = to_string(1)
 
-      %Occurrence{error: error = %Error{}} =
+      %Occurrence{error: error = %Error{}, stacktrace: %{lines: [last_line | _]}} =
         report_error(fn -> 1 + string_var end)
 
       assert error.kind == to_string(ArithmeticError)
@@ -37,10 +40,17 @@ defmodule ErrorTrackerTest do
 
       # Elixir 1.17.0 reports these errors differently than previous versions
       if Version.compare(System.version(), "1.17.0") == :lt do
-        assert error.source_line =~ @relative_file_path
+        assert last_line.module == "ErrorTrackerTest"
+        assert last_line.function =~ "&ErrorTracker.report/3 reports badarith errors"
+        assert last_line.arity == 1
+        assert last_line.file
+        assert last_line.line
       else
-        assert error.source_function == "erlang.+/2"
-        assert error.source_line == "(nofile)"
+        assert last_line.module == "erlang"
+        assert last_line.function == "+"
+        assert last_line.arity == 2
+        refute last_line.file
+        refute last_line.line
       end
     end
 
