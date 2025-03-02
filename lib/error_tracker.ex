@@ -336,7 +336,7 @@ defmodule ErrorTracker do
     {existing_status, muted} =
       case Repo.one(status_and_muted_query) do
         {existing_status, muted} -> {existing_status, muted}
-        nil -> {nil, nil}
+        nil -> {nil, false}
       end
 
     {:ok, {error, occurrence}} =
@@ -369,6 +369,8 @@ defmodule ErrorTracker do
         {error, occurrence}
       end)
 
+    occurrence = %Occurrence{occurrence | error: error}
+
     # If the error existed and was marked as resolved before this exception,
     # sent a Telemetry event
     # If it is a new error, sent a Telemetry event
@@ -378,9 +380,7 @@ defmodule ErrorTracker do
       nil -> Telemetry.new_error(error)
     end
 
-    # Send telemetry for new occurrences if not muted
-    if !muted, do: Telemetry.new_occurrence(occurrence)
-
-    %Occurrence{occurrence | error: error}
+    Telemetry.new_occurrence(occurrence, muted)
+    occurrence
   end
 end
