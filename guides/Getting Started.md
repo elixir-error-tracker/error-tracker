@@ -170,8 +170,8 @@ ErrorTracker allows you to mute specific errors.
 
 When an error is muted:
 - New occurrences are still tracked and stored in the database
-- No telemetry events are emitted for new occurrences
 - You can still see the error and its occurrences in the web UI
+- [Telemetry events](ErrorTracker.Telemetry.html) for new occurrences include the `muted: true` flag so you can ignore them as needed.
 
 This is particularly useful for noisy errors that you want to keep tracking but don't want to receive notifications about.
 
