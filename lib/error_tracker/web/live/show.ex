@@ -69,6 +69,20 @@ defmodule ErrorTracker.Web.Live.Show do
     {:noreply, assign(socket, :error, updated_error)}
   end
 
+  @impl Phoenix.LiveView
+  def handle_event("mute", _params, socket) do
+    {:ok, updated_error} = ErrorTracker.mute(socket.assigns.error)
+
+    {:noreply, assign(socket, :error, updated_error)}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("unmute", _params, socket) do
+    {:ok, updated_error} = ErrorTracker.unmute(socket.assigns.error)
+
+    {:noreply, assign(socket, :error, updated_error)}
+  end
+
   defp load_related_occurrences(socket) do
     current_occurrence = socket.assigns.occurrence
     base_query = Ecto.assoc(socket.assigns.error, :occurrences)

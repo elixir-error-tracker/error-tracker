@@ -7,7 +7,7 @@ defmodule ErrorTracker.Migration.MySQL do
   alias ErrorTracker.Migration.SQLMigrator
 
   @initial_version 3
-  @current_version 4
+  @current_version 5
 
   @impl ErrorTracker.Migration
   def up(opts) do

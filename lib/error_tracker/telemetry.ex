@@ -31,39 +31,45 @@ defmodule ErrorTracker.Telemetry do
   Each event is emitted with some measures and metadata, which can be used to
   receive information without having to query the database again:
 
-  | event                                   | measures       | metadata      |
-  | --------------------------------------- | -------------- | ------------- |
-  | `[:error_tracker, :error, :new]`        | `:system_time` | `:error`      |
-  | `[:error_tracker, :error, :unresolved]` | `:system_time` | `:error`      |
-  | `[:error_tracker, :error, :resolved]`   | `:system_time` | `:error`      |
-  | `[:error_tracker, :occurrence, :new]`   | `:system_time` | `:occurrence` |
+  | event                                   | measures       | metadata                          |
+  | --------------------------------------- | -------------- | ----------------------------------|
+  | `[:error_tracker, :error, :new]`        | `:system_time` | `:error`                          |
+  | `[:error_tracker, :error, :unresolved]` | `:system_time` | `:error`                          |
+  | `[:error_tracker, :error, :resolved]`   | `:system_time` | `:error`                          |
+  | `[:error_tracker, :occurrence, :new]`   | `:system_time` | `:occurrence`, `:error`, `:muted` |
+
+  The metadata keys contain the following data:
+
+  * `:error` - An `%ErrorTracker.Error{}` struct representing the error.
+  * `:occurrence` - An `%ErrorTracker.Occurrence{}` struct representing the occurrence.
+  * `:muted` - A boolean indicating whether the error is muted or not.
   """
 
   @doc false
-  def new_error(error) do
+  def new_error(error = %ErrorTracker.Error{}) do
     measurements = %{system_time: System.system_time()}
     metadata = %{error: error}
     :telemetry.execute([:error_tracker, :error, :new], measurements, metadata)
   end
 
   @doc false
-  def unresolved_error(error) do
+  def unresolved_error(error = %ErrorTracker.Error{}) do
     measurements = %{system_time: System.system_time()}
     metadata = %{error: error}
     :telemetry.execute([:error_tracker, :error, :unresolved], measurements, metadata)
   end
 
   @doc false
-  def resolved_error(error) do
+  def resolved_error(error = %ErrorTracker.Error{}) do
     measurements = %{system_time: System.system_time()}
     metadata = %{error: error}
     :telemetry.execute([:error_tracker, :error, :resolved], measurements, metadata)
   end
 
   @doc false
-  def new_occurrence(occurrence) do
+  def new_occurrence(occurrence = %ErrorTracker.Occurrence{}, muted) when is_boolean(muted) do
     measurements = %{system_time: System.system_time()}
-    metadata = %{occurrence: occurrence}
+    metadata = %{error: occurrence.error, occurrence: occurrence, muted: muted}
     :telemetry.execute([:error_tracker, :occurrence, :new], measurements, metadata)
   end
 end
