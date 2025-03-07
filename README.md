@@ -4,7 +4,18 @@
 <a title="Latest release" href="https://hex.pm/packages/error_tracker"><img src="https://img.shields.io/hexpm/v/error_tracker.svg" alt="Latest release" /></a>
 <a title="View documentation" href="https://hexdocs.pm/error_tracker"><img src="https://img.shields.io/badge/hex.pm-docs-blue.svg" alt="View documentation" /></a>
 
-**An Elixir based built-in error tracking solution.** ErrorTracker captures errors in your application and stores them in the database. It also provides a web dashboard from where you can find, inspect and resolve captured errors.
+**An Elixir based built-in error tracking solution.**
+
+ErrorTracker captures errors in your application and stores them in the database. It also provides a web dashboard from where you can find, inspect and resolve captured errors.
+
+**Does it send notifications or integrate with issue trackers?**
+
+ErrorTrackers's goal is to track errors. Period. It provides a nice Telemetry integration that you can attach to and use to send notifications, open tickets in your issue tracker and whatnot.
+
+**Why another error tracker?**
+
+While there are multiple SaaS error trackers available, this is the only Elixir-native built-in error tracker that runs as part of your application. It gives you full control over where, how and what data is stored so it is always on your control and doesn't leave your system.\
+You can see a more detailed explanation [here](https://crbelaus.com/2024/07/31/built-in-elixir-error-reporting-tracking).
 
 <a href="guides/screenshots/error-dashboard.png">
   <img src="guides/screenshots/error-dashboard.png" alt="ErrorTracker web dashboard" width="400">
