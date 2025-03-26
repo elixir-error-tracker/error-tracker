@@ -63,7 +63,7 @@
         class="border-b bg-gray-400/10 border-y border-gray-900 hover:bg-gray-800/60 last-of-type:border-b-0"
       >
         <td scope="row" class="px-4 py-4 font-medium text-white relative">
-          <.link navigate={error_path(@socket, error)} class="absolute inset-1">
+          <.link navigate={error_path(@socket, error, @search)} class="absolute inset-1">
             <span class="sr-only">(<%= sanitize_module(error.kind) %>) <%= error.reason %></span>
           </.link>
           <p class="whitespace-nowrap text-ellipsis overflow-hidden">

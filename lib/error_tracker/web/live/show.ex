@@ -7,41 +7,40 @@ defmodule ErrorTracker.Web.Live.Show do
   alias ErrorTracker.Error
   alias ErrorTracker.Occurrence
   alias ErrorTracker.Repo
+  alias ErrorTracker.Web.Search
 
   @occurrences_to_navigate 50
 
   @impl Phoenix.LiveView
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(params = %{"id" => id}, _session, socket) do
     error = Repo.get!(Error, id)
-    {:ok, assign(socket, error: error, app: Application.fetch_env!(:error_tracker, :otp_app))}
+
+    {:ok,
+     assign(socket,
+       error: error,
+       app: Application.fetch_env!(:error_tracker, :otp_app),
+       search: Search.from_params(params)
+     )}
   end
 
   @impl Phoenix.LiveView
-  def handle_params(%{"occurrence_id" => occurrence_id}, _uri, socket) do
+  def handle_params(params, _uri, socket) do
     occurrence =
-      socket.assigns.error
-      |> Ecto.assoc(:occurrences)
-      |> Repo.get!(occurrence_id)
+      if occurrence_id = params["occurrence_id"] do
+        socket.assigns.error
+        |> Ecto.assoc(:occurrences)
+        |> Repo.get!(occurrence_id)
+      else
+        socket.assigns.error
+        |> Ecto.assoc(:occurrences)
+        |> order_by([o], desc: o.id)
+        |> limit(1)
+        |> Repo.one()
+      end
 
     socket =
       socket
-      |> assign(:occurrence, occurrence)
-      |> load_related_occurrences()
-
-    {:noreply, socket}
-  end
-
-  def handle_params(_, _uri, socket) do
-    [occurrence] =
-      socket.assigns.error
-      |> Ecto.assoc(:occurrences)
-      |> order_by([o], desc: o.id)
-      |> limit(1)
-      |> Repo.all()
-
-    socket =
-      socket
-      |> assign(:occurrence, occurrence)
+      |> assign(occurrence: occurrence)
       |> load_related_occurrences()
 
     {:noreply, socket}
@@ -49,10 +48,14 @@ defmodule ErrorTracker.Web.Live.Show do
 
   @impl Phoenix.LiveView
   def handle_event("occurrence_navigation", %{"occurrence_id" => id}, socket) do
-    {:noreply,
-     push_patch(socket,
-       to: occurrence_path(socket, %Occurrence{error_id: socket.assigns.error.id, id: id})
-     )}
+    occurrence_path =
+      occurrence_path(
+        socket,
+        %Occurrence{error_id: socket.assigns.error.id, id: id},
+        socket.assigns.search
+      )
+
+    {:noreply, push_patch(socket, to: occurrence_path)}
   end
 
   @impl Phoenix.LiveView
