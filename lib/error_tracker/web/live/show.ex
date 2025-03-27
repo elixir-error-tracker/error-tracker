@@ -126,9 +126,27 @@ defmodule ErrorTracker.Web.Live.Show do
       |> Ecto.assoc(:occurrences)
       |> Repo.aggregate(:count)
 
+    next_occurrence =
+      base_query
+      |> where([o], o.id > ^current_occurrence.id)
+      |> order_by([o], asc: o.id)
+      |> limit(1)
+      |> select([:id, :error_id, :inserted_at])
+      |> Repo.one()
+
+    prev_occurrence =
+      base_query
+      |> where([o], o.id < ^current_occurrence.id)
+      |> order_by([o], desc: o.id)
+      |> limit(1)
+      |> select([:id, :error_id, :inserted_at])
+      |> Repo.one()
+
     socket
     |> assign(:occurrences, occurrences)
     |> assign(:total_occurrences, total_occurrences)
+    |> assign(:next, next_occurrence)
+    |> assign(:prev, prev_occurrence)
   end
 
   defp related_occurrences(query, num_results) do
