@@ -4,8 +4,14 @@ defmodule ErrorTracker.Web.Layouts do
 
   @default_socket_config %{path: "/live", transport: :websocket}
 
-  @css :code.priv_dir(:error_tracker) |> Path.join("static/app.css") |> File.read!()
-  @js :code.priv_dir(:error_tracker) |> Path.join("static/app.js") |> File.read!()
+  @css_path Application.app_dir(:error_tracker, ["priv", "static", "app.css"])
+  @js_path Application.app_dir(:error_tracker, ["priv", "static", "app.js"])
+
+  @external_resource @css_path
+  @external_resource @js_path
+
+  @css File.read!(@css_path)
+  @js File.read!(@js_path)
 
   embed_templates "layouts/*"
 
