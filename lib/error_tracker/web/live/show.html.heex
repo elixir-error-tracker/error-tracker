@@ -1,5 +1,7 @@
 <div class="my-6">
-  <.button type="link" href={dashboard_path(@socket, @search)}>« Back to the dashboard</.button>
+  <.link navigate={dashboard_path(@socket, @search)}>
+    <.icon name="arrow-left" /> Back to the dashboard
+  </.link>
 </div>
 
 <div id="header">
