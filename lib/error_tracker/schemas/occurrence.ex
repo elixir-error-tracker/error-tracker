@@ -46,26 +46,32 @@ defmodule ErrorTracker.Occurrence do
     if changeset.valid? do
       context = get_field(changeset, :context, %{})
 
-      json_encoder =
+      db_json_encoder =
         ErrorTracker.Repo.with_adapter(fn
-          :postgres -> Application.get_env(:postgrex, :json_library, Jason)
-          :mysql -> Application.get_env(:myxql, :json_library, Jason)
-          :sqlite -> Application.get_env(:ecto_sqlite3, :json_library, Jason)
+          :postgres -> Application.get_env(:postgrex, :json_library)
+          :mysql -> Application.get_env(:myxql, :json_library)
+          :sqlite -> Application.get_env(:ecto_sqlite3, :json_library)
         end)
 
-      case json_encoder.encode_to_iodata(context) do
-        {:ok, _} ->
-          put_change(changeset, :context, context)
+      validated_context =
+        try do
+          json_encoder = db_json_encoder || ErrorTracker.__default_json_encoder__()
+          _iodata = json_encoder.encode_to_iodata!(context)
 
-        {:error, _} ->
-          Logger.warning(
-            "[ErrorTracker] Context has been ignored: it is not serializable to JSON."
-          )
+          context
+        rescue
+          _e in Protocol.UndefinedError ->
+            Logger.warning(
+              "[ErrorTracker] Context has been ignored: it is not serializable to JSON."
+            )
 
-          put_change(changeset, :context, %{
-            error: "Context not stored because it contains information not serializable to JSON."
-          })
-      end
+            %{
+              error:
+                "Context not stored because it contains information not serializable to JSON."
+            }
+        end
+
+      put_change(changeset, :context, validated_context)
     else
       changeset
     end
