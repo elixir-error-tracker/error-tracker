@@ -139,7 +139,7 @@ defmodule ErrorTracker.Web.CoreComponents do
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 16 16"
       fill="currentColor"
-      class="!h-4 !w-4 inline-block"
+      class="!h-4 !w-4 !mr-1 inline-block"
     >
       <path
         fill-rule="evenodd"
@@ -156,7 +156,7 @@ defmodule ErrorTracker.Web.CoreComponents do
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 16 16"
       fill="currentColor"
-      class="!h-4 !w-4 inline-block"
+      class="!h-4 !w-4 !mr-1 inline-block"
     >
       <path
         fill-rule="evenodd"
