@@ -49,7 +49,7 @@
         <th scope="col" class="px-4 pr-2 w-72">Error</th>
         <th scope="col" class="px-4 py-3 w-72">Occurrences</th>
         <th scope="col" class="px-4 py-3 w-28">Status</th>
-        <th scope="col" class="px-4 py-3 w-28"></th>
+        <th scope="col" class="px-4 py-3 w-40"></th>
       </tr>
     </thead>
     <tbody>
@@ -86,7 +86,7 @@
           <.badge :if={error.status == :resolved} color={:green}>Resolved</.badge>
           <.badge :if={error.status == :unresolved} color={:red}>Unresolved</.badge>
         </td>
-        <td class="px-4 py-4 text-center flex justify-between space-x-2">
+        <td class="px-4 py-4 pt-6 text-center flex space-x-2 justify-end">
           <.button
             :if={error.status == :unresolved}
             phx-click="resolve"
