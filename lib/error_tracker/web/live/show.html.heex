@@ -1,5 +1,7 @@
 <div class="my-6">
-  <.button type="link" href={dashboard_path(@socket)}>« Back to the dashboard</.button>
+  <.link navigate={dashboard_path(@socket, @search)}>
+    <.icon name="arrow-left" /> Back to the dashboard
+  </.link>
 </div>
 
 <div id="header">
@@ -97,6 +99,19 @@
           </option>
         </select>
       </form>
+
+      <nav class="grid grid-cols-2 gap-2 mt-2">
+        <div class="text-left">
+          <.link :if={@prev} patch={occurrence_path(@socket, @prev, @search)}>
+            <.icon name="arrow-left" /> Prev
+          </.link>
+        </div>
+        <div class="text-right">
+          <.link :if={@next} patch={occurrence_path(@socket, @next, @search)}>
+            Next <.icon name="arrow-right" />
+          </.link>
+        </div>
+      </nav>
     </.section>
 
     <.section title="Error kind">

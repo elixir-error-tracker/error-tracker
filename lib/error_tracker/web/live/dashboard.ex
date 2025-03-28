@@ -7,24 +7,28 @@ defmodule ErrorTracker.Web.Live.Dashboard do
 
   alias ErrorTracker.Error
   alias ErrorTracker.Repo
+  alias ErrorTracker.Web.Search
 
   @per_page 10
 
   @impl Phoenix.LiveView
   def handle_params(params, uri, socket) do
-    {search, search_form} = search_terms(params)
-
     path = struct(URI, uri |> URI.parse() |> Map.take([:path, :query]))
 
     {:noreply,
      socket
-     |> assign(path: path, search: search, page: 1, search_form: search_form)
+     |> assign(
+       path: path,
+       search: Search.from_params(params),
+       page: 1,
+       search_form: Search.to_form(params)
+     )
      |> paginate_errors()}
   end
 
   @impl Phoenix.LiveView
   def handle_event("search", params, socket) do
-    {search, _search_form} = search_terms(params["search"] || %{})
+    search = Search.from_params(params["search"] || %{})
 
     path_w_filters = %URI{socket.assigns.path | query: URI.encode_query(search)}
 
@@ -107,15 +111,6 @@ defmodule ErrorTracker.Web.Live.Dashboard do
       occurrences: Map.new(occurrences),
       total_pages: (total_errors / @per_page) |> Float.ceil() |> trunc
     )
-  end
-
-  defp search_terms(params) do
-    data = %{}
-    types = %{reason: :string, source_line: :string, source_function: :string, status: :string}
-
-    changeset = Ecto.Changeset.cast({data, types}, params, Map.keys(types))
-
-    {Ecto.Changeset.apply_changes(changeset), to_form(changeset, as: :search)}
   end
 
   defp filter(query, search) do
