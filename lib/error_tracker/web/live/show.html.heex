@@ -141,11 +141,11 @@
           Mark as unresolved
         </.button>
 
-        <.button :if={!@error.muted} phx-click="mute" type="link">
+        <.button :if={!@error.muted} phx-click="mute">
           <.icon name="bell-slash" /> Mute
         </.button>
 
-        <.button :if={@error.muted} phx-click="unmute" type="link">
+        <.button :if={@error.muted} phx-click="unmute">
           <.icon name="bell" /> Unmute
         </.button>
       </div>

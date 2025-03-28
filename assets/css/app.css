@@ -12,3 +12,7 @@
   @apply bg-gray-500;
   border-radius: 4px;
 }
+
+button.btn-secondary {
+  @apply bg-orange-700 text-white hover:bg-orange-800;
+}

@@ -86,37 +86,35 @@
           <.badge :if={error.status == :resolved} color={:green}>Resolved</.badge>
           <.badge :if={error.status == :unresolved} color={:red}>Unresolved</.badge>
         </td>
-        <td class="px-4 py-4 text-center">
-          <div class="flex justify-between">
-            <.button
-              :if={error.status == :unresolved}
-              phx-click="resolve"
-              phx-value-error_id={error.id}
-            >
-              Resolve
-            </.button>
+        <td class="px-4 py-4 text-center flex justify-between space-x-2">
+          <.button
+            :if={error.status == :unresolved}
+            phx-click="resolve"
+            phx-value-error_id={error.id}
+          >
+            Resolve
+          </.button>
 
-            <.button
-              :if={error.status == :resolved}
-              phx-click="unresolve"
-              phx-value-error_id={error.id}
-            >
-              Unresolve
-            </.button>
+          <.button
+            :if={error.status == :resolved}
+            phx-click="unresolve"
+            phx-value-error_id={error.id}
+          >
+            Unresolve
+          </.button>
 
-            <.button :if={!error.muted} phx-click="mute" type="link" phx-value-error_id={error.id}>
-              <.icon name="bell-slash" /> Mute
-            </.button>
+          <.button :if={!error.muted} phx-click="mute" phx-value-error_id={error.id} class="flex items-center btn-secondary">
+            <.icon name="bell-slash" /> Mute
+          </.button>
 
-            <.button
-              :if={error.muted}
-              phx-click="unmute"
-              type="link"
-              phx-value-error_id={error.id}
-            >
-              <.icon name="bell" /> Unmute
-            </.button>
-          </div>
+          <.button
+            :if={error.muted}
+            phx-click="unmute"
+            phx-value-error_id={error.id}
+            class="flex items-center btn-secondary"
+          >
+            <.icon name="bell" /> Unmute
+          </.button>
         </td>
       </tr>
     </tbody>
