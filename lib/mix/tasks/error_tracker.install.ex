@@ -76,9 +76,9 @@ if Code.ensure_loaded?(Igniter) do
 
     defp configure(igniter, app_name, repo_module) do
       igniter
-      |> Igniter.Project.Config.configure("config.exs", :error_tracker, [:repo], repo_module)
-      |> Igniter.Project.Config.configure("config.exs", :error_tracker, [:otp_app], app_name)
-      |> Igniter.Project.Config.configure("config.exs", :error_tracker, [:enabled], true)
+      |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:repo], repo_module)
+      |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:otp_app], app_name)
+      |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:enabled], true)
     end
 
     defp set_up_database(igniter, repo_module) do
