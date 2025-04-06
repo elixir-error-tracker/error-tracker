@@ -69,16 +69,21 @@ if Code.ensure_loaded?(Igniter) do
       {igniter, router} = Igniter.Libs.Phoenix.select_router(igniter)
 
       igniter
-      |> configure(app_name, repo)
+      |> set_up_configuration(app_name, repo)
+      |> set_up_formatter()
       |> set_up_database(repo)
       |> set_up_web_ui(app_name, router)
     end
 
-    defp configure(igniter, app_name, repo) do
+    defp set_up_configuration(igniter, app_name, repo) do
       igniter
       |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:repo], repo)
       |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:otp_app], app_name)
       |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:enabled], true)
+    end
+
+    defp set_up_formatter(igniter) do
+      Igniter.Project.Formatter.import_dep(igniter, :error_tracker)
     end
 
     defp set_up_database(igniter, repo) do
