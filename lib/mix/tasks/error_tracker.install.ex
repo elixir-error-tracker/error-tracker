@@ -65,29 +65,29 @@ if Code.ensure_loaded?(Igniter) do
     @impl Igniter.Mix.Task
     def igniter(igniter) do
       app_name = Igniter.Project.Application.app_name(igniter)
-      repo_module = Igniter.Project.Module.module_name(igniter, "Repo")
+      {igniter, repo} = Igniter.Libs.Ecto.select_repo(igniter)
       {igniter, router} = Igniter.Libs.Phoenix.select_router(igniter)
 
       igniter
-      |> configure(app_name, repo_module)
-      |> set_up_database(repo_module)
+      |> configure(app_name, repo)
+      |> set_up_database(repo)
       |> set_up_web_ui(app_name, router)
     end
 
-    defp configure(igniter, app_name, repo_module) do
+    defp configure(igniter, app_name, repo) do
       igniter
-      |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:repo], repo_module)
+      |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:repo], repo)
       |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:otp_app], app_name)
       |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:enabled], true)
     end
 
-    defp set_up_database(igniter, repo_module) do
+    defp set_up_database(igniter, repo) do
       migration_body = """
       def up, do: ErrorTracker.Migration.up()
       def down, do: ErrorTracker.Migration.down(version: 1)
       """
 
-      Igniter.Libs.Ecto.gen_migration(igniter, repo_module, "add_error_tracker",
+      Igniter.Libs.Ecto.gen_migration(igniter, repo, "add_error_tracker",
         body: migration_body,
         on_exists: :skip
       )
