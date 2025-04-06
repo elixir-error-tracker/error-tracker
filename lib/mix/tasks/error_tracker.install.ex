@@ -66,12 +66,12 @@ if Code.ensure_loaded?(Igniter) do
     def igniter(igniter) do
       app_name = Igniter.Project.Application.app_name(igniter)
       repo_module = Igniter.Project.Module.module_name(igniter, "Repo")
-      web_module = Igniter.Libs.Phoenix.web_module(igniter)
+      {igniter, router} = Igniter.Libs.Phoenix.select_router(igniter)
 
       igniter
       |> configure(app_name, repo_module)
       |> set_up_database(repo_module)
-      |> set_up_web_ui(web_module)
+      |> set_up_web_ui(app_name, router)
     end
 
     defp configure(igniter, app_name, repo_module) do
@@ -93,14 +93,36 @@ if Code.ensure_loaded?(Igniter) do
       )
     end
 
-    defp set_up_web_ui(igniter, web_module) do
-      content =
-        """
-        # TODO: This path should be protected from unauthorized user access
-        error_tracker_dashboard "/errors"
-        """
+    defp set_up_web_ui(igniter, app_name, router) do
+      if router do
+        Igniter.Project.Module.find_and_update_module!(igniter, router, fn zipper ->
+          zipper =
+            Igniter.Code.Common.add_code(
+              zipper,
+              """
+              if Application.compile_env(#{inspect(app_name)}, :dev_routes) do
+                use ErrorTracker.Web, :router
 
-      Igniter.Libs.Phoenix.append_to_scope(igniter, "/", content, arg2: web_module)
+                scope "/dev" do
+                  pipe_through :browser
+
+                  error_tracker_dashboard "/errors"
+                end
+              end
+              """,
+              placement: :after
+            )
+
+          {:ok, zipper}
+        end)
+      else
+        Igniter.add_warning(igniter, """
+        No Phoenix router found or selected. Please ensure that Phoenix is set up
+        and then run this installer again with
+
+            mix igniter.install error_tracker
+        """)
+      end
     end
   end
 else
