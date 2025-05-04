@@ -18,7 +18,7 @@ defmodule ErrorTracker.Occurrence do
     field :reason, :string
 
     field :context, :map
-    field :breadcrumbs, {:array, :string}
+    field :breadcrumbs, ErrorTracker.Types.StringArray
 
     embeds_one :stacktrace, ErrorTracker.Stacktrace
     belongs_to :error, ErrorTracker.Error
