@@ -6,7 +6,35 @@ In this guide we will learn how to install ErrorTracker in an Elixir project so 
 
 **This guide requires you to have set up Ecto with PostgreSQL, MySQL/MariaDB or SQLite3 beforehand.**
 
-## Installing ErrorTracker as a dependency
+## Automatic installation using Igniter
+
+The ErrorTracker includes an [igniter](https://hex.pm/packages/igniter) installer that will add the latest version of ErrorTracker to your dependencies before running the installer. Installation will use the application's default Ecto repo and Phoenix router, configure ErrorTracker and create the necessary database migrations. It will basically automate all the installation steps listed in the [manual installation](#manual-installation) section.
+
+### If Igniter is already available
+
+ErrorTracker may be installed and configured with a single command:
+
+```bash
+mix igniter.install error_tracker
+```
+
+### If Igniter is not yet available
+
+If the `igniter.install` escript is not available. First, add `error_tracker` and `igniter` to your deps in `mix.exs`:
+
+```elixir
+{:error_tracker, "~> 0.6"},
+{:igniter, "~> 0.5", only: [:dev]},
+```
+
+Run `mix deps.get` to fetch the dependencies, then run the install task:
+
+```bash
+mix error_tracker.install
+```
+
+
+## Manual Installation
 
 The first step to add ErrorTracker to your application is to declare the package as a dependency in your `mix.exs` file:
 
@@ -25,7 +53,7 @@ Once ErrorTracker is declared as a dependency of your application, you can insta
 mix deps.get
 ```
 
-## Configuring ErrorTracker
+### Configuring ErrorTracker
 
 ErrorTracker needs a few configuration options to work. This configuration should be added to your `config/config.exs` file:
 
@@ -42,7 +70,7 @@ The `:otp_app` option specifies your application name. When an error occurs, Err
 
 The `:enabled` option (defaults to `true` if not present) allows to disable the ErrorTracker on certain environments. This is useful to avoid filling your dev database with errors, for example.
 
-## Setting up the database
+### Setting up the database
 
 Since ErrorTracker stores errors in the database you must create a database migration to add the required tables:
 
