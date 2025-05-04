@@ -7,11 +7,14 @@ repo =
     "mysql" ->
       ErrorTracker.Test.MySQLRepo
 
+    "mariadb" ->
+      ErrorTracker.Test.MariaDBRepo
+
     "postgres" ->
       ErrorTracker.Test.Repo
 
     _other ->
-      raise "Please run either `DB=sqlite mix test`, `DB=postgres mix test` or `DB=mysql mix test`"
+      raise "Please run either `DB=sqlite mix test`, `DB=postgres mix test`, `DB=mariadb mix test` or `DB=mysql mix test`"
   end
 
 Application.put_env(:error_tracker, :repo, repo)
