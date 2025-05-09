@@ -12,7 +12,13 @@ defmodule ErrorTracker.Error do
 
   use Ecto.Schema
 
-  @type t :: %__MODULE__{}
+  @type t :: %__MODULE__{
+    kind: string(),
+    reason: string(),
+    source_line: string(),
+    source_function: string(),
+    status: :resolved | :unresolved
+  }
 
   schema "error_tracker_errors" do
     field :kind, :string
