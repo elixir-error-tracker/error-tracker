@@ -99,7 +99,9 @@ defmodule ErrorTracker.MixProject do
       {:ex_doc, "~> 0.33", only: :dev},
       {:phoenix_live_reload, ">= 0.0.0", only: :dev},
       {:plug_cowboy, ">= 0.0.0", only: :dev},
-      {:tailwind, "~> 0.2", only: :dev}
+      {:tailwind, "~> 0.2", only: :dev},
+      # Optional dependencies
+      {:igniter, "~> 0.5", optional: true}
     ]
   end
 
