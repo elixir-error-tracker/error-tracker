@@ -17,7 +17,10 @@ defmodule ErrorTracker.Error do
           reason: String.t(),
           source_line: String.t(),
           source_function: String.t(),
-          status: :resolved | :unresolved
+          status: :resolved | :unresolved,
+          fingerprint: String.t(),
+          last_occurrence_at: DateTime.t(),
+          muted: boolean()
         }
 
   schema "error_tracker_errors" do
