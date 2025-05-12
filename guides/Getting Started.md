@@ -191,6 +191,19 @@ The `ErrorTracker.Ignorer` behaviour allows you to ignore errors based on their 
 
 When an error is ignored, its occurrences are not tracked at all. This is useful for expected errors that you don't want to store in your database.
 
+For example, if you had an integration with an unreliable third-party system that was frequently timing out, you could ignore those errors like so:
+
+```elixir
+defmodule MyApp.ErrorIgnores do
+  @behaviour ErrorTracker.Ignorer
+
+  @impl ErrorTracker.Ignorer
+  def ignore?(%{kind: "Elixir.UnreliableThirdParty.Error", reason: ":timeout"} = _error, _context) do
+    true
+  end
+end
+```
+
 ### Muting Errors
 
 Sometimes you may want to keep tracking error occurrences but avoid receiving notifications about them. For these cases,
