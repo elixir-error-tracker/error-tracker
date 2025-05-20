@@ -47,6 +47,16 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      mysql:
+        image: mysql:9
+        ports: ["3307:3306"]
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        options: >-
+          --health-cmd "mysqladmin ping --password=root"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     name: Elixir v${{ matrix.elixir }}, Erlang v${{ matrix.erlang }}
     steps:
       - uses: actions/checkout@v4
@@ -96,7 +106,12 @@ jobs:
         env:
           DB: postgres
 
-      - name: Run Tests - MySQL/MariaDB
+      - name: Run Tests - MariaDB
+        run: mix test
+        env:
+          DB: mariadb
+
+      - name: Run Tests - MySQL
         run: mix test
         env:
           DB: mysql
