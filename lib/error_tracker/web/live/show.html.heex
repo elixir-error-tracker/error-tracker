@@ -79,7 +79,13 @@
     </.section>
 
     <.section title="Context">
-      <pre class="overflow-auto text-sm p-4 rounded-lg bg-gray-300/10 border border-gray-900"><%= Jason.encode!(@occurrence.context, pretty: true) %></pre>
+      <pre
+        id="context"
+        class="overflow-auto text-sm p-4 rounded-lg bg-gray-300/10 border border-gray-900"
+        phx-hook="JsonPrettyPrint"
+      >
+        <%= ErrorTracker.__default_json_encoder__().encode_to_iodata!(@occurrence.context) %>
+      </pre>
     </.section>
   </div>
 
