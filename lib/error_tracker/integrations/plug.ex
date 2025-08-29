@@ -56,7 +56,7 @@ defmodule ErrorTracker.Integrations.Plug do
   been fetched and parsed as part of the Plug pipeline).
 
   * `request.headers`: headers received on the request. All headers are included
-  by default except for the `Cookie` ones, as they may include large and
+  by default except for the `Cookie` and `Authorization` ones, as they may include large and
   sensitive content like sessions.
 
   """
@@ -118,7 +118,7 @@ defmodule ErrorTracker.Integrations.Plug do
       "request.query" => conn.query_string,
       "request.method" => conn.method,
       "request.ip" => remote_ip(conn),
-      "request.headers" => conn.req_headers |> Map.new() |> Map.drop(["cookie"]),
+      "request.headers" => conn.req_headers |> Map.new() |> Map.drop(["cookie", "authorization"]),
       # Depending on the error source, the request params may have not been fetched yet
       "request.params" => unless(is_struct(conn.params, Plug.Conn.Unfetched), do: conn.params)
     }
