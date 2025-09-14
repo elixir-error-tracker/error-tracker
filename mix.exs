@@ -87,7 +87,7 @@ defmodule ErrorTracker.MixProject do
       {:ecto_sql, "~> 3.0"},
       {:ecto, "~> 3.11"},
       {:jason, "~> 1.1"},
-      {:phoenix_live_view, "~> 0.19 or ~> 1.0"},
+      {:phoenix_live_view, "~> 1.0"},
       {:phoenix_ecto, "~> 4.6"},
       {:plug, "~> 1.10"},
       {:postgrex, ">= 0.0.0", optional: true},
