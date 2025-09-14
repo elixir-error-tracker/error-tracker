@@ -5,7 +5,7 @@
 Mix.install([
   {:ecto_sqlite3, ">= 0.0.0"},
   {:error_tracker, path: ".", force: true},
-  {:phoenix_playground, "~> 0.1.7"}
+  {:phoenix_playground, "~> 0.1.8"}
 ])
 
 otp_app = :error_tracker_dev
