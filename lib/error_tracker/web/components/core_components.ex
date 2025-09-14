@@ -26,7 +26,7 @@ defmodule ErrorTracker.Web.CoreComponents do
       ]}
       {@rest}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </.link>
     """
   end
@@ -42,7 +42,7 @@ defmodule ErrorTracker.Web.CoreComponents do
       ]}
       {@rest}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </button>
     """
   end
@@ -80,7 +80,7 @@ defmodule ErrorTracker.Web.CoreComponents do
       class={["text-sm font-medium me-2 py-1 px-2 rounded-lg ring-1 ring-inset", @color_class]}
       {@rest}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </span>
     """
   end
@@ -124,9 +124,9 @@ defmodule ErrorTracker.Web.CoreComponents do
         :if={assigns[:title]}
         class={["text-sm font-semibold mb-2 uppercase text-gray-400", @title_class]}
       >
-        <%= @title %>
+        {@title}
       </h2>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end

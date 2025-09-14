@@ -64,23 +64,23 @@
       >
         <td scope="row" class="px-4 py-4 font-medium text-white relative">
           <.link navigate={error_path(@socket, error, @search)} class="absolute inset-1">
-            <span class="sr-only">(<%= sanitize_module(error.kind) %>) <%= error.reason %></span>
+            <span class="sr-only">({sanitize_module(error.kind)}) {error.reason}</span>
           </.link>
           <p class="whitespace-nowrap text-ellipsis overflow-hidden">
-            (<%= sanitize_module(error.kind) %>) <%= error.reason %>
+            ({sanitize_module(error.kind)}) {error.reason}
           </p>
           <p
             :if={ErrorTracker.Error.has_source_info?(error)}
             class="whitespace-nowrap text-ellipsis overflow-hidden font-normal text-gray-400"
           >
-            <%= sanitize_module(error.source_function) %>
+            {sanitize_module(error.source_function)}
             <br />
-            <%= error.source_line %>
+            {error.source_line}
           </p>
         </td>
         <td class="px-4 py-4">
-          <p>Last: <%= format_datetime(error.last_occurrence_at) %></p>
-          <p>Total: <%= @occurrences[error.id] %></p>
+          <p>Last: {format_datetime(error.last_occurrence_at)}</p>
+          <p>Total: {@occurrences[error.id]}</p>
         </td>
         <td class="px-4 py-4">
           <.badge :if={error.status == :resolved} color={:green}>Resolved</.badge>

@@ -97,7 +97,7 @@ defmodule ErrorTracker.Web.Layouts do
         class="whitespace-nowrap flex-0 block py-2 px-3 rounded-lg text-white hover:text-white hover:bg-gray-700 md:hover:bg-transparent md:border-0 md:hover:text-sky-500"
         {@rest}
       >
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </a>
     </li>
     """
