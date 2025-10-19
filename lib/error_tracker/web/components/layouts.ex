@@ -2,16 +2,25 @@ defmodule ErrorTracker.Web.Layouts do
   @moduledoc false
   use ErrorTracker.Web, :html
 
+  phoenix_js_paths =
+    for app <- ~w[phoenix phoenix_html phoenix_live_view]a do
+      path = Application.app_dir(app, ["priv", "static", "#{app}.js"])
+      Module.put_attribute(__MODULE__, :external_resource, path)
+      path
+    end
+
+  @static_path Application.app_dir(:error_tracker, ["priv", "static"])
+  @external_resource css_path = Path.join(@static_path, "app.css")
+  @external_resource js_path = Path.join(@static_path, "app.js")
+
+  @css File.read!(css_path)
+
+  @js """
+  #{for path <- phoenix_js_paths, do: path |> File.read!() |> String.replace("//# sourceMappingURL=", "// ")}
+  #{File.read!(js_path)}
+  """
+
   @default_socket_config %{path: "/live", transport: :websocket}
-
-  @css_path Application.app_dir(:error_tracker, ["priv", "static", "app.css"])
-  @js_path Application.app_dir(:error_tracker, ["priv", "static", "app.js"])
-
-  @external_resource @css_path
-  @external_resource @js_path
-
-  @css File.read!(@css_path)
-  @js File.read!(@js_path)
 
   embed_templates "layouts/*"
 
