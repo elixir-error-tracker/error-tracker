@@ -5,8 +5,12 @@ defmodule ErrorTracker.Integrations.PlugTest do
 
   @fake_callstack []
 
-  test "it reports errors, including the request headers" do
-    conn = Phoenix.ConnTest.build_conn() |> Plug.Conn.put_req_header("accept", "application/json")
+  setup do
+    [conn: Phoenix.ConnTest.build_conn()]
+  end
+
+  test "it reports errors, including the request headers", %{conn: conn} do
+    conn = conn |> Plug.Conn.put_req_header("accept", "application/json")
 
     IntegrationPlug.report_error(
       conn,
@@ -24,5 +28,22 @@ defmodule ErrorTracker.Integrations.PlugTest do
 
     %{"request.headers" => request_headers} = occurrence.context
     assert request_headers == %{"accept" => "application/json"}
+  end
+
+  test "it obfuscates sensitive request headers", %{conn: conn} do
+    conn =
+      conn |> Plug.Conn.put_req_header("cookie", "who stole the cookie from the cookie jar ?")
+
+    IntegrationPlug.report_error(
+      conn,
+      {"an error from Phoenix", "something bad happened"},
+      @fake_callstack
+    )
+
+    [occurrence] = repo().all(ErrorTracker.Occurrence)
+
+    header_names = occurrence.context |> Map.get("request.headers") |> Map.keys()
+
+    assert "cookie" not in header_names
   end
 end
