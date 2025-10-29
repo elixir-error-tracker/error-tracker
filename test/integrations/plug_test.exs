@@ -30,9 +30,14 @@ defmodule ErrorTracker.Integrations.PlugTest do
     assert request_headers == %{"accept" => "application/json"}
   end
 
-  test "it obfuscates sensitive request headers", %{conn: conn} do
+  test "it does not save sensitive request headers, to avoid storing them in cleartext", %{
+    conn: conn
+  } do
     conn =
-      conn |> Plug.Conn.put_req_header("cookie", "who stole the cookie from the cookie jar ?")
+      conn
+      |> Plug.Conn.put_req_header("cookie", "who stole the cookie from the cookie jar ?")
+      |> Plug.Conn.put_req_header("authorization", "Bearer plz-dont-leak-my-secrets")
+      |> Plug.Conn.put_req_header("safe", "this can be safely stored in cleartext")
 
     IntegrationPlug.report_error(
       conn,
@@ -45,5 +50,8 @@ defmodule ErrorTracker.Integrations.PlugTest do
     header_names = occurrence.context |> Map.get("request.headers") |> Map.keys()
 
     assert "cookie" not in header_names
+    assert "authorization" not in header_names
+
+    assert "safe" in header_names
   end
 end

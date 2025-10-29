@@ -111,6 +111,8 @@ defmodule ErrorTracker.Integrations.Plug do
     conn |> build_context |> ErrorTracker.set_context()
   end
 
+  @sensitive_headers ["cookie", "authorization"]
+
   defp build_context(conn = %Plug.Conn{}) do
     %{
       "request.host" => conn.host,
@@ -118,7 +120,7 @@ defmodule ErrorTracker.Integrations.Plug do
       "request.query" => conn.query_string,
       "request.method" => conn.method,
       "request.ip" => remote_ip(conn),
-      "request.headers" => conn.req_headers |> Map.new() |> Map.drop(["cookie"]),
+      "request.headers" => conn.req_headers |> Map.new() |> Map.drop(@sensitive_headers),
       # Depending on the error source, the request params may have not been fetched yet
       "request.params" => unless(is_struct(conn.params, Plug.Conn.Unfetched), do: conn.params)
     }
