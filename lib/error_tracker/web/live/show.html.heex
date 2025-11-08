@@ -6,12 +6,12 @@
 
 <div id="header">
   <p class="text-sm uppercase font-semibold text-gray-400">
-    Error #<%= @error.id %> @ <%= format_datetime(@occurrence.inserted_at) %>
+    Error #{@error.id} @ {format_datetime(@occurrence.inserted_at)}
   </p>
   <h1 class="my-1 text-2xl w-full font-semibold whitespace-nowrap text-ellipsis overflow-hidden">
-    (<%= sanitize_module(@error.kind) %>) <%= @error.reason
+    ({sanitize_module(@error.kind)}) {@error.reason
     |> String.replace("\n", " ")
-    |> String.trim() %>
+    |> String.trim()}
   </h1>
 </div>
 
@@ -38,9 +38,9 @@
             class="border-b bg-gray-400/10 border-gray-900 last:border-b-0"
           >
             <td class="w-11 pl-2 py-4 font-medium text-white relative text-right">
-              <%= length(@occurrence.breadcrumbs) - index %>.
+              {length(@occurrence.breadcrumbs) - index}.
             </td>
-            <td class="px-2 py-4 font-medium text-white relative"><%= breadcrumb %></td>
+            <td class="px-2 py-4 font-medium text-white relative">{breadcrumb}</td>
           </tr>
         </table>
       </div>
@@ -95,7 +95,7 @@
             value={occurrence.id}
             selected={occurrence.id == @occurrence.id}
           >
-            <%= format_datetime(occurrence.inserted_at) %>
+            {format_datetime(occurrence.inserted_at)}
           </option>
         </select>
       </form>

@@ -5,10 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <meta name="socket-path" content={get_socket_config(:path)} />
-    <meta name="socket-transport" content={get_socket_config(:transport)} />
+    <meta name="live-path" content={get_socket_config(:path)} />
+    <meta name="live-transport" content={get_socket_config(:transport)} />
 
-    <title><%= assigns[:page_title] || "🐛 ErrorTracker" %></title>
+    <title>{assigns[:page_title] || "🐛 ErrorTracker"}</title>
 
     <style nonce={@csp_nonces[:style]}>
       <%= raw get_content(:css) %>
@@ -19,6 +19,6 @@
   </head>
 
   <body class="bg-gray-800 text-white">
-    <%= @inner_content %>
+    {@inner_content}
   </body>
 </html>
