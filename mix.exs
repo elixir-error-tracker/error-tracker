@@ -84,8 +84,8 @@ defmodule ErrorTracker.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ecto_sql, "~> 3.0"},
-      {:ecto, "~> 3.11"},
+      {:ecto_sql, "~> 3.13"},
+      {:ecto, "~> 3.13"},
       {:jason, "~> 1.1"},
       {:phoenix_live_view, "~> 1.0"},
       {:phoenix_ecto, "~> 4.6"},
