@@ -23,7 +23,7 @@ mix igniter.install error_tracker
 If the `igniter.install` escript is not available. First, add `error_tracker` and `igniter` to your deps in `mix.exs`:
 
 ```elixir
-{:error_tracker, "~> 0.6"},
+{:error_tracker, "~> 0.7"},
 {:igniter, "~> 0.5", only: [:dev]},
 ```
 
@@ -42,7 +42,7 @@ The first step to add ErrorTracker to your application is to declare the package
 # mix.exs
 defp deps do
   [
-    {:error_tracker, "~> 0.6"}
+    {:error_tracker, "~> 0.7"}
   ]
 end
 ```
