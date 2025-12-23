@@ -369,7 +369,8 @@ defmodule ErrorTracker do
         {error, occurrence}
       end)
 
-    occurrence = %Occurrence{occurrence | error: error}
+    %Occurrence{} = occurrence
+    occurrence = %{occurrence | error: error}
 
     # If the error existed and was marked as resolved before this exception,
     # sent a Telemetry event
