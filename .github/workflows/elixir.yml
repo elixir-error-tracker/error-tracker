@@ -26,6 +26,8 @@ jobs:
             erlang: "27.x"
           - elixir: "1.18.x"
             erlang: "27.x"
+          - elixir: "1.19.x"
+            erlang: "28.x"
     services:
       db:
         image: postgres:15
