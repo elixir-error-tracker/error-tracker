@@ -30,7 +30,8 @@ defmodule ErrorTracker.Web.Live.Dashboard do
   def handle_event("search", params, socket) do
     search = Search.from_params(params["search"] || %{})
 
-    path_w_filters = %URI{socket.assigns.path | query: URI.encode_query(search)}
+    %URI{} = path = socket.assigns.path
+    path_w_filters = %{path | query: URI.encode_query(search)}
 
     {:noreply, push_patch(socket, to: URI.to_string(path_w_filters))}
   end
