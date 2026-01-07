@@ -37,6 +37,13 @@ defmodule ErrorTracker.Integrations.PlugTest do
       conn
       |> Plug.Conn.put_req_header("cookie", "who stole the cookie from the cookie jar ?")
       |> Plug.Conn.put_req_header("authorization", "Bearer plz-dont-leak-my-secrets")
+      |> Plug.Conn.put_req_header("authentication-helper", "hunter42")
+      |> Plug.Conn.put_req_header("important-token", "abcxyz")
+      |> Plug.Conn.put_req_header("private-name", "Some call me... Tim")
+      |> Plug.Conn.put_req_header("special-credential", "drink-your-ovaltine")
+      |> Plug.Conn.put_req_header("special-key", "Begin Private Key; dontleakmeplz")
+      |> Plug.Conn.put_req_header("special-secret", "Shh, it's a secret")
+      |> Plug.Conn.put_req_header("special-password", "correct-horse-battery-staple")
       |> Plug.Conn.put_req_header("safe", "this can be safely stored in cleartext")
 
     IntegrationPlug.report_error(
@@ -51,7 +58,15 @@ defmodule ErrorTracker.Integrations.PlugTest do
 
     assert "cookie" not in header_names
     assert "authorization" not in header_names
+    assert "authentication-helper" not in header_names
+    assert "important-token" not in header_names
+    assert "private-name" not in header_names
+    assert "special-credential" not in header_names
+    assert "special-key" not in header_names
+    assert "special-password" not in header_names
+    assert "special-secret" not in header_names
 
     assert "safe" in header_names
+    assert length(header_names) == 1
   end
 end
