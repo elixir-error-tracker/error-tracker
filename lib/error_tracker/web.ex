@@ -61,7 +61,7 @@ defmodule ErrorTracker.Web do
 
   ```elixir
   config :error_tracker,
-    socket: [
+    live_view_socket: [
       path: "/my-custom-live-path"
       transport: :longpoll # (accepted values are :longpoll or :websocket)
     ]
