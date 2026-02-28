@@ -384,12 +384,23 @@ defmodule ErrorTracker do
     occurrence
   end
 
+  @default_json_encoder (cond do
+                           Code.ensure_loaded?(JSON) ->
+                             JSON
+
+                           Code.ensure_loaded?(Jason) ->
+                             Jason
+
+                           true ->
+                             raise """
+                             No JSON encoder found. Please add Jason to your dependencies:
+
+                                 {:jason, "~> 1.1"}
+
+                             Or upgrade to Elixir 1.18+.
+                             """
+                         end)
+
   @doc false
-  def __default_json_encoder__ do
-    # Elixir 1.18+ includes the JSON module. On older versions we should fall back to Jason (which
-    # is listed as an optional dependency).
-    if Version.match?(System.version(), ">= 1.18.0"),
-      do: JSON,
-      else: Jason
-  end
+  def __default_json_encoder__, do: @default_json_encoder
 end
