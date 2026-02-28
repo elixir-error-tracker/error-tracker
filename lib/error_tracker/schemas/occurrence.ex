@@ -60,7 +60,7 @@ defmodule ErrorTracker.Occurrence do
 
           context
         rescue
-          _e in Protocol.UndefinedError ->
+          _e ->
             Logger.warning(
               "[ErrorTracker] Context has been ignored: it is not serializable to JSON."
             )
