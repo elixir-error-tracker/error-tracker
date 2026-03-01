@@ -79,6 +79,13 @@ defmodule ErrorTracker do
   Breadcrumbs can be viewed in the dashboard on the details page of an occurrence.
   """
 
+  import Ecto.Query
+
+  alias ErrorTracker.Error
+  alias ErrorTracker.Occurrence
+  alias ErrorTracker.Repo
+  alias ErrorTracker.Telemetry
+
   @typedoc """
   A map containing the relevant context for a particular error.
   """
@@ -88,13 +95,6 @@ defmodule ErrorTracker do
   An `Exception` or a `{kind, payload}` tuple compatible with `Exception.normalize/3`.
   """
   @type exception :: Exception.t() | {:error, any()} | {Exception.non_error_kind(), any()}
-
-  import Ecto.Query
-
-  alias ErrorTracker.Error
-  alias ErrorTracker.Occurrence
-  alias ErrorTracker.Repo
-  alias ErrorTracker.Telemetry
 
   @doc """
   Report an exception to be stored.
@@ -154,7 +154,7 @@ defmodule ErrorTracker do
   appear as unresolved again.
   """
   @spec resolve(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
-  def resolve(error = %Error{status: :unresolved}) do
+  def resolve(%Error{status: :unresolved} = error) do
     changeset = Ecto.Changeset.change(error, status: :resolved)
 
     with {:ok, updated_error} <- Repo.update(changeset) do
@@ -167,7 +167,7 @@ defmodule ErrorTracker do
   Marks an error as unresolved.
   """
   @spec unresolve(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
-  def unresolve(error = %Error{status: :resolved}) do
+  def unresolve(%Error{status: :resolved} = error) do
     changeset = Ecto.Changeset.change(error, status: :unresolved)
 
     with {:ok, updated_error} <- Repo.update(changeset) do
@@ -188,7 +188,7 @@ defmodule ErrorTracker do
   receive notifications about.
   """
   @spec mute(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
-  def mute(error = %Error{}) do
+  def mute(%Error{} = error) do
     changeset = Ecto.Changeset.change(error, muted: true)
 
     Repo.update(changeset)
@@ -201,7 +201,7 @@ defmodule ErrorTracker do
   for new occurrences of this error again.
   """
   @spec unmute(Error.t()) :: {:ok, Error.t()} | {:error, Ecto.Changeset.t()}
-  def unmute(error = %Error{}) do
+  def unmute(%Error{} = error) do
     changeset = Ecto.Changeset.change(error, muted: false)
 
     Repo.update(changeset)
@@ -341,7 +341,7 @@ defmodule ErrorTracker do
     {:ok, {error, occurrence}} =
       Repo.transaction(fn ->
         error =
-          ErrorTracker.Repo.with_adapter(fn
+          Repo.with_adapter(fn
             :mysql ->
               Repo.insert!(error,
                 on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]]

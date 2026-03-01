@@ -26,6 +26,7 @@ defmodule ErrorTracker.IgnorerTest do
 end
 
 defmodule ErrorTracker.EveryErrorIgnorer do
+  @moduledoc false
   @behaviour ErrorTracker.Ignorer
 
   @impl true

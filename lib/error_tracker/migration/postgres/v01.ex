@@ -5,7 +5,7 @@ defmodule ErrorTracker.Migration.Postgres.V01 do
 
   import Ecto.Query
 
-  def up(opts = %{create_schema: create_schema, prefix: prefix}) do
+  def up(%{create_schema: create_schema, prefix: prefix} = opts) do
     # Prior to V02 the migration version was stored in table comments.
     # As of now the migration version is stored in a new table (created in V02).
     #

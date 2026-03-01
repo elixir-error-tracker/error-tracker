@@ -12,7 +12,7 @@ defmodule ErrorTracker.Web.Live.Show do
   @occurrences_to_navigate 50
 
   @impl Phoenix.LiveView
-  def mount(params = %{"id" => id}, _session, socket) do
+  def mount(%{"id" => id} = params, _session, socket) do
     error = Repo.get!(Error, id)
 
     {:ok,

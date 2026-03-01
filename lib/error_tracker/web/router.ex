@@ -42,10 +42,12 @@ defmodule ErrorTracker.Web.Router do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
+        alias ErrorTracker.Web.Live.Show
+
         live_session session_name, session_opts do
           live "/", ErrorTracker.Web.Live.Dashboard, :index, as: session_name
-          live "/:id", ErrorTracker.Web.Live.Show, :show, as: session_name
-          live "/:id/:occurrence_id", ErrorTracker.Web.Live.Show, :show, as: session_name
+          live "/:id", Show, :show, as: session_name
+          live "/:id/:occurrence_id", Show, :show, as: session_name
         end
       end
     end

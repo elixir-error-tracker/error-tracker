@@ -46,28 +46,28 @@ defmodule ErrorTracker.Telemetry do
   """
 
   @doc false
-  def new_error(error = %ErrorTracker.Error{}) do
+  def new_error(%ErrorTracker.Error{} = error) do
     measurements = %{system_time: System.system_time()}
     metadata = %{error: error}
     :telemetry.execute([:error_tracker, :error, :new], measurements, metadata)
   end
 
   @doc false
-  def unresolved_error(error = %ErrorTracker.Error{}) do
+  def unresolved_error(%ErrorTracker.Error{} = error) do
     measurements = %{system_time: System.system_time()}
     metadata = %{error: error}
     :telemetry.execute([:error_tracker, :error, :unresolved], measurements, metadata)
   end
 
   @doc false
-  def resolved_error(error = %ErrorTracker.Error{}) do
+  def resolved_error(%ErrorTracker.Error{} = error) do
     measurements = %{system_time: System.system_time()}
     metadata = %{error: error}
     :telemetry.execute([:error_tracker, :error, :resolved], measurements, metadata)
   end
 
   @doc false
-  def new_occurrence(occurrence = %ErrorTracker.Occurrence{}, muted) when is_boolean(muted) do
+  def new_occurrence(%ErrorTracker.Occurrence{} = occurrence, muted) when is_boolean(muted) do
     measurements = %{system_time: System.system_time()}
     metadata = %{error: occurrence.error, occurrence: occurrence, muted: muted}
     :telemetry.execute([:error_tracker, :occurrence, :new], measurements, metadata)

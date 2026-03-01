@@ -86,22 +86,22 @@ defmodule ErrorTracker.MixProject do
     [
       {:ecto_sql, "~> 3.13"},
       {:ecto, "~> 3.13"},
-      {:phoenix_live_view, "~> 1.0"},
       {:phoenix_ecto, "~> 4.6"},
+      {:phoenix_live_view, "~> 1.0"},
       {:plug, "~> 1.10"},
-      {:jason, "~> 1.1", optional: true},
-      {:postgrex, ">= 0.0.0", optional: true},
-      {:myxql, ">= 0.0.0", optional: true},
-      {:ecto_sqlite3, ">= 0.0.0", optional: true},
       # Dev dependencies
       {:bun, "~> 1.3", only: :dev},
-      {:credo, "~> 1.7", only: [:dev, :test]},
       {:ex_doc, "~> 0.33", only: :dev},
       {:phoenix_live_reload, ">= 0.0.0", only: :dev},
       {:plug_cowboy, ">= 0.0.0", only: :dev},
+      {:styler, "~> 1.11", only: [:dev, :test], runtime: false},
       {:tailwind, "~> 0.2", only: :dev},
       # Optional dependencies
-      {:igniter, "~> 0.5", optional: true}
+      {:ecto_sqlite3, ">= 0.0.0", optional: true},
+      {:igniter, "~> 0.5", optional: true},
+      {:jason, "~> 1.1", optional: true},
+      {:myxql, ">= 0.0.0", optional: true},
+      {:postgrex, ">= 0.0.0", optional: true}
     ]
   end
 

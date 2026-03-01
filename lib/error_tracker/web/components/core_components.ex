@@ -16,7 +16,7 @@ defmodule ErrorTracker.Web.CoreComponents do
 
   slot :inner_block, required: true
 
-  def button(assigns = %{type: "link"}) do
+  def button(%{type: "link"} = assigns) do
     ~H"""
     <.link
       class={[
@@ -133,7 +133,7 @@ defmodule ErrorTracker.Web.CoreComponents do
 
   attr :name, :string, values: ~w[bell bell-slash arrow-left arrow-right]
 
-  def icon(assigns = %{name: "bell"}) do
+  def icon(%{name: "bell"} = assigns) do
     ~H"""
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +150,7 @@ defmodule ErrorTracker.Web.CoreComponents do
     """
   end
 
-  def icon(assigns = %{name: "bell-slash"}) do
+  def icon(%{name: "bell-slash"} = assigns) do
     ~H"""
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +168,7 @@ defmodule ErrorTracker.Web.CoreComponents do
     """
   end
 
-  def icon(assigns = %{name: "arrow-left"}) do
+  def icon(%{name: "arrow-left"} = assigns) do
     ~H"""
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -185,7 +185,7 @@ defmodule ErrorTracker.Web.CoreComponents do
     """
   end
 
-  def icon(assigns = %{name: "arrow-right"}) do
+  def icon(%{name: "arrow-right"} = assigns) do
     ~H"""
     <svg
       xmlns="http://www.w3.org/2000/svg"

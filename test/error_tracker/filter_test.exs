@@ -43,6 +43,7 @@ defmodule ErrorTracker.FilterTest do
 end
 
 defmodule ErrorTracker.FilterTest.AuthHeaderHider do
+  @moduledoc false
   @behaviour ErrorTracker.Filter
 
   def sanitize(context) do
@@ -54,10 +55,9 @@ defmodule ErrorTracker.FilterTest.AuthHeaderHider do
       o ->
         o
     end)
-    |> Enum.map(fn
+    |> Map.new(fn
       {key, val} when is_map(val) -> {key, sanitize(val)}
       o -> o
     end)
-    |> Map.new()
   end
 end

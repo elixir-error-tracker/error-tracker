@@ -134,7 +134,7 @@ defmodule ErrorTracker.Plugins.Pruner do
     {:noreply, schedule_prune(state)}
   end
 
-  defp schedule_prune(state = %{interval: interval}) do
+  defp schedule_prune(%{interval: interval} = state) do
     Process.send_after(self(), :prune, interval)
 
     state

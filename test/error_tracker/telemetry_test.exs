@@ -22,8 +22,7 @@ defmodule ErrorTracker.TelemetryTest do
     %Occurrence{error: error = %Error{}} = ErrorTracker.report(exception, stacktrace)
     assert_receive {:telemetry_event, [:error_tracker, :error, :new], _, %{error: %Error{}}}
 
-    assert_receive {:telemetry_event, [:error_tracker, :occurrence, :new], _,
-                    %{occurrence: %Occurrence{}, muted: false}}
+    assert_receive {:telemetry_event, [:error_tracker, :occurrence, :new], _, %{occurrence: %Occurrence{}, muted: false}}
 
     # The error is already known so the new error event won't be emitted
     ErrorTracker.report(exception, stacktrace)
@@ -31,15 +30,13 @@ defmodule ErrorTracker.TelemetryTest do
     refute_receive {:telemetry_event, [:error_tracker, :error, :new], _, %{error: %Error{}}},
                    150
 
-    assert_receive {:telemetry_event, [:error_tracker, :occurrence, :new], _,
-                    %{occurrence: %Occurrence{}, muted: false}}
+    assert_receive {:telemetry_event, [:error_tracker, :occurrence, :new], _, %{occurrence: %Occurrence{}, muted: false}}
 
     # The error is muted so the new occurrence event will include the muted=true metadata
     ErrorTracker.mute(error)
     ErrorTracker.report(exception, stacktrace)
 
-    assert_receive {:telemetry_event, [:error_tracker, :occurrence, :new], _,
-                    %{occurrence: %Occurrence{}, muted: true}}
+    assert_receive {:telemetry_event, [:error_tracker, :occurrence, :new], _, %{occurrence: %Occurrence{}, muted: true}}
   end
 
   test "events are emitted for resolved and unresolved errors" do
@@ -52,7 +49,6 @@ defmodule ErrorTracker.TelemetryTest do
     # The unresolved event will be emitted
     {:ok, _unresolved} = ErrorTracker.unresolve(resolved)
 
-    assert_receive {:telemetry_event, [:error_tracker, :error, :unresolved], _,
-                    %{error: %Error{}}}
+    assert_receive {:telemetry_event, [:error_tracker, :error, :unresolved], _, %{error: %Error{}}}
   end
 end

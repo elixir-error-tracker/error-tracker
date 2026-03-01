@@ -10,7 +10,7 @@ defmodule ErrorTracker.Integrations.PlugTest do
   end
 
   test "it reports errors, including the request headers", %{conn: conn} do
-    conn = conn |> Plug.Conn.put_req_header("accept", "application/json")
+    conn = Plug.Conn.put_req_header(conn, "accept", "application/json")
 
     IntegrationPlug.report_error(
       conn,
@@ -49,8 +49,8 @@ defmodule ErrorTracker.Integrations.PlugTest do
 
     header_names = occurrence.context |> Map.get("request.headers") |> Map.keys()
 
-    assert "cookie" not in header_names
-    assert "authorization" not in header_names
+    refute "cookie" in header_names
+    refute "authorization" in header_names
 
     assert "safe" in header_names
   end

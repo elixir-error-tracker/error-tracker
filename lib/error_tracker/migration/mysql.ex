@@ -4,6 +4,7 @@ defmodule ErrorTracker.Migration.MySQL do
   @behaviour ErrorTracker.Migration
 
   use Ecto.Migration
+
   alias ErrorTracker.Migration.SQLMigrator
 
   @initial_version 3

@@ -6,9 +6,9 @@ defmodule ErrorTracker.Occurrence do
   in which the exception raised.
   """
 
-  import Ecto.Changeset
-
   use Ecto.Schema
+
+  import Ecto.Changeset
 
   require Logger
 
@@ -61,13 +61,10 @@ defmodule ErrorTracker.Occurrence do
           context
         rescue
           _e ->
-            Logger.warning(
-              "[ErrorTracker] Context has been ignored: it is not serializable to JSON."
-            )
+            Logger.warning("[ErrorTracker] Context has been ignored: it is not serializable to JSON.")
 
             %{
-              error:
-                "Context not stored because it contains information not serializable to JSON."
+              error: "Context not stored because it contains information not serializable to JSON."
             }
         end
 

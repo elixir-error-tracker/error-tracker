@@ -106,12 +106,11 @@ defmodule ErrorTracker.Web do
     quote do
       use Phoenix.Component
 
-      import Phoenix.HTML
-      import Phoenix.LiveView.Helpers
-
       import ErrorTracker.Web.CoreComponents
       import ErrorTracker.Web.Helpers
       import ErrorTracker.Web.Router.Routes
+      import Phoenix.HTML
+      import Phoenix.LiveView.Helpers
 
       alias Phoenix.LiveView.JS
     end

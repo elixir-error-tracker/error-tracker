@@ -22,10 +22,12 @@ Application.put_all_env(
 )
 
 defmodule ErrorTrackerDev.Repo do
-  require Logger
   use Ecto.Repo, otp_app: otp_app, adapter: Ecto.Adapters.SQLite3
 
+  require Logger
+
   defmodule Migration do
+    @moduledoc false
     use Ecto.Migration
 
     def up, do: ErrorTracker.Migration.up()
@@ -80,6 +82,7 @@ defmodule ErrorTrackerDev.Controller do
 end
 
 defmodule ErrorTrackerDev.Live do
+  @moduledoc false
   use Phoenix.LiveView
 
   def mount(params, _session, socket) do
@@ -226,7 +229,7 @@ defmodule ErrorTrackerDev.Endpoint do
     |> Plug.Conn.put_resp_header("content-security-policy", Enum.join(policies, " "))
   end
 
-  defp plug_exception(conn = %Plug.Conn{path_info: path_info}, _opts) when is_list(path_info) do
+  defp plug_exception(%Plug.Conn{path_info: path_info} = conn, _opts) when is_list(path_info) do
     if "plug_exception" in path_info,
       do: raise("Crashed in Endpoint"),
       else: conn
@@ -244,6 +247,7 @@ defmodule ErrorTrackerDev.ErrorView do
 end
 
 defmodule ErrorTrackerDev.GenServer do
+  @moduledoc false
   use GenServer
 
   # Client
@@ -267,10 +271,12 @@ defmodule ErrorTrackerDev.GenServer do
 end
 
 defmodule ErrorTrackerDev.Exception do
+  @moduledoc false
   defexception [:message, :bread_crumbs]
 end
 
 defmodule ErrorTrackerDev.Telemetry do
+  @moduledoc false
   def handle_event(event, measure, metadata, _opts) do
     dbg([event, measure, metadata])
   end
