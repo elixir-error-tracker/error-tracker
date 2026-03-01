@@ -223,14 +223,13 @@ defmodule ErrorTracker do
 
   ## Content serialization
 
-  The content stored on the context should be serializable using the JSON library
-  used by the application (usually `Jason`), so it is rather recommended to use
-  primitive types (strings, numbers, booleans...).
+  The content stored on the context should be serializable using the JSON library used by the
+  application (usually `JSON` for Elixir 1.18+ and `Jason` for older versions), so it is
+  recommended to use primitive types (strings, numbers, booleans...).
 
   If you still need to pass more complex data types to your context, please test
-  that they can be encoded to JSON or storing the errors will fail. In the case
-  of `Jason` that may require defining an Encoder for that data type if not
-  included by default.
+  that they can be encoded to JSON or storing the errors will fail. You may need to define a
+  custom encoder for that data type if not included by default.
   """
   @spec set_context(context()) :: context()
   def set_context(params) when is_map(params) do
@@ -384,4 +383,24 @@ defmodule ErrorTracker do
     Telemetry.new_occurrence(occurrence, muted)
     occurrence
   end
+
+  @default_json_encoder (cond do
+                           Code.ensure_loaded?(JSON) ->
+                             JSON
+
+                           Code.ensure_loaded?(Jason) ->
+                             Jason
+
+                           true ->
+                             raise """
+                             No JSON encoder found. Please add Jason to your dependencies:
+
+                                 {:jason, "~> 1.1"}
+
+                             Or upgrade to Elixir 1.18+.
+                             """
+                         end)
+
+  @doc false
+  def __default_json_encoder__, do: @default_json_encoder
 end
