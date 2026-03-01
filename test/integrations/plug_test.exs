@@ -47,11 +47,8 @@ defmodule ErrorTracker.Integrations.PlugTest do
 
     [occurrence] = repo().all(ErrorTracker.Occurrence)
 
-    header_names = occurrence.context |> Map.get("request.headers") |> Map.keys()
-
-    refute "cookie" in header_names
-    refute "authorization" in header_names
-
-    assert "safe" in header_names
+    assert occurrence.context["request.headers"]["cookie"] == "[REDACTED]"
+    assert occurrence.context["request.headers"]["authorization"] == "[REDACTED]"
+    assert occurrence.context["request.headers"]["safe"] != "[REDACTED]"
   end
 end
