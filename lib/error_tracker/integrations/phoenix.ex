@@ -119,12 +119,7 @@ defmodule ErrorTracker.Integrations.Phoenix do
     })
   end
 
-  def handle_event(
-        [:phoenix, :live_component, :handle_event, :exception],
-        _,
-        metadata,
-        :no_config
-      ) do
+  def handle_event([:phoenix, :live_component, :handle_event, :exception], _, metadata, :no_config) do
     ErrorTracker.report({metadata.kind, metadata.reason}, metadata.stacktrace, %{
       "live_view.component" => metadata.component,
       "live_view.event" => metadata.event,

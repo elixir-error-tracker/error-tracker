@@ -96,21 +96,21 @@ defmodule ErrorTracker.Web.Live.Dashboard do
     error_ids = Enum.map(errors, & &1.id)
 
     occurrences =
-      if errors != [] do
+      if errors == [] do
+        []
+      else
         errors
         |> Ecto.assoc(:occurrences)
         |> where([o], o.error_id in ^error_ids)
         |> group_by([o], o.error_id)
         |> select([o], {o.error_id, count(o.id)})
         |> Repo.all()
-      else
-        []
       end
 
     assign(socket,
       errors: errors,
       occurrences: Map.new(occurrences),
-      total_pages: (total_errors / @per_page) |> Float.ceil() |> trunc
+      total_pages: (total_errors / @per_page) |> Float.ceil() |> trunc()
     )
   end
 

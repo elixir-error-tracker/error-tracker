@@ -97,7 +97,7 @@ defmodule ErrorTracker.Integrations.Plug do
 
   @doc false
   def report_error(conn, reason, stack) do
-    unless Process.get(:error_tracker_router_exception_reported) do
+    if !Process.get(:error_tracker_router_exception_reported) do
       try do
         ErrorTracker.report(reason, stack, build_context(conn))
       after
@@ -107,13 +107,13 @@ defmodule ErrorTracker.Integrations.Plug do
   end
 
   @doc false
-  def set_context(conn = %Plug.Conn{}) do
-    conn |> build_context |> ErrorTracker.set_context()
+  def set_context(%Plug.Conn{} = conn) do
+    conn |> build_context() |> ErrorTracker.set_context()
   end
 
   @sensitive_headers ["cookie", "authorization"]
 
-  defp build_context(conn = %Plug.Conn{}) do
+  defp build_context(%Plug.Conn{} = conn) do
     %{
       "request.host" => conn.host,
       "request.path" => conn.request_path,
@@ -122,11 +122,11 @@ defmodule ErrorTracker.Integrations.Plug do
       "request.ip" => remote_ip(conn),
       "request.headers" => conn.req_headers |> Map.new() |> Map.drop(@sensitive_headers),
       # Depending on the error source, the request params may have not been fetched yet
-      "request.params" => unless(is_struct(conn.params, Plug.Conn.Unfetched), do: conn.params)
+      "request.params" => if(!is_struct(conn.params, Plug.Conn.Unfetched), do: conn.params)
     }
   end
 
-  defp remote_ip(conn = %Plug.Conn{}) do
+  defp remote_ip(%Plug.Conn{} = conn) do
     remote_ip =
       case Plug.Conn.get_req_header(conn, "x-forwarded-for") do
         [x_forwarded_for | _] ->

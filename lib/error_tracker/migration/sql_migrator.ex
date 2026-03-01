@@ -5,6 +5,8 @@ defmodule ErrorTracker.Migration.SQLMigrator do
 
   import Ecto.Query
 
+  alias Ecto.Adapters.SQL
+
   def migrate_up(migrator, opts, initial_version) do
     initial = current_version(opts)
 
@@ -61,7 +63,7 @@ defmodule ErrorTracker.Migration.SQLMigrator do
   defp record_version(_opts, 0), do: :ok
 
   defp record_version(opts, version) do
-    timestamp = DateTime.utc_now() |> DateTime.to_unix()
+    timestamp = DateTime.to_unix(DateTime.utc_now())
 
     ErrorTracker.Repo.with_adapter(fn
       :postgres ->
@@ -92,8 +94,8 @@ defmodule ErrorTracker.Migration.SQLMigrator do
   defp meta_table_exists?(repo, opts) do
     ErrorTracker.Repo.with_adapter(fn
       :postgres ->
-        Ecto.Adapters.SQL.query!(
-          repo,
+        repo
+        |> SQL.query!(
           "SELECT TRUE FROM information_schema.tables WHERE table_name = 'error_tracker_meta' AND table_schema = $1",
           [opts.prefix],
           log: false
@@ -102,7 +104,7 @@ defmodule ErrorTracker.Migration.SQLMigrator do
         |> Enum.any?()
 
       _other ->
-        Ecto.Adapters.SQL.table_exists?(repo, "error_tracker_meta", log: false)
+        SQL.table_exists?(repo, "error_tracker_meta", log: false)
     end)
   end
 end

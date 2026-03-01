@@ -30,6 +30,8 @@ if Code.ensure_loaded?(Igniter) do
 
     use Igniter.Mix.Task
 
+    alias Igniter.Project.Config
+
     @impl Igniter.Mix.Task
     def info(_argv, _composing_task) do
       %Igniter.Mix.Task.Info{
@@ -77,9 +79,9 @@ if Code.ensure_loaded?(Igniter) do
 
     defp set_up_configuration(igniter, app_name, repo) do
       igniter
-      |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:repo], repo)
-      |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:otp_app], app_name)
-      |> Igniter.Project.Config.configure_new("config.exs", :error_tracker, [:enabled], true)
+      |> Config.configure_new("config.exs", :error_tracker, [:repo], repo)
+      |> Config.configure_new("config.exs", :error_tracker, [:otp_app], app_name)
+      |> Config.configure_new("config.exs", :error_tracker, [:enabled], true)
     end
 
     defp set_up_formatter(igniter) do

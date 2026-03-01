@@ -39,7 +39,7 @@ defmodule ErrorTracker.Error do
   end
 
   @doc false
-  def new(kind, reason, stacktrace = %ErrorTracker.Stacktrace{}) do
+  def new(kind, reason, %ErrorTracker.Stacktrace{} = stacktrace) do
     source = ErrorTracker.Stacktrace.source(stacktrace)
 
     {source_line, source_function} =

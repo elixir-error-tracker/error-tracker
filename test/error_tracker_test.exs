@@ -88,7 +88,7 @@ defmodule ErrorTrackerTest do
     @tag capture_log: true
     test "reports errors with invalid context" do
       # It's invalid because cannot be serialized to JSON
-      invalid_context = %{foo: %ErrorTracker.Error{}}
+      invalid_context = %{foo: %Error{}}
 
       assert %Occurrence{} = report_error(fn -> raise "test" end, invalid_context)
     end
@@ -172,5 +172,6 @@ defmodule ErrorTrackerTest do
 end
 
 defmodule ErrorWithBreadcrumbs do
+  @moduledoc false
   defexception [:message, :bread_crumbs]
 end

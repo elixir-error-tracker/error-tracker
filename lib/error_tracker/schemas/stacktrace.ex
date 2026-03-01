@@ -44,7 +44,7 @@ defmodule ErrorTracker.Stacktrace do
   defp normalize_arity(a) when is_integer(a), do: a
   defp normalize_arity(a) when is_list(a), do: length(a)
 
-  defp line_changeset(line = %__MODULE__.Line{}, params) do
+  defp line_changeset(%__MODULE__.Line{} = line, params) do
     Ecto.Changeset.cast(line, params, ~w[application module function arity file line]a)
   end
 
@@ -54,21 +54,21 @@ defmodule ErrorTracker.Stacktrace do
   The first line matching the client application. If no line belongs to the current
   application, just the first line.
   """
-  def source(stack = %__MODULE__{}) do
-    client_app = Application.fetch_env!(:error_tracker, :otp_app) |> to_string()
+  def source(%__MODULE__{} = stack) do
+    client_app = :error_tracker |> Application.fetch_env!(:otp_app) |> to_string()
 
     Enum.find(stack.lines, &(&1.application == client_app)) || List.first(stack.lines)
   end
 end
 
 defimpl String.Chars, for: ErrorTracker.Stacktrace do
-  def to_string(stack = %ErrorTracker.Stacktrace{}) do
+  def to_string(%ErrorTracker.Stacktrace{} = stack) do
     Enum.join(stack.lines, "\n")
   end
 end
 
 defimpl String.Chars, for: ErrorTracker.Stacktrace.Line do
-  def to_string(stack_line = %ErrorTracker.Stacktrace.Line{}) do
+  def to_string(%ErrorTracker.Stacktrace.Line{} = stack_line) do
     "#{stack_line.module}.#{stack_line.function}/#{stack_line.arity} in #{stack_line.file}:#{stack_line.line}"
   end
 end

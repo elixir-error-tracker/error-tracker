@@ -94,6 +94,7 @@ defmodule ErrorTracker.MixProject do
       {:ex_doc, "~> 0.33", only: :dev},
       {:phoenix_live_reload, ">= 0.0.0", only: :dev},
       {:plug_cowboy, ">= 0.0.0", only: :dev},
+      {:styler, "~> 1.11", only: [:dev, :test], runtime: false},
       {:tailwind, "~> 0.2", only: :dev},
       # Optional dependencies
       {:ecto_sqlite3, ">= 0.0.0", optional: true},
