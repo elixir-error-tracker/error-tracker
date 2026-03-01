@@ -119,8 +119,8 @@ defmodule ErrorTracker.Plugins.Pruner do
   def init(state \\ []) do
     state = %{
       limit: state[:limit] || 200,
-      max_age: state[:max_age] || to_timeout(day: 1),
-      interval: state[:interval] || to_timeout(minute: 30)
+      max_age: state[:max_age] || :timer.hours(24),
+      interval: state[:interval] || :timer.minutes(30)
     }
 
     {:ok, schedule_prune(state)}
