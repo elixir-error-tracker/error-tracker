@@ -89,10 +89,6 @@ defmodule ErrorTracker.MixProject do
       {:phoenix_live_view, "~> 1.0"},
       {:phoenix_ecto, "~> 4.6"},
       {:plug, "~> 1.10"},
-      {:jason, "~> 1.1", optional: true},
-      {:postgrex, ">= 0.0.0", optional: true},
-      {:myxql, ">= 0.0.0", optional: true},
-      {:ecto_sqlite3, ">= 0.0.0", optional: true},
       # Dev dependencies
       {:bun, "~> 1.3", only: :dev},
       {:credo, "~> 1.7", only: [:dev, :test]},
@@ -101,6 +97,10 @@ defmodule ErrorTracker.MixProject do
       {:plug_cowboy, ">= 0.0.0", only: :dev},
       {:tailwind, "~> 0.2", only: :dev},
       # Optional dependencies
+      {:jason, "~> 1.1", optional: true},
+      {:postgrex, ">= 0.0.0", optional: true},
+      {:myxql, ">= 0.0.0", optional: true},
+      {:ecto_sqlite3, ">= 0.0.0", optional: true},
       {:igniter, "~> 0.5", optional: true}
     ]
   end
