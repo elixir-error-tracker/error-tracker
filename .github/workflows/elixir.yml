@@ -88,16 +88,16 @@ jobs:
         run: mix compile --force --warnings-as-errors
 
       - name: Run Tests - SQLite3
-        run: mix test
+        run: mix test --warnings-as-errors
         env:
           DB: sqlite
 
       - name: Run Tests - PostgreSQL
-        run: mix test
+        run: mix test --warnings-as-errors
         env:
           DB: postgres
 
       - name: Run Tests - MySQL/MariaDB
-        run: mix test
+        run: mix test --warnings-as-errors
         env:
           DB: mysql
