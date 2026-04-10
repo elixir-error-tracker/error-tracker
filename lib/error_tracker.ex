@@ -377,7 +377,7 @@ defmodule ErrorTracker do
     case existing_status do
       :resolved -> Telemetry.unresolved_error(error)
       :unresolved -> :noop
-      nil -> Telemetry.new_error(error)
+      nil -> Telemetry.new_error(error, occurrence)
     end
 
     Telemetry.new_occurrence(occurrence, muted)

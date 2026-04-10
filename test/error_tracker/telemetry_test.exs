@@ -19,8 +19,8 @@ defmodule ErrorTracker.TelemetryTest do
       end
 
     # Since the error is new, both the new error and new occurrence events will be emitted
-    %Occurrence{error: error = %Error{}} = ErrorTracker.report(exception, stacktrace)
-    assert_receive {:telemetry_event, [:error_tracker, :error, :new], _, %{error: %Error{}}}
+    occurrence = %Occurrence{error: error = %Error{}} = ErrorTracker.report(exception, stacktrace)
+    assert_receive {:telemetry_event, [:error_tracker, :error, :new], _, %{error: %Error{}, occurrence: ^occurrence}}
 
     assert_receive {:telemetry_event, [:error_tracker, :occurrence, :new], _, %{occurrence: %Occurrence{}, muted: false}}
 

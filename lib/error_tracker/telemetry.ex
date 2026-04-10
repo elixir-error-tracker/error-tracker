@@ -46,9 +46,9 @@ defmodule ErrorTracker.Telemetry do
   """
 
   @doc false
-  def new_error(%ErrorTracker.Error{} = error) do
+  def new_error(%ErrorTracker.Error{} = error, %ErrorTracker.Occurrence{} = occurrence) do
     measurements = %{system_time: System.system_time()}
-    metadata = %{error: error}
+    metadata = %{error: error, occurrence: occurrence}
     :telemetry.execute([:error_tracker, :error, :new], measurements, metadata)
   end
 
