@@ -19,8 +19,8 @@ defmodule ErrorTracker.TelemetryTest do
       end
 
     # Since the error is new, both the new error and new occurrence events will be emitted
-    %Occurrence{error: error = %Error{}} = ErrorTracker.report(exception, stacktrace)
-    assert_receive {:telemetry_event, [:error_tracker, :error, :new], _, %{error: %Error{}}}
+    occurrence = %Occurrence{error: error = %Error{}} = ErrorTracker.report(exception, stacktrace)
+    assert_receive {:telemetry_event, [:error_tracker, :error, :new], _, %{error: %Error{}, occurrence: ^occurrence}}
 
     assert_receive {:telemetry_event, [:error_tracker, :occurrence, :new], _, %{occurrence: %Occurrence{}, muted: false}}
 
@@ -49,6 +49,27 @@ defmodule ErrorTracker.TelemetryTest do
     # The unresolved event will be emitted
     {:ok, _unresolved} = ErrorTracker.unresolve(resolved)
 
-    assert_receive {:telemetry_event, [:error_tracker, :error, :unresolved], _, %{error: %Error{}}}
+    assert_receive {:telemetry_event, [:error_tracker, :error, :unresolved], _, %{error: %Error{}, occurrence: nil}}
+  end
+
+  test "events are emitted for previously resolved errors" do
+    {exception, stacktrace} =
+      try do
+        raise "This error was resolved but came back"
+      rescue
+        e -> {e, __STACKTRACE__}
+      end
+
+    %Occurrence{error: error = %Error{}} = ErrorTracker.report(exception, stacktrace)
+
+    ErrorTracker.resolve(error)
+
+    occurrence = ErrorTracker.report(exception, stacktrace)
+
+    assert_receive {:telemetry_event, [:error_tracker, :error, :unresolved], _,
+                    %{
+                      error: %Error{reason: "This error was resolved but came back"},
+                      occurrence: ^occurrence
+                    }}
   end
 end
