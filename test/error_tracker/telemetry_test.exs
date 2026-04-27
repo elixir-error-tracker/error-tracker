@@ -51,4 +51,24 @@ defmodule ErrorTracker.TelemetryTest do
 
     assert_receive {:telemetry_event, [:error_tracker, :error, :unresolved], _, %{error: %Error{}}}
   end
+
+  test "the :unresolved event carries the muted flag for muted errors" do
+    {exception, stacktrace} =
+      try do
+        raise "This is a test"
+      rescue
+        e -> {e, __STACKTRACE__}
+      end
+
+    %Occurrence{error: error = %Error{}} = ErrorTracker.report(exception, stacktrace)
+    {:ok, error} = ErrorTracker.mute(error)
+    {:ok, _resolved} = ErrorTracker.resolve(error)
+
+    # Trigger the same error again. It exists and is resolved, so the
+    # :unresolved telemetry event fires — and its `error` struct must
+    # reflect the muted flag stored in the DB.
+    ErrorTracker.report(exception, stacktrace)
+
+    assert_receive {:telemetry_event, [:error_tracker, :error, :unresolved], _, %{error: %Error{muted: true}}}
+  end
 end
