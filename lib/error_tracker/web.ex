@@ -71,6 +71,8 @@ defmodule ErrorTracker.Web do
   @doc false
   def html do
     quote do
+      use Phoenix.Component
+
       import Phoenix.Controller, only: [get_csrf_token: 0]
 
       unquote(html_helpers())
@@ -104,8 +106,6 @@ defmodule ErrorTracker.Web do
 
   defp html_helpers do
     quote do
-      use Phoenix.Component
-
       import ErrorTracker.Web.CoreComponents
       import ErrorTracker.Web.Helpers
       import ErrorTracker.Web.Router.Routes
