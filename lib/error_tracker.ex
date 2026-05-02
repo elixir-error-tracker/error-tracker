@@ -381,9 +381,9 @@ defmodule ErrorTracker do
     # sent a Telemetry event
     # If it is a new error, sent a Telemetry event
     case existing_status do
-      :resolved -> Telemetry.unresolved_error(error)
+      :resolved -> Telemetry.previously_resolved_error(error, occurrence)
       :unresolved -> :noop
-      nil -> Telemetry.new_error(error)
+      nil -> Telemetry.new_error(error, occurrence)
     end
 
     Telemetry.new_occurrence(occurrence, muted)
