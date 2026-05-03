@@ -338,7 +338,7 @@ defmodule ErrorTracker do
         nil -> {nil, false}
       end
 
-    {:ok, {error, occurrence}} =
+    {:ok, {%Error{} = error, %Occurrence{} = occurrence}} =
       Repo.transaction(fn ->
         error =
           Repo.with_adapter(fn
@@ -368,14 +368,12 @@ defmodule ErrorTracker do
         {error, occurrence}
       end)
 
-    %Occurrence{} = occurrence
-    occurrence = %{occurrence | error: error}
-
     # `Repo.insert!(_, on_conflict: [set: [...]])` only round-trips the columns
     # it sets, so the in-memory struct keeps `muted: false` (the schema default)
     # even when the DB row is muted. Stamp it with the value we already fetched
     # so subscribers of `[:error_tracker, :error, :*]` see the real flag.
     error = %{error | muted: muted}
+    occurrence = %{occurrence | error: error}
 
     # If the error existed and was marked as resolved before this exception,
     # sent a Telemetry event
