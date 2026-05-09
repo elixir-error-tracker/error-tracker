@@ -9,7 +9,7 @@
     value={@search_form[:reason].value}
     type="text"
     placeholder="Error"
-    class="border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+    class="border text-sm rounded-lg block p-2.5 bg-gray-700 light:bg-white border-gray-600 light:border-gray-300 placeholder-gray-400 text-white light:text-gray-900 focus:ring-blue-500 focus:border-blue-500"
     phx-debounce
   />
   <input
@@ -17,7 +17,7 @@
     value={@search_form[:source_line].value}
     type="text"
     placeholder="Source line"
-    class="border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+    class="border text-sm rounded-lg block p-2.5 bg-gray-700 light:bg-white border-gray-600 light:border-gray-300 placeholder-gray-400 text-white light:text-gray-900 focus:ring-blue-500 focus:border-blue-500"
     phx-debounce
   />
   <input
@@ -25,12 +25,12 @@
     value={@search_form[:source_function].value}
     type="text"
     placeholder="Source function"
-    class="border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+    class="border text-sm rounded-lg block p-2.5 bg-gray-700 light:bg-white border-gray-600 light:border-gray-300 placeholder-gray-400 text-white light:text-gray-900 focus:ring-blue-500 focus:border-blue-500"
     phx-debounce
   />
   <select
     name={@search_form[:status].name}
-    class="border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+    class="border text-sm rounded-lg block p-2.5 bg-gray-700 light:bg-white border-gray-600 light:border-gray-300 placeholder-gray-400 text-white light:text-gray-900 focus:ring-blue-500 focus:border-blue-500"
   >
     <option value="" selected={@search_form[:status].value == ""}>All</option>
     <option value="unresolved" selected={@search_form[:status].value == "unresolved"}>
@@ -42,9 +42,9 @@
   </select>
 </.form>
 
-<div class="relative overflow-x-auto shadow-md sm:rounded-lg ring-1 ring-gray-900">
-  <table class="w-full text-sm text-left rtl:text-right text-gray-400 table-fixed">
-    <thead class="text-xs uppercase bg-gray-900">
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg ring-1 ring-gray-900 light:ring-gray-200">
+  <table class="w-full text-sm text-left rtl:text-right text-gray-400 light:text-gray-500 table-fixed">
+    <thead class="text-xs uppercase bg-gray-900 light:bg-gray-100">
       <tr>
         <th scope="col" class="px-4 pr-2 w-72">Error</th>
         <th scope="col" class="px-4 py-3 w-72">Occurrences</th>
@@ -60,9 +60,9 @@
       </tr>
       <tr
         :for={error <- @errors}
-        class="border-b bg-gray-400/10 border-y border-gray-900 hover:bg-gray-800/60 last-of-type:border-b-0"
+        class="border-b bg-gray-400/10 light:bg-gray-50 border-y border-gray-900 light:border-gray-200 hover:bg-gray-800/60 light:hover:bg-gray-100 last-of-type:border-b-0"
       >
-        <td scope="row" class="px-4 py-4 font-medium text-white relative">
+        <td scope="row" class="px-4 py-4 font-medium text-white light:text-gray-900 relative">
           <.link navigate={error_path(@socket, error, @search)} class="absolute inset-1">
             <span class="sr-only">({sanitize_module(error.kind)}) {error.reason}</span>
           </.link>
@@ -71,7 +71,7 @@
           </p>
           <p
             :if={ErrorTracker.Error.has_source_info?(error)}
-            class="whitespace-nowrap text-ellipsis overflow-hidden font-normal text-gray-400"
+            class="whitespace-nowrap text-ellipsis overflow-hidden font-normal text-gray-400 light:text-gray-500"
           >
             {sanitize_module(error.source_function)}
             <br />

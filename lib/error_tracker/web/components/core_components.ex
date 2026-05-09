@@ -21,7 +21,7 @@ defmodule ErrorTracker.Web.CoreComponents do
     <.link
       class={[
         "phx-submit-loading:opacity-75 py-[11.5px]",
-        "text-sm font-semibold text-sky-500 hover:text-white/80",
+        "text-sm font-semibold text-sky-500 light:text-sky-600 hover:text-white/80 light:hover:text-gray-900/80",
         @class
       ]}
       {@rest}
@@ -63,14 +63,14 @@ defmodule ErrorTracker.Web.CoreComponents do
   def badge(assigns) do
     color_class =
       case assigns.color do
-        :blue -> "bg-blue-900 text-blue-300"
-        :gray -> "bg-gray-700 text-gray-300"
-        :red -> "bg-red-400/10 text-red-300 ring-red-400/20"
-        :green -> "bg-emerald-400/10 text-emerald-300 ring-emerald-400/20"
-        :yellow -> "bg-yellow-900 text-yellow-300"
-        :indigo -> "bg-indigo-900 text-indigo-300"
-        :purple -> "bg-purple-900 text-purple-300"
-        :pink -> "bg-pink-900 text-pink-300"
+        :blue -> "bg-blue-900 light:bg-blue-100 text-blue-300 light:text-blue-800"
+        :gray -> "bg-gray-700 light:bg-gray-200 text-gray-300 light:text-gray-700"
+        :red -> "bg-red-400/10 light:bg-red-100 text-red-300 light:text-red-800 ring-red-400/20 light:ring-red-400/30"
+        :green -> "bg-emerald-400/10 light:bg-emerald-100 text-emerald-300 light:text-emerald-800 ring-emerald-400/20 light:ring-emerald-400/30"
+        :yellow -> "bg-yellow-900 light:bg-yellow-100 text-yellow-300 light:text-yellow-800"
+        :indigo -> "bg-indigo-900 light:bg-indigo-100 text-indigo-300 light:text-indigo-800"
+        :purple -> "bg-purple-900 light:bg-purple-100 text-purple-300 light:text-purple-800"
+        :pink -> "bg-pink-900 light:bg-pink-100 text-pink-300 light:text-pink-800"
       end
 
     assigns = Map.put(assigns, :color_class, color_class)
@@ -95,14 +95,14 @@ defmodule ErrorTracker.Web.CoreComponents do
     <div class="mt-10 w-full flex">
       <button
         :if={@page > 1}
-        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400  bg-gray-900 border border-gray-400 rounded-lg hover:bg-gray-800 hover:text-white"
+        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400 light:text-gray-500 bg-gray-900 light:bg-gray-100 border border-gray-400 light:border-gray-300 rounded-lg hover:bg-gray-800 light:hover:bg-gray-200 hover:text-white light:hover:text-gray-900"
         phx-click={@event_previous}
       >
         Previous page
       </button>
       <button
         :if={@page < @total_pages}
-        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400 bg-gray-900 border border-gray-400 rounded-lg hover:bg-gray-800 hover:text-white"
+        class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-400 light:text-gray-500 bg-gray-900 light:bg-gray-100 border border-gray-400 light:border-gray-300 rounded-lg hover:bg-gray-800 light:hover:bg-gray-200 hover:text-white light:hover:text-gray-900"
         phx-click={@event_next}
       >
         Next page
@@ -122,7 +122,7 @@ defmodule ErrorTracker.Web.CoreComponents do
     <div>
       <h2
         :if={assigns[:title]}
-        class={["text-sm font-semibold mb-2 uppercase text-gray-400", @title_class]}
+        class={["text-sm font-semibold mb-2 uppercase text-gray-400 light:text-gray-500", @title_class]}
       >
         {@title}
       </h2>

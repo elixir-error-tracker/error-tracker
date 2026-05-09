@@ -5,7 +5,7 @@
 </div>
 
 <div id="header">
-  <p class="text-sm uppercase font-semibold text-gray-400">
+  <p class="text-sm uppercase font-semibold text-gray-400 light:text-gray-500">
     Error #{@error.id} @ {format_datetime(@occurrence.inserted_at)}
   </p>
   <h1 class="my-1 text-2xl w-full font-semibold whitespace-nowrap text-ellipsis overflow-hidden">
@@ -16,44 +16,44 @@
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-4 md:space-x-3 mt-6 gap-2">
-  <div class="md:col-span-3 md:border-r md:border-gray-600 space-y-8 pr-5">
+  <div class="md:col-span-3 md:border-r md:border-gray-600 light:md:border-gray-300 space-y-8 pr-5">
     <.section title="Full message">
-      <pre class="overflow-auto p-4 rounded-lg bg-gray-300/10 border border-gray-900"><%= @occurrence.reason %></pre>
+      <pre class="overflow-auto p-4 rounded-lg bg-gray-300/10 light:bg-gray-100 border border-gray-900 light:border-gray-200"><%= @occurrence.reason %></pre>
     </.section>
 
     <.section :if={ErrorTracker.Error.has_source_info?(@error)} title="Source">
-      <pre class="overflow-auto text-sm p-4 rounded-lg bg-gray-300/10 border border-gray-900">
+      <pre class="overflow-auto text-sm p-4 rounded-lg bg-gray-300/10 light:bg-gray-100 border border-gray-900 light:border-gray-200">
         <%= sanitize_module(@error.source_function) %>
         <%= @error.source_line %></pre>
     </.section>
 
     <.section :if={@occurrence.breadcrumbs != []} title="Bread crumbs">
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg ring-1 ring-gray-900">
-        <table class="w-full text-sm text-gray-400 table-fixed">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg ring-1 ring-gray-900 light:ring-gray-200">
+        <table class="w-full text-sm text-gray-400 light:text-gray-500 table-fixed">
           <tr
             :for={
               {breadcrumb, index} <-
                 @occurrence.breadcrumbs |> Enum.reverse() |> Enum.with_index()
             }
-            class="border-b bg-gray-400/10 border-gray-900 last:border-b-0"
+            class="border-b bg-gray-400/10 light:bg-gray-50 border-gray-900 light:border-gray-200 last:border-b-0"
           >
-            <td class="w-11 pl-2 py-4 font-medium text-white relative text-right">
+            <td class="w-11 pl-2 py-4 font-medium text-white light:text-gray-900 relative text-right">
               {length(@occurrence.breadcrumbs) - index}.
             </td>
-            <td class="px-2 py-4 font-medium text-white relative">{breadcrumb}</td>
+            <td class="px-2 py-4 font-medium text-white light:text-gray-900 relative">{breadcrumb}</td>
           </tr>
         </table>
       </div>
     </.section>
 
     <.section :if={@occurrence.stacktrace.lines != []} title="Stacktrace">
-      <div class="p-4 bg-gray-300/10 border border-gray-900 rounded-lg">
+      <div class="p-4 bg-gray-300/10 light:bg-gray-100 border border-gray-900 light:border-gray-200 rounded-lg">
         <div class="w-full mb-4">
           <label class="flex justify-end">
             <input
               type="checkbox"
               id="show-app-frames"
-              class="ml-2 mr-2 mb-1 mt-1 inline-block text-sky-600 rounded focus:ring-sky-600 ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
+              class="ml-2 mr-2 mb-1 mt-1 inline-block text-sky-600 rounded focus:ring-sky-600 ring-offset-gray-800 light:ring-offset-white focus:ring-2 bg-gray-700 light:bg-white border-gray-600 light:border-gray-300"
               phx-click={JS.toggle(to: "#stacktrace tr:not([data-app=#{@app}])")}
             />
             <span class="text-md inline-block">
@@ -81,7 +81,7 @@
     <.section title="Context">
       <pre
         id="context"
-        class="overflow-auto text-sm p-4 rounded-lg bg-gray-300/10 border border-gray-900"
+        class="overflow-auto text-sm p-4 rounded-lg bg-gray-300/10 light:bg-gray-100 border border-gray-900 light:border-gray-200"
         phx-hook="JsonPrettyPrint"
       >
         <%= ErrorTracker.__default_json_encoder__().encode_to_iodata!(@occurrence.context) %>
@@ -89,12 +89,12 @@
     </.section>
   </div>
 
-  <div class="px-3 md:pl-0 space-y-8">
+  <div class="px-3 md:pl-0 space-y-8 light:md:border-gray-300">
     <.section title={"Occurrence (#{@total_occurrences} total)"}>
       <form phx-change="occurrence_navigation">
         <select
           name="occurrence_id"
-          class="w-full border text-sm rounded-lg block p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+          class="w-full border text-sm rounded-lg block p-2.5 bg-gray-700 light:bg-white border-gray-600 light:border-gray-300 placeholder-gray-400 text-white light:text-gray-900 focus:ring-blue-500 focus:border-blue-500"
         >
           <option
             :for={occurrence <- @occurrences}
