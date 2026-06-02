@@ -52,6 +52,45 @@ const Hooks = {
     mounted() {
       Theme.init();
     }
+  },
+  CopyToClipboard: {
+    mounted() {
+      this.label = this.el.dataset.copyLabel || this.el.textContent;
+      this.copiedLabel = this.el.dataset.copiedLabel || "Copied";
+      this.timeout = null;
+      this.onClick = () => this.copy();
+      this.el.addEventListener("click", this.onClick);
+    },
+    destroyed() {
+      this.el.removeEventListener("click", this.onClick);
+      clearTimeout(this.timeout);
+    },
+    copy() {
+      const target = document.getElementById(this.el.dataset.copyTarget);
+      if (!target) return;
+
+      const text = target.value || target.textContent;
+      if (!text) return;
+
+      const writeText = navigator.clipboard
+        ? navigator.clipboard.writeText(text).catch(() => this.writeTextFallback(target))
+        : this.writeTextFallback(target);
+
+      writeText.then(() => {
+        this.el.textContent = this.copiedLabel;
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          this.el.textContent = this.label;
+        }, 2000);
+      });
+    },
+    writeTextFallback(target) {
+      target.select();
+      document.execCommand("copy");
+      target.blur();
+
+      return Promise.resolve();
+    }
   }
 };
 
