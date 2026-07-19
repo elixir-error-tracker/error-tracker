@@ -8,11 +8,28 @@
   <p class="text-sm uppercase font-semibold text-gray-400 light:text-gray-500">
     Error #{@error.id} @ {format_datetime(@occurrence.inserted_at)}
   </p>
-  <h1 class="my-1 text-2xl w-full font-semibold whitespace-nowrap text-ellipsis overflow-hidden">
-    ({sanitize_module(@error.kind)}) {@error.reason
-    |> String.replace("\n", " ")
-    |> String.trim()}
-  </h1>
+  <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+    <h1 class="my-1 text-2xl w-full font-semibold whitespace-nowrap text-ellipsis overflow-hidden">
+      ({sanitize_module(@error.kind)}) {@error.reason
+      |> String.replace("\n", " ")
+      |> String.trim()}
+    </h1>
+    <button
+      id="copy-error-button"
+      type="button"
+      class={[
+        "shrink-0 rounded-lg border border-gray-700 light:border-gray-300 px-3 py-2 text-sm font-semibold",
+        "text-sky-500 light:text-sky-600 hover:bg-gray-300/10 light:hover:bg-gray-100"
+      ]}
+      phx-hook="CopyToClipboard"
+      data-copy-target="copy-error-text"
+      data-copy-label="Copy error"
+      data-copied-label="Copied"
+    >
+      Copy error
+    </button>
+  </div>
+  <textarea id="copy-error-text" class="sr-only" readonly><%= @copy_error_text %></textarea>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-4 md:space-x-3 mt-6 gap-2">

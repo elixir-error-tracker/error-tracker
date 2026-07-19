@@ -41,6 +41,10 @@ defmodule ErrorTracker.Web.Live.Show do
     socket =
       socket
       |> assign(occurrence: occurrence)
+      |> assign(
+        :copy_error_text,
+        copy_error_text(socket.assigns.error, occurrence, socket.assigns.app)
+      )
       |> load_related_occurrences()
 
     {:noreply, socket}
@@ -155,5 +159,68 @@ defmodule ErrorTracker.Web.Live.Show do
     |> select([:id, :error_id, :inserted_at])
     |> limit(^num_results)
     |> Repo.all()
+  end
+
+  @doc false
+  def copy_error_text(%Error{} = error, %Occurrence{} = occurrence, app) do
+    [
+      "Error ##{error.id}",
+      "Occurrence ##{occurrence.id}",
+      "Kind: #{error.kind}",
+      "Message:\n#{occurrence.reason}",
+      source_section(error),
+      breadcrumbs_section(occurrence.breadcrumbs),
+      stacktrace_section(occurrence.stacktrace, app),
+      context_section(occurrence.context)
+    ]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join("\n\n")
+  end
+
+  defp source_section(%Error{} = error) do
+    if Error.has_source_info?(error) do
+      String.trim("""
+      Source:
+      #{error.source_function}
+      #{error.source_line}
+      """)
+    end
+  end
+
+  defp breadcrumbs_section([]), do: nil
+  defp breadcrumbs_section(nil), do: nil
+
+  defp breadcrumbs_section(breadcrumbs) do
+    breadcrumbs =
+      breadcrumbs
+      |> Enum.reverse()
+      |> Enum.with_index(1)
+      |> Enum.map_join("\n", fn {breadcrumb, index} -> "#{index}. #{breadcrumb}" end)
+
+    "Breadcrumbs:\n#{breadcrumbs}"
+  end
+
+  defp stacktrace_section(%{lines: []}, _app), do: nil
+  defp stacktrace_section(nil, _app), do: nil
+
+  defp stacktrace_section(stacktrace, app) do
+    lines =
+      Enum.map_join(stacktrace.lines, "\n", fn line ->
+        application = line.application || to_string(app)
+        location = if line.line, do: "#{line.file}:#{line.line}", else: "(nofile)"
+
+        "(#{application}) #{line.module}.#{line.function}/#{line.arity}\n    #{location}"
+      end)
+
+    "Stacktrace:\n#{lines}"
+  end
+
+  defp context_section(context) do
+    json =
+      context
+      |> ErrorTracker.__default_json_encoder__().encode_to_iodata!()
+      |> IO.iodata_to_binary()
+
+    "Context:\n#{json}"
   end
 end
