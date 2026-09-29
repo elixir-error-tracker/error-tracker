@@ -125,7 +125,7 @@ defmodule ErrorTracker.Web.Layouts do
   end
 
   attr :to, :string, required: true
-  attr :rest, :global
+  attr :rest, :global, include: ~w(target)
 
   slot :inner_block, required: true
 
