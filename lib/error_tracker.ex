@@ -140,8 +140,10 @@ defmodule ErrorTracker do
 
     if enabled?() && !ignored?(error, context) do
       sanitized_context = sanitize_context(context)
+      sanitized_reason = sanitize_reason(reason)
+      error = %{error | reason: sanitized_reason}
 
-      upsert_error!(error, stacktrace, sanitized_context, breadcrumbs, reason)
+      upsert_error!(error, stacktrace, sanitized_context, breadcrumbs, sanitized_reason)
     else
       :noop
     end
@@ -300,6 +302,15 @@ defmodule ErrorTracker do
       else: context
   end
 
+  defp sanitize_reason(reason) do
+    filter_mod = Application.get_env(:error_tracker, :filter)
+
+    if filter_mod && Code.ensure_loaded?(filter_mod) &&
+         function_exported?(filter_mod, :sanitize_reason, 1),
+       do: filter_mod.sanitize_reason(reason),
+       else: reason
+  end
+
   defp normalize_exception(%struct{} = ex, _stacktrace) when is_exception(ex) do
     {to_string(struct), Exception.message(ex)}
   end
@@ -344,12 +355,24 @@ defmodule ErrorTracker do
           Repo.with_adapter(fn
             :mysql ->
               Repo.insert!(error,
-                on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]]
+                on_conflict: [
+                  set: [
+                    status: :unresolved,
+                    last_occurrence_at: DateTime.utc_now(),
+                    reason: error.reason
+                  ]
+                ]
               )
 
             _other ->
               Repo.insert!(error,
-                on_conflict: [set: [status: :unresolved, last_occurrence_at: DateTime.utc_now()]],
+                on_conflict: [
+                  set: [
+                    status: :unresolved,
+                    last_occurrence_at: DateTime.utc_now(),
+                    reason: error.reason
+                  ]
+                ],
                 conflict_target: :fingerprint
               )
           end)
